@@ -1,9 +1,14 @@
 package bfst22.vector;
 
-public class OSMNode {
+import java.io.Serializable;
+
+public class OSMNode implements Serializable {
+    public static final long serialVersionUID = 9082413;
+    long id;
     float lat, lon;
 
-    public OSMNode(float lat, float lon) {
+    public OSMNode(long id, float lat, float lon) {
+        this.id = id;
         this.lat = lat;
         this.lon = lon;
     }

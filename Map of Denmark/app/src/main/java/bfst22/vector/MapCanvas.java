@@ -24,8 +24,12 @@ public class MapCanvas extends Canvas {
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, getWidth(), getHeight());
         gc.setTransform(trans);
+        gc.setFill(Color.LIGHTBLUE);
+        for (var line : model.iterable(WayType.LAKE)) {
+            line.fill(gc);
+        }
         gc.setLineWidth(1/Math.sqrt(trans.determinant()));
-        for (var line : model) {
+        for (var line : model.iterable(WayType.UNKNOWN)) {
             line.draw(gc);
         }
     }

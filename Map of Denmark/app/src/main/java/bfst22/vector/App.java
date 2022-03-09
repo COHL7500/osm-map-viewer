@@ -6,7 +6,8 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        var model = new Model("data/small.osm");
+        // var filename = getParameters().getRaw().get(0);
+        var model = new Model("data/frb.osm");
         new View(model, primaryStage);
     }
 }

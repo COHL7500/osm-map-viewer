@@ -21,7 +21,7 @@ public class Line implements Drawable {
         this.to = to;
     }
 
-    public void draw(GraphicsContext gc) {
+    public void trace(GraphicsContext gc) {
         gc.beginPath();
         gc.moveTo(from.getX(), from.getY());
         gc.lineTo(to.getX(), to.getY());
