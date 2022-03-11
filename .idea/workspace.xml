@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Final version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,6 +101,7 @@
       <workItem from="1646833278674" duration="720000" />
       <workItem from="1646834258507" duration="1081000" />
       <workItem from="1646836450160" duration="15059000" />
+      <workItem from="1647001408368" duration="327000" />
     </task>
     <task id="LOCAL-00001" summary="update .gitignore">
       <created>1646834535049</created>
@@ -130,7 +131,21 @@
       <option name="project" value="LOCAL" />
       <updated>1646996172521</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Final version">
+      <created>1647001220412</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1647001220412</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Final version">
+      <created>1647001318783</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1647001318783</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
