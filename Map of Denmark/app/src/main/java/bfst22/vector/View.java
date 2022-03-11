@@ -5,6 +5,8 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 
+// Responsible for displaying model data.
+
 public class View {
     public View(Model model, Stage primaryStage) throws IOException {
         primaryStage.show();

@@ -3,14 +3,19 @@ package bfst22.vector;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+// A HashMap exclusively designed for nodes.
+
 public class NodeMap extends ArrayList<OSMNode> {
     boolean sorted;
 
+    // adds a new node to the nodemap and corrects the sorted bool to false.
     public boolean add(OSMNode node) {
         sorted = false;
         return super.add(node);
     }
 
+    // gets the node from the map based on the given reference and sorts the map.
+    // Uncertain as to why it sorts the map? Perhaps performance improvement?
     public OSMNode get(long ref) {
         if (!sorted) {
             sort(Comparator.comparing(node -> node.id));

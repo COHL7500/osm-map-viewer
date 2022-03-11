@@ -5,10 +5,13 @@ import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
 
+// Defines the lines intended to draw the polygons on the map; typically used for ways.
+
 public class PolyLine implements Drawable, Serializable {
     public static final long serialVersionUID = 134123;
     float[] coords;
 
+    // Constructs the line based on the given nodes for the particular polygon.
     public PolyLine(List<OSMNode> nodes) {
         coords = new float[nodes.size() * 2];
         int i = 0;
@@ -18,6 +21,7 @@ public class PolyLine implements Drawable, Serializable {
         }
     }
 
+    // traces the are needed to be drawn before drawing.
     @Override
     public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);
