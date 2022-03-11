@@ -6,12 +6,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
+import java.util.Arrays;
+import java.util.EnumMap;
+
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
 
 public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
+    EnumMap<WayType, Boolean> displayWay = new EnumMap<WayType, Boolean>(WayType.class);
 
     // Runs upon startup (setting default pan, zoom for example).
 
@@ -25,10 +29,15 @@ public class MapCanvas extends Canvas {
         // Observer notifies the change in a particular state, being our repaint in this case.
         model.addObserver(this::repaint);
 
+        Arrays.stream(WayType.values()).forEach(type -> displayWay.put(type,true));
+
         // Instantly paints upon initialization
         repaint();
     }
 
+    void setDisplayStatus(WayType way, boolean state){
+        this.displayWay.put(way, state);
+    }
 
     // Draws all of the elements of our map.
     void repaint() {
@@ -45,6 +54,21 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
+        gc.setLineWidth(1/Math.sqrt(trans.determinant()));
+
+        for(var way : displayWay.entrySet()){
+            if(way.getValue()) {
+                for (var line : model.iterable(way.getKey())) {
+                    if(way.getKey() == WayType.WATER){
+                        gc.setFill(Color.LIGHTBLUE);
+                        line.fill(gc);
+                    } else {
+                        line.draw(gc);
+                    }
+                }
+            }
+        }
+        /*
         // draws all entities with the type WATER in our lines list.
         for (var line : model.iterable(WayType.WATER)) {
             gc.setFill(Color.LIGHTBLUE);
@@ -57,7 +81,7 @@ public class MapCanvas extends Canvas {
         // In the final product, this should be removed.
         for (var line : model.iterable(WayType.UNKNOWN)) {
             line.draw(gc);
-        }
+        }*/
     }
 
     // Allows the user to navigate around the map by panning.

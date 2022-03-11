@@ -20,12 +20,7 @@
     <top>
         <ButtonBar prefHeight="5.0" prefWidth="600.0" BorderPane.alignment="CENTER">
             <buttons>
-                <MenuButton mnemonicParsing="false" prefHeight="25.0" text="Menu">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                        <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                </MenuButton>
+                <MenuButton fx:id="dropdown" mnemonicParsing="false" prefHeight="25.0" text="Menu" />
                 <TextField prefHeight="25.0" text="Search">
                     <padding>
                         <Insets right="40.0" />
@@ -35,24 +30,7 @@
                 <Slider />
                 <Button minWidth="66.0" mnemonicParsing="false" prefHeight="25.0" text="+" />
             </buttons>
-        </ButtonBar><ButtonBar prefHeight="5.0" prefWidth="600.0" BorderPane.alignment="CENTER">
-        <buttons>
-            <MenuButton mnemonicParsing="false" prefHeight="25.0" text="Menu">
-                <items>
-                    <MenuItem mnemonicParsing="false" text="Action 1" />
-                    <MenuItem mnemonicParsing="false" text="Action 2" />
-                </items>
-            </MenuButton>
-            <TextField prefHeight="25.0" text="Search">
-                <padding>
-                    <Insets right="40.0" />
-                </padding>
-            </TextField>
-            <Button minWidth="62.0" mnemonicParsing="false" prefHeight="25.0" text="-" />
-            <Slider />
-            <Button minWidth="66.0" mnemonicParsing="false" prefHeight="25.0" text="+" />
-        </buttons>
-    </ButtonBar>
+        </ButtonBar>
     </top>
     <center>
         <MapCanvas fx:id="canvas"

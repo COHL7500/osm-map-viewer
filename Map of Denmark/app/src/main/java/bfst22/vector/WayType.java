@@ -8,5 +8,5 @@ package bfst22.vector;
  **/
 
 public enum WayType {
-    UNKNOWN, WATER;
+    WATER, BUILDING, UNKNOWN;
 }
