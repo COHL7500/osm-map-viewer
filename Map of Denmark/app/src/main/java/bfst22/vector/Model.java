@@ -137,6 +137,7 @@ public class Model {
                             var v = reader.getAttributeValue(null, "v");
 
                             if (k.equals("natural") && v.equals("water")) type = WayType.WATER;
+                            if (k.equals("building")) type = WayType.BUILDING;
 
                             break;
 
@@ -165,9 +166,7 @@ public class Model {
                         case "relation":
 
                             // if the relation is water, then it draws
-                            if (type == WayType.WATER && !rel.isEmpty()) {
-                                lines.get(type).add(new MultiPolygon(rel));
-                            }
+                            if (!rel.isEmpty()) lines.get(type).add(new MultiPolygon(rel));
                             rel.clear();
                             break;
                     }
