@@ -154,6 +154,8 @@ public class Model {
 
                             if (k.equals("building")) type = WayType.BUILDING;
 
+                            if (k.equals("route")) type = WayType.ROUTE;
+
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)

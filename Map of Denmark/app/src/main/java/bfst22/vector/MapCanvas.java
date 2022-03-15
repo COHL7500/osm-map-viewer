@@ -99,8 +99,8 @@ public class MapCanvas extends Canvas {
 
         for(var line : model.iterable((WayType.ROUTE)))
         {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
+            gc.setStroke(Color.PURPLE);
+            line.draw(gc);
         }
     }
 

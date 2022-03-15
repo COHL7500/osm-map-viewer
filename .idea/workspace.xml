@@ -4,23 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Final version">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Add building type, painting them grey">
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/WayType.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/WayType.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/WayType.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/WayType.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +118,7 @@
       <workItem from="1646833278674" duration="720000" />
       <workItem from="1646834258507" duration="1081000" />
       <workItem from="1646836450160" duration="15059000" />
-      <workItem from="1647001408368" duration="10960000" />
+      <workItem from="1647001408368" duration="11308000" />
     </task>
     <task id="LOCAL-00001" summary="update .gitignore">
       <created>1646834535049</created>
@@ -174,7 +169,14 @@
       <option name="project" value="LOCAL" />
       <updated>1647001886353</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add building type, painting them grey">
+      <created>1647377042489</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1647377042489</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -195,6 +197,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update .gitignore" />
     <MESSAGE value="Final version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final version" />
+    <MESSAGE value="Add building type, painting them grey" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add building type, painting them grey" />
   </component>
 </project>
