@@ -138,6 +138,22 @@ public class Model {
 
                             if (k.equals("natural") && v.equals("water")) type = WayType.WATER;
 
+                            else if (k.equals("highway")) {
+                                switch (v) {
+                                    case "primary":
+                                        type = WayType.PRIMARY;
+                                        break;
+                                    case "secondary":
+                                        type = WayType.SECONDARY;
+                                        break;
+                                    case "tertiary":
+                                        type = WayType.TERTIARY;
+                                        break;
+                                }
+                            }
+
+                            if (k.equals("building")) type = WayType.BUILDING;
+
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -165,9 +181,21 @@ public class Model {
                         case "relation":
 
                             // if the relation is water, then it draws
-                            if (type == WayType.WATER && !rel.isEmpty()) {
+                            if (type == WayType.WATER && !rel.isEmpty())
+                            {
                                 lines.get(type).add(new MultiPolygon(rel));
                             }
+
+                            else if(type == WayType.BUILDING && !rel.isEmpty())
+                            {
+                                lines.get(type).add(new MultiPolygon(rel));
+                            }
+
+                            else if(type == WayType.ROUTE && !rel.isEmpty())
+                            {
+                                lines.get(type).add(new MultiPolygon(rel));
+                            }
+
                             rel.clear();
                             break;
                     }

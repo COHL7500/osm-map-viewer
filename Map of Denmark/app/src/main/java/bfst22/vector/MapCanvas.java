@@ -36,7 +36,7 @@ public class MapCanvas extends Canvas {
         gc.setTransform(new Affine());
 
         // Background color
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.WHITESMOKE);
 
         // Uncertain what this does exactly, but yeah.. Try and see what happens if you comment it  out.
         gc.fillRect(0, 0, getWidth(), getHeight());
@@ -45,9 +45,44 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
-        // draws all entities with the type WATER in our lines list.
+        gc.setLineWidth(0.000035);
+
+        // specifies line properties of our entities with the type HIGHWAY in our lines list.
+        for(var line : model.iterable((WayType.PRIMARY)))
+        {
+            gc.setStroke(Color.BLACK);
+            line.draw(gc);
+            gc.setStroke(Color.web("#fdd7a1"));
+            line.draw(gc);
+        }
+
+        gc.setLineWidth(0.00002);
+
+        for(var line : model.iterable((WayType.SECONDARY)))
+        {
+            gc.setStroke(Color.BLACK);
+            line.draw(gc);
+            gc.setStroke(Color.web("#f6fabb"));
+            line.draw(gc);
+        }
+
+        for(var line : model.iterable((WayType.TERTIARY)))
+        {
+            gc.setStroke(Color.BLACK);
+            line.draw(gc);
+            gc.setStroke(Color.WHITE);
+            line.draw(gc);
+        }
+
+        // specifies fill properties all entities with the type WATER in our lines list.
         for (var line : model.iterable(WayType.WATER)) {
             gc.setFill(Color.LIGHTBLUE);
+            line.fill(gc);
+        }
+
+        for(var line : model.iterable((WayType.BUILDING)))
+        {
+            gc.setFill(Color.web("#d8d0c9"));
             line.fill(gc);
         }
 
@@ -55,8 +90,17 @@ public class MapCanvas extends Canvas {
 
         // draws all entities with no particular type (their tag has not yet been accounted for).
         // In the final product, this should be removed.
+
+
         for (var line : model.iterable(WayType.UNKNOWN)) {
+            gc.setStroke(Color.BLACK);
             line.draw(gc);
+        }
+
+        for(var line : model.iterable((WayType.ROUTE)))
+        {
+            gc.setFill(Color.LIGHTBLUE);
+            line.fill(gc);
         }
     }
 
