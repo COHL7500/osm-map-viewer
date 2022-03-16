@@ -45,6 +45,12 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
+        for(var line : model.iterable(WayType.ISLET))
+        {
+            gc.setFill(Color.web("#f1eee9"));
+            line.fill(gc);
+        }
+
         for(var line : model.iterable(WayType.PARK))
         {
             gc.setFill(Color.web("#cdf7c9"));
@@ -78,12 +84,6 @@ public class MapCanvas extends Canvas {
         }
 
 
-        for(var line : model.iterable(WayType.ISLET))
-        {
-            gc.setFill(Color.web("#f1eee9"));
-            line.fill(gc);
-        }
-
         for(var line : model.iterable(WayType.FOREST)) // not working
         {
             gc.setFill(Color.web("#B7d29c"));
@@ -113,8 +113,6 @@ public class MapCanvas extends Canvas {
             line.draw(gc);
         }
 
-        gc.setLineWidth(0.00002);
-
         for(var line : model.iterable((WayType.SECONDARY)))
         {
             gc.setStroke(Color.BLACK);
@@ -131,15 +129,17 @@ public class MapCanvas extends Canvas {
             line.draw(gc);
         }
 
+        gc.setLineWidth(0.00002);
+
         for (var line : model.iterable(WayType.FOOTWAY))
         {
-            gc.setStroke(Color.ORANGE);
+            gc.setStroke(Color.web("#e29488"));
             line.draw(gc);
         }
 
         for(var line : model.iterable((WayType.CYCLEWAY)))
         {
-            gc.setStroke(Color.LIGHTGREEN);
+            gc.setStroke(Color.web("#3333f8"));
             line.draw(gc);
         }
 
