@@ -13,6 +13,7 @@ public interface Drawable {
         gc.beginPath();
         trace(gc);
         gc.stroke();
+        gc.closePath(); // Just as a safety measure; uncertain if it does anything different.
     }
 
     // fills an object.
@@ -20,6 +21,7 @@ public interface Drawable {
         gc.beginPath();
         trace(gc);
         gc.fill();
+        gc.closePath();
     }
 
     // traces the element's area for where it has to be drawn.

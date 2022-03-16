@@ -45,6 +45,63 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
+        for(var line : model.iterable(WayType.PARK))
+        {
+            gc.setFill(Color.web("#cdf7c9"));
+            line.fill(gc);
+        }
+
+        for(var line : model.iterable(WayType.GRASS))
+        {
+            gc.setFill(Color.web("#cdebb0"));
+            line.fill(gc);
+        }
+
+        for (var line : model.iterable((WayType.COASTLINE)))
+        {
+            gc.setStroke(Color.web("#b0a1ba", 0.75));
+            line.draw(gc);
+        }
+
+        for(var line : model.iterable((WayType.BRIDGE)))
+        {
+            gc.setFill(Color.web("#8a8a8a"));
+            line.fill(gc);
+        }
+
+        for(var line : model.iterable((WayType.BUILDING)))
+        {
+            gc.setFill(Color.BLACK);
+            line.fill(gc);
+            gc.setFill(Color.web("#d8d0c9"));
+            line.fill(gc);
+        }
+
+
+        for(var line : model.iterable(WayType.ISLET))
+        {
+            gc.setFill(Color.web("#f1eee9"));
+            line.fill(gc);
+        }
+
+        for(var line : model.iterable(WayType.FOREST)) // not working
+        {
+            gc.setFill(Color.web("#B7d29c"));
+            line.fill(gc);
+        }
+
+        // specifies fill properties all entities with the type WATER in our lines list.
+        for (var line : model.iterable(WayType.WATER)) {
+            gc.setFill(Color.LIGHTBLUE);
+            line.fill(gc);
+        }
+
+        for(var line : model.iterable((WayType.ROUTE)))
+        {
+            gc.setStroke(Color.web("#889194", 0.25));
+            line.draw(gc);
+        }
+
         gc.setLineWidth(0.000035);
 
         // specifies line properties of our entities with the type HIGHWAY in our lines list.
@@ -74,16 +131,16 @@ public class MapCanvas extends Canvas {
             line.draw(gc);
         }
 
-        // specifies fill properties all entities with the type WATER in our lines list.
-        for (var line : model.iterable(WayType.WATER)) {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
+        for (var line : model.iterable(WayType.FOOTWAY))
+        {
+            gc.setStroke(Color.ORANGE);
+            line.draw(gc);
         }
 
-        for(var line : model.iterable((WayType.BUILDING)))
+        for(var line : model.iterable((WayType.CYCLEWAY)))
         {
-            gc.setFill(Color.web("#d8d0c9"));
-            line.fill(gc);
+            gc.setStroke(Color.LIGHTGREEN);
+            line.draw(gc);
         }
 
         gc.setLineWidth(1/Math.sqrt(trans.determinant()));
@@ -91,17 +148,14 @@ public class MapCanvas extends Canvas {
         // draws all entities with no particular type (their tag has not yet been accounted for).
         // In the final product, this should be removed.
 
+        /*
 
         for (var line : model.iterable(WayType.UNKNOWN)) {
             gc.setStroke(Color.BLACK);
             line.draw(gc);
         }
 
-        for(var line : model.iterable((WayType.ROUTE)))
-        {
-            gc.setStroke(Color.PURPLE);
-            line.draw(gc);
-        }
+         */
     }
 
     // Allows the user to navigate around the map by panning.

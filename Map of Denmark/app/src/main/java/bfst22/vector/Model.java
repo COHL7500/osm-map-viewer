@@ -136,26 +136,81 @@ public class Model {
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
 
-                            if (k.equals("natural") && v.equals("water")) type = WayType.WATER;
-
-                            else if (k.equals("highway")) {
-                                switch (v) {
-                                    case "primary":
-                                        type = WayType.PRIMARY;
-                                        break;
-                                    case "secondary":
-                                        type = WayType.SECONDARY;
-                                        break;
-                                    case "tertiary":
-                                        type = WayType.TERTIARY;
-                                        break;
+                            switch (k) {
+                                case "leisure":
+                                {
+                                    switch (v) {
+                                        case "park":
+                                            type = WayType.PARK;
+                                            break;
+                                    }
                                 }
+                                case "natural":
+                                    switch (v) {
+                                        case "water":
+                                            type = WayType.WATER;
+                                            break;
+
+                                        case "coastline":
+                                            type = WayType.COASTLINE;
+                                            break;
+                                        }
+
+                                case "landuse":
+                                    switch (v) {
+                                        case "grass":
+                                            type = WayType.GRASS;
+                                            break;
+
+                                        case "forest":
+                                            type = WayType.FOREST;
+                                            break;
+                                    }
+
+                                case "highway":
+                                    switch (v) {
+                                        case "primary":
+                                            type = WayType.PRIMARY;
+                                            break;
+                                        case "secondary":
+                                            type = WayType.SECONDARY;
+                                            break;
+                                        case "tertiary":
+                                            type = WayType.TERTIARY;
+                                            break;
+                                        case "cycleway":
+                                            type = WayType.CYCLEWAY;
+                                            break;
+                                        case "footway":
+                                            type = WayType.FOOTWAY;
+                                            break;
+                                    }
+                                    break;
+
+                                case "building":
+                                    type = WayType.BUILDING;
+                                    break;
+
+                                case "route":
+                                    type = WayType.ROUTE;
+                                    break;
+
+                                case "man_made":
+                                    switch (v)
+                                    {
+                                        case "bridge":
+                                            type = WayType.BRIDGE;
+                                            break;
+                                    }
+
+                                case "place":
+                                    switch (v)
+                                    {
+                                        case "islet":
+                                            type = WayType.ISLET;
+                                            break;
+                                    }
                             }
-
-                            if (k.equals("building")) type = WayType.BUILDING;
-
-                            if (k.equals("route")) type = WayType.ROUTE;
-
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -198,8 +253,24 @@ public class Model {
                                 lines.get(type).add(new MultiPolygon(rel));
                             }
 
+                            else if(type == WayType.PARK && !rel.isEmpty())
+                            {
+                                lines.get(type).add(new MultiPolygon(rel));
+                            }
+
+                            else if(type == WayType.COASTLINE && !rel.isEmpty())
+                            {
+                                lines.get(type).add(new MultiPolygon(rel));
+                            }
+
+                            else if(type == WayType.FOREST && !rel.isEmpty())
+                            {
+                                lines.get(type).add(new MultiPolygon(rel));
+                            }
+
                             rel.clear();
                             break;
+
                     }
                     break;
             }
