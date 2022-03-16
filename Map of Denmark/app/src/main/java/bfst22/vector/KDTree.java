@@ -2,6 +2,9 @@ package bfst22.vector;
 
 import bfst22.vector.OSMNode;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class KDTree <Key extends Comparable<Key>, Value> {
 
@@ -17,6 +20,7 @@ public class KDTree <Key extends Comparable<Key>, Value> {
     }
     private KDNode root;
     private Point2D point;
+
     private Key lo;
     private Key hi;
     private int size;
@@ -24,6 +28,11 @@ public class KDTree <Key extends Comparable<Key>, Value> {
     //Initialize empty symbol table (Tree)
     public KDTree(){
         root = null;
+    }
+
+    //Initialize a non-empy KD-Tree
+    public KDTree(List<? extends MapElement> elements){
+        //Not yet implemented
     }
 
     public Value get(Key key){
