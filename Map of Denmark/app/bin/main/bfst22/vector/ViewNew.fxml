@@ -21,6 +21,10 @@
 
     <top>
         <HBox spacing="10" minWidth="325.0" alignment="CENTER">
+            <padding>
+                <Insets top="5" bottom="5" left="10" right="10"/>
+            </padding>
+
             <MenuButton fx:id="dropdown" minWidth="75.0" mnemonicParsing="false" prefHeight="25.0" HBox.hgrow="SOMETIMES" text="Menu"/>
 
             <TextField minWidth="100.0" prefHeight="25.0" HBox.hgrow="ALWAYS" text="Search">
@@ -30,7 +34,7 @@
             </TextField>
 
             <Button minWidth="25.0" mnemonicParsing="false" prefHeight="25.0" HBox.hgrow="SOMETIMES" text="-" />
-            <Slider minWidth="100.0" />
+            <Slider fx:id="slider" minWidth="100.0" />
 
             <Button minWidth="25.0" mnemonicParsing="false" prefHeight="25.0" HBox.hgrow="SOMETIMES" text="+" />
         </HBox>
