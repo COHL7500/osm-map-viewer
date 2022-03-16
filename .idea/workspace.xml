@@ -5,14 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Final version">
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/ASLY.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/BIHA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/BRML.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/DADH.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/EMNO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/JACG.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/JFHO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/JSPI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/KBEJ.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/KMEY.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/KMSA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/LANR.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/LULN.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/MBIA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/MHSI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/MHVL.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/MIDF.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/MIKKJ.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/NTRO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/OKRE.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/OLJH.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/SHAD.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/SIAR.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/TBAV.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/TRBJ.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/TUKA.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/test/java/bfst22/vector/WIHE.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/WayType.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/WayType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/ViewNew.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/ViewNew.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Controller.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/WayType.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/WayType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,17 +80,24 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="269QMlfGE3joviY7jmpI6seF86D" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -66,6 +108,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -145,14 +188,26 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="address-test" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="update .gitignore" />
     <MESSAGE value="Final version" />
     <option name="LAST_COMMIT_MESSAGE" value="Final version" />
