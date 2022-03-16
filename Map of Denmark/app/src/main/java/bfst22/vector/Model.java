@@ -237,6 +237,9 @@ public class Model {
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
 
+                            if(!rel.isEmpty()) {lines.get(type).add(new MultiPolygon(rel));}
+
+                            /*
                             // if the relation is water, then it draws
                             if (type == WayType.WATER && !rel.isEmpty())
                             {
@@ -267,7 +270,7 @@ public class Model {
                             {
                                 lines.get(type).add(new MultiPolygon(rel));
                             }
-
+                             */
                             rel.clear();
                             break;
 
