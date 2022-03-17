@@ -6,19 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WayFeature implements Serializable {
-	public static final long serialVersionUID = 134123;
+public class WayFeature implements Serializable, SerialVersionIdentifiable {
 	public Map<String, features> ways = new HashMap<>();
 }
 
-class features implements Serializable {
-	public static final long serialVersionUID = 134123;
+class features implements Serializable, SerialVersionIdentifiable {
 	public WayDraw draw;
 	public Map<String,SubFeature> subfeatures = new HashMap<>();
 }
 
-class WayDraw implements Serializable {
-	public static final long serialVersionUID = 134123;
+class WayDraw implements Serializable, SerialVersionIdentifiable {
 	public boolean fill;
 	public String fill_color;
 	public boolean stroke;
@@ -28,8 +25,7 @@ class WayDraw implements Serializable {
 	public int zoom_level;
 }
 
-class SubFeature implements Serializable {
-	public static final long serialVersionUID = 134123;
+class SubFeature implements Serializable, SerialVersionIdentifiable {
 	public WayDraw draw;
 	public List<Drawable> drawable = new ArrayList<>();
 	public String name;
