@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/Style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022__10_42__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022__10_42__Changes_.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022__11_39__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022__11_39__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" afterDir="false" />
@@ -15,26 +13,13 @@
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapFeature.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/MapFeature.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/OSMWay.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/OSMWay.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/PolyLine.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/PolyLine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/View.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/View.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/featureDraw.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/featureDraw.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/keyFeature.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/keyFeature.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/valueFeature.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/valueFeature.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/View.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/WayConfig.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/WayConfig.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/data/small.osm.zip.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapFeature.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapFeature.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/OSMNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/OSMNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/OSMWay.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/OSMWay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/PolyLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/PolyLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/View.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/View.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/View.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/WayConfig.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/WayConfig.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
