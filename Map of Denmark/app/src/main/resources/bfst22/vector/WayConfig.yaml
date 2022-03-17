@@ -1,0 +1,287 @@
+ways:
+  water:
+    draw:
+      fill: true
+      fill_color: "lightblue"
+    subfeatures:
+      river: {}
+      oxbow: {}
+      canal: {}
+      ditch: {}
+      lock: {}
+      fish_pass: {}
+      lake: {}
+      reservoir: {}
+      pond: {}
+      basin: {}
+      lagoon: {}
+      stream_pool: {}
+      reflecting_pool: {}
+      moat: {}
+      wastewater: {}
+  natural:
+    subfeatures:
+      water:
+        draw:
+          fill: true
+          fill_color: "lightblue"
+      coastline:
+        draw:
+          stroke: true
+  place:
+    draw:
+      fill: true
+      fill_color: "lightgreen"
+    subfeatures:
+      country: {}
+      state: {}
+      region: {}
+      province: {}
+      district: {}
+      county: {}
+      muncipality: {}
+      city: {}
+      borough: {}
+      suburb: {}
+      quater: {}
+      neighbourhood: {}
+      city_block: {}
+      plot: {}
+      town: {}
+      village: {}
+      hamlet: {}
+      isolated_dwelling: {}
+      farm: {}
+      allotments: {}
+      continent: {}
+      archipelago: {}
+      island: {}
+      islet: {}
+      square: {}
+      locality: {}
+      sea: {}
+      ocean: {}
+  landuse:
+    draw:
+      fill: true
+      fill_color: "darkgreen"
+    subfeatures:
+      commercial: {}
+      construction: {}
+      education: {}
+      industrial: {}
+      residential: {}
+      retail: {}
+      allotments: {}
+      farmland: {}
+      farmyard: {}
+      flowerbed: {}
+      forest: {}
+      meadow: {}
+      orchard: {}
+      vineyard: {}
+      aquaculture: {}
+      basin: {}
+      reservoir: {}
+      salt_pond: {}
+      brownfield: {}
+      cemetery: {}
+      conservation: {}
+      depot: {}
+      garages: {}
+      grass: {}
+      greenfield: {}
+      greenhouse_horticulture: {}
+      landfill: {}
+      military: {}
+      plant_nusery: {}
+      port: {}
+      quarry: {}
+      railway: {}
+      recreation_ground: {}
+      religious: {}
+      village_green: {}
+      winter_sports: {}
+  leisure:
+    draw:
+      fill: true
+      fill_color: "orange"
+    subfeatures:
+      adult_gaming_centre: {}
+      amusement_arcade: {}
+      beach_report: {}
+      bandstand: {}
+      bird_hide: {}
+      common: {}
+      dance: {}
+      disc_golf_course: {}
+      dog_park: {}
+      escape_game: {}
+      firepit: {}
+      fishing: {}
+      fitness_centre: {}
+      fitness_station: {}
+      garden: {}
+      hackerspace: {}
+      horse_riding: {}
+      ice_rink: {}
+      marina: {}
+      miniature_golf: {}
+      nature_reserve: {}
+      park: {}
+      picnic_table: {}
+      pitch: {}
+      playground: {}
+      slipway: {}
+      sports_centre: {}
+      stadium: {}
+      summer_camp: {}
+      swimming_area: {}
+      swimming_pool: {}
+      track: {}
+      water_park: {}
+  man_made:
+    draw:
+      stroke: true
+      fill: true
+      fill_color: "grey"
+    subfeatures:
+      bridge: {}
+  highway:
+    draw:
+      stroke: true
+      stroke_color: "grey"
+      zoom_level: 30000
+    subfeatures:
+      motorway: {}
+      trunk: {}
+      primary:
+        draw:
+          stroke: true
+          stroke_color: "blue"
+          line_width: 0.00005
+          zoom_level: 20000
+      secondary:
+        draw:
+          stroke: true
+          stroke_color: "red"
+          line_width: 0.00004
+          zoom_level: 20000
+      tertiary:
+        draw:
+          line_width: 0.00003
+      unclassified: {}
+      residential: {}
+      motorwar_link: {}
+      trunk_link: {}
+      primary_link: {}
+      secondary_link: {}
+      teritary_link: {}
+      living_street: {}
+      service: {}
+      pedestrian: {}
+      track: {}
+      bus_guideway: {}
+      escape: {}
+      raceway: {}
+      road: {}
+      busway: {}
+      footway: {}
+      bridleway: {}
+      steps: {}
+      corridor: {}
+      path: {}
+      cycleway: {}
+      proposed: {}
+      construction: {}
+  building:
+    draw:
+      stroke: true
+      fill: true
+      fill_color: "lightgrey"
+    subfeatures:
+      yes: {}
+      office: {}
+      apartments: {}
+      bridge: {}
+      parking: {}
+  office:
+    draw:
+      stroke: true
+      fill: true
+      fill_color: "teal"
+    subfeatures:
+      yes: {}
+      accountant: {}
+      advertising_agency: {}
+      architect: {}
+      association: {}
+      charity: {}
+      company: {}
+      consulting: {}
+      courier: {}
+      coworking: {}
+      diplomatic: {}
+      educational_institution: {}
+      employment_agency: {}
+      energy_supplier: {}
+      engineer: {}
+      estate_agent: {}
+      financial: {}
+      financial_advisor: {}
+      forestry: {}
+      foundation: {}
+      geodesist: {}
+      government: {}
+      graphic_design: {}
+      guide: {}
+      harbour_master: {}
+      insurance: {}
+      it: {}
+      lawyer: {}
+      logistics: {}
+      moving_company: {}
+      newspaper: {}
+      ngo: {}
+      notary: {}
+      political_party: {}
+      property_management: {}
+      quango: {}
+      religion: {}
+      research: {}
+      security: {}
+      surveyor: {}
+      tax_advisor: {}
+      telecommunication: {}
+      travel_agent: {}
+      union: {}
+      visa: {}
+      water_utility: {}
+  route:
+    draw:
+      stroke: true
+      stroke_color: "brown"
+      dash_size: 0.0001
+      zoom_level: 48000
+    subfeatures:
+      bicycle: {}
+      bus: {}
+      canoe: {}
+      detour: {}
+      ferry: {}
+      foot: {}
+      hiking: {}
+      horse: {}
+      inline_skates: {}
+      light_rail: {}
+      mtb: {}
+      piste: {}
+      railway: {}
+      road: {}
+      running: {}
+      ski: {}
+      subway: {}
+      train: {}
+      tracks: {}
+      tram: {}
+      trolleybus: {}

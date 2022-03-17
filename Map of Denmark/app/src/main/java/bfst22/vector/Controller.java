@@ -6,13 +6,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
-
 public class Controller {
 
     private Point2D lastMouse;
 
-    @FXML
-    private MapCanvas canvas;
+    @FXML private MapCanvas canvas;
 
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
@@ -21,8 +19,7 @@ public class Controller {
     }
 
     // Handles an event of scrolling and increases/decreases the zoom level of the map.
-    @FXML
-    private void onScroll(ScrollEvent e) {
+    @FXML private void onScroll(ScrollEvent e) {
         var factor = e.getDeltaY();
 
         // Default canvas zoom: 1.10
@@ -30,8 +27,7 @@ public class Controller {
     }
 
     // Handles panning in the program
-    @FXML
-    private void onMouseDragged(MouseEvent e) {
+    @FXML private void onMouseDragged(MouseEvent e) {
         var dx = e.getX() - lastMouse.getX();
         var dy = e.getY() - lastMouse.getY();
         canvas.pan(dx, dy);
@@ -39,8 +35,7 @@ public class Controller {
     }
 
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
-    @FXML
-    private void onMousePressed(MouseEvent e) {
+    @FXML private void onMousePressed(MouseEvent e) {
         lastMouse = new Point2D(e.getX(), e.getY());
     }
 }

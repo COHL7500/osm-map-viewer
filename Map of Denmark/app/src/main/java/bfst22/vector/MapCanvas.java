@@ -1,133 +1,112 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
-
 public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
+    double zoom_current = 1;
 
     // Runs upon startup (setting default pan, zoom for example).
-
     void init(Model model) {
         this.model = model;
-        pan(-model.minlon, -model.minlat);
+        this.pan(-model.minlon, -model.minlat);
 
         // Default zoom level: 700
-        zoom(700 / (model.maxlon - model.minlon), 0, 0);
+        this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
 
         // Observer notifies the change in a particular state, being our repaint in this case.
         model.addObserver(this::repaint);
 
         // Instantly paints upon initialization
-        repaint();
+        this.repaint();
     }
-
 
     // Draws all of the elements of our map.
     void repaint() {
-        var gc = getGraphicsContext2D();
+        GraphicsContext gc = getGraphicsContext2D();
         gc.setTransform(new Affine());
 
-        // Background color
-        gc.setFill(Color.WHITESMOKE);
-
-        // Uncertain what this does exactly, but yeah.. Try and see what happens if you comment it  out.
-        gc.fillRect(0, 0, getWidth(), getHeight());
+        // Clears the screen for the next frame
+        gc.clearRect(0, 0, getWidth(), getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
-        gc.setLineWidth(0.000035);
+        for(features element : model.yamlObj.ways.values()){
+            this.setStylingDefault(gc);
 
-        // specifies line properties of our entities with the type HIGHWAY in our lines list.
-        for(var line : model.iterable((WayType.PRIMARY)))
-        {
-            gc.setStroke(Color.BLACK);
-            line.draw(gc);
-            gc.setStroke(Color.web("#fdd7a1"));
-            line.draw(gc);
+            for (SubFeature element2 : element.subfeatures.values()) {
+                this.setStyling(gc, element.draw);
+                this.setStyling(gc, element2.draw);
+
+                for(Drawable draw : element2.drawable){
+                    if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                            || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) draw.fill(gc);
+                    if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
+                            || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current) draw.draw(gc);
+                    //if(element2.name != null && element2.name.length() > 0) this.drawText(gc,element2.name);
+                }
+            }
         }
+    }
 
-        gc.setLineWidth(0.00002);
-
-        for(var line : model.iterable((WayType.SECONDARY)))
-        {
-            gc.setStroke(Color.BLACK);
-            line.draw(gc);
-            gc.setStroke(Color.web("#f6fabb"));
-            line.draw(gc);
+    public void setStyling(GraphicsContext gc, WayDraw draw){
+        if(draw != null) {
+            if (draw.stroke_color != null) gc.setStroke(Color.web(draw.stroke_color));
+            if (draw.line_width != 0) gc.setLineWidth(draw.line_width);
+            if (draw.fill_color != null) gc.setFill(Color.web(draw.fill_color));
+            if (draw.dash_size != 0) gc.setLineDashes(draw.dash_size);
         }
+    }
 
-        for(var line : model.iterable((WayType.TERTIARY)))
-        {
-            gc.setStroke(Color.BLACK);
-            line.draw(gc);
-            gc.setStroke(Color.WHITE);
-            line.draw(gc);
-        }
+    public void setStylingDefault(GraphicsContext gc){
+        gc.setFill(Color.BLACK);
+        gc.setLineWidth(0.00001);
+        gc.setStroke(Color.BLACK);
+        gc.setLineDashes(1);
+    }
 
-        // specifies fill properties all entities with the type WATER in our lines list.
-        for (var line : model.iterable(WayType.WATER)) {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
-        }
-
-        for(var line : model.iterable((WayType.BUILDING)))
-        {
-            gc.setFill(Color.web("#d8d0c9"));
-            line.fill(gc);
-        }
-
-        gc.setLineWidth(1/Math.sqrt(trans.determinant()));
-
-        // draws all entities with no particular type (their tag has not yet been accounted for).
-        // In the final product, this should be removed.
-
-
-        for (var line : model.iterable(WayType.UNKNOWN)) {
-            gc.setStroke(Color.BLACK);
-            line.draw(gc);
-        }
-
-        for(var line : model.iterable((WayType.ROUTE)))
-        {
-            gc.setFill(Color.LIGHTBLUE);
-            line.fill(gc);
-        }
+    public void drawText(GraphicsContext gc, String text){
+        gc.setFill(Color.BLACK);
+        gc.setTextAlign(TextAlignment.LEFT);
+        gc.setTextBaseline(VPos.CENTER);
+        gc.fillText(text, 0, getHeight()/2);
     }
 
     // Allows the user to navigate around the map by panning.
     // this is used in onMouseDragged from Controller.
-    void pan(double dx, double dy) {
-        trans.prependTranslation(dx, dy);
-        repaint();
+    public void pan(final double dx, final double dy) {
+        this.trans.prependTranslation(dx, dy);
+        this.repaint();
     }
 
     // Allows the user to zoom in on the map.
     // this is used in onScroll from Controller.
-    void zoom(double factor, double x, double y) {
-        trans.prependTranslation(-x, -y);
-        trans.prependScale(factor, factor);
-        trans.prependTranslation(x, y);
-        repaint();
+    public void zoom(final double factor, final double x, final double y) {
+        this.zoom_current *= factor;
+        this.trans.prependTranslation(-x, -y);
+        this.trans.prependScale(factor, factor);
+        this.trans.prependTranslation(x, y);
+        this.repaint();
     }
 
     // Uncertain what the utility of this method is.
-
-    public Point2D mouseToModel(Point2D point) {
+    public Point2D mouseToModel(final Point2D point) {
         try {
-            return trans.inverseTransform(point);
+            return this.trans.inverseTransform(point);
         } catch (NonInvertibleTransformException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

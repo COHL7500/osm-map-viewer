@@ -3,7 +3,6 @@ package bfst22.vector;
 import java.io.Serializable;
 
 // Defines what a node is in the OSM file and its properties.
-
 public class OSMNode implements Serializable {
     public static final long serialVersionUID = 9082413;
     long id;
@@ -14,5 +13,4 @@ public class OSMNode implements Serializable {
         this.lat = lat;
         this.lon = lon;
     }
-
 }

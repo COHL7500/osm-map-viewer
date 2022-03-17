@@ -14,6 +14,6 @@ public class View {
         primaryStage.setScene(loader.load());
         Controller controller = loader.getController();
         controller.init(model);
-        primaryStage.setTitle("Totalt mega fed vector grafik!!!");
+        primaryStage.setTitle("Danmarkskort - Gruppe #1");
     }
 }
