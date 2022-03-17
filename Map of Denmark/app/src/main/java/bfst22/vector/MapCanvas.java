@@ -1,23 +1,26 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
 public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
+    GraphicsContext gc = super.getGraphicsContext2D();
     double zoom_current = 1;
 
     // Runs upon startup (setting default pan, zoom for example).
-    void init(Model model) {
+    public void init(final Model model) {
         this.model = model;
         this.pan(-model.minlon, -model.minlat);
 
@@ -25,63 +28,79 @@ public class MapCanvas extends Canvas {
         this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
 
         // Observer notifies the change in a particular state, being our repaint in this case.
-        model.addObserver(this::repaint);
+        this.model.addObserver(this::repaint);
 
         // Instantly paints upon initialization
         this.repaint();
     }
 
     // Draws all of the elements of our map.
-    void repaint() {
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.setTransform(new Affine());
+    private void repaint() {
+        this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
-        gc.clearRect(0, 0, getWidth(), getHeight());
+        this.gc.clearRect(0, 0, getWidth(), getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
-        gc.setTransform(trans);
+        this.gc.setTransform(trans);
 
+        List<valueFeature> featureList = new ArrayList<>();
+
+        // Loops through all the key features and sets the default styling for all its objects
         for(keyFeature element : model.yamlObj.ways.values()){
-            this.setStylingDefault(gc);
+            this.setStylingDefault();
 
+            // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
             for (valueFeature element2 : element.valuefeatures.values()) {
-                this.setStyling(gc, element.draw);
-                this.setStyling(gc, element2.draw);
+                if(element2.display) {
+                    // Loops through all drawable elements that shall be drawn to the screen
+                    // Checks if the styling requires them to be drawn with filling and/or strokes
+                    // and then proceed to draw the value feature in the way it has been told to
+                    for (Drawable draw : element2.drawable) {
+                        this.setStyling(element.draw);
+                        this.setStyling(element2.draw);
 
-                for(Drawable draw : element2.drawable){
-                    if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                            || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) draw.fill(gc);
-                    if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
-                            || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current) draw.draw(gc);
-                    //if(element2.name != null && element2.name.length() > 0) this.drawText(gc,element2.name);
+                        if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current)
+                            draw.fill(this.gc);
+                        if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
+                                || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
+                            draw.draw(this.gc);
+                        if (element2.name != null && element2.nameCenter != null && element2.name.length() > 0)
+                            featureList.add(element2);
+                    }
                 }
             }
         }
+
+        featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
 
-    public void setStyling(GraphicsContext gc, featureDraw draw){
+    // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided
+    private void setStyling(final featureDraw draw){
         if(draw != null) {
-            if (draw.stroke_color != null) gc.setStroke(Color.web(draw.stroke_color));
-            if (draw.line_width != 0) gc.setLineWidth(draw.line_width);
-            if (draw.fill_color != null) gc.setFill(Color.web(draw.fill_color));
-            if (draw.dash_size != 0) gc.setLineDashes(draw.dash_size);
+            if (draw.stroke_color != null)  this.gc.setStroke(Color.web(draw.stroke_color));
+            if (draw.line_width != 0)       this.gc.setLineWidth(draw.line_width);
+            if (draw.fill_color != null)    this.gc.setFill(Color.web(draw.fill_color));
+            if (draw.dash_size != 0)        this.gc.setLineDashes(draw.dash_size);
         }
     }
 
-    public void setStylingDefault(GraphicsContext gc){
-        gc.setFill(Color.BLACK);
-        gc.setLineWidth(0.00001);
-        gc.setStroke(Color.BLACK);
-        gc.setLineDashes(1);
+    // Sets the default styling options for graphicscontext in case no values for keyfeature/valuefeature are provided
+    private void setStylingDefault(){
+        this.gc.setFill(Color.BLACK);
+        this.gc.setLineWidth(0.00001);
+        this.gc.setStroke(Color.BLACK);
+        this.gc.setLineDashes(1);
     }
 
-    public void drawText(GraphicsContext gc, String text){
-        gc.setFill(Color.BLACK);
-        gc.setTextAlign(TextAlignment.LEFT);
-        gc.setTextBaseline(VPos.CENTER);
-        gc.fillText(text, 0, getHeight()/2);
+    // Draws any kind of provided text to the screen
+    private void drawText(final String text, final double[] coords){
+        this.gc.setLineWidth(0.00001);
+        this.gc.setFill(Color.BLACK);
+        this.gc.setFont(new Font("Arial", 0.0001));
+        this.gc.fillText(text,coords[0],coords[1]);
     }
 
     // Allows the user to navigate around the map by panning.
