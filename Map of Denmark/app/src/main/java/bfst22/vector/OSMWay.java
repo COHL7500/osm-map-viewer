@@ -6,8 +6,7 @@ import java.util.List;
 
 // Defines what a way is in the OSM file and its properties.
 
-public class OSMWay implements Serializable {
-    public static final long serialVersionUID = 42;
+public class OSMWay implements Serializable, SerialVersionIdentifiable {
     List<OSMNode> nodes;
 
     public OSMWay(List<OSMNode> nodes) {
