@@ -3,7 +3,7 @@ ways:
     draw:
       fill: true
       fill_color: "lightblue"
-    subfeatures:
+    valuefeatures:
       river: {}
       oxbow: {}
       canal: {}
@@ -20,7 +20,7 @@ ways:
       moat: {}
       wastewater: {}
   natural:
-    subfeatures:
+    valuefeatures:
       water:
         draw:
           fill: true
@@ -32,7 +32,7 @@ ways:
     draw:
       fill: true
       fill_color: "lightgreen"
-    subfeatures:
+    valuefeatures:
       country: {}
       state: {}
       region: {}
@@ -65,7 +65,7 @@ ways:
     draw:
       fill: true
       fill_color: "darkgreen"
-    subfeatures:
+    valuefeatures:
       commercial: {}
       construction: {}
       education: {}
@@ -106,7 +106,7 @@ ways:
     draw:
       fill: true
       fill_color: "orange"
-    subfeatures:
+    valuefeatures:
       adult_gaming_centre: {}
       amusement_arcade: {}
       beach_report: {}
@@ -145,14 +145,14 @@ ways:
       stroke: true
       fill: true
       fill_color: "grey"
-    subfeatures:
+    valuefeatures:
       bridge: {}
   highway:
     draw:
       stroke: true
       stroke_color: "grey"
       zoom_level: 30000
-    subfeatures:
+    valuefeatures:
       motorway: {}
       trunk: {}
       primary:
@@ -199,7 +199,7 @@ ways:
       stroke: true
       fill: true
       fill_color: "lightgrey"
-    subfeatures:
+    valuefeatures:
       yes: {}
       office: {}
       apartments: {}
@@ -210,7 +210,7 @@ ways:
       stroke: true
       fill: true
       fill_color: "teal"
-    subfeatures:
+    valuefeatures:
       yes: {}
       accountant: {}
       advertising_agency: {}
@@ -263,7 +263,7 @@ ways:
       stroke_color: "brown"
       dash_size: 0.0001
       zoom_level: 48000
-    subfeatures:
+    valuefeatures:
       bicycle: {}
       bus: {}
       canoe: {}

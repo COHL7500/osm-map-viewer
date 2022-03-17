@@ -16,13 +16,13 @@ public class Model {
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
-    WayFeature yamlObj;
+    MapFeature yamlObj;
     List<Runnable> observers;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.observers = new ArrayList<>();
-        this.yamlObj = new Yaml(new Constructor(WayFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
 
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
@@ -36,7 +36,7 @@ public class Model {
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                yamlObj = (WayFeature) input.readObject();
+                yamlObj = (MapFeature) input.readObject();
             }
         }
 
@@ -142,9 +142,9 @@ public class Model {
                         case "way":
                             var way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
-                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).subfeatures.containsKey(subtype)) {
-                                this.yamlObj.ways.get(suptype).subfeatures.get(subtype).drawable.add(way);
-                                this.yamlObj.ways.get(suptype).subfeatures.get(subtype).name = name;
+                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
                             }
                             subtype = suptype = name = null;
                             nodes.clear();
@@ -152,9 +152,9 @@ public class Model {
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
-                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).subfeatures.containsKey(subtype)) {
-                                this.yamlObj.ways.get(suptype).subfeatures.get(subtype).drawable.add(new MultiPolygon(rel));
-                                this.yamlObj.ways.get(suptype).subfeatures.get(subtype).name = name;
+                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(new MultiPolygon(rel));
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
                             }
                             subtype = suptype = name = null;
                             rel.clear();

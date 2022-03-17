@@ -43,10 +43,10 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         gc.setTransform(trans);
 
-        for(features element : model.yamlObj.ways.values()){
+        for(keyFeature element : model.yamlObj.ways.values()){
             this.setStylingDefault(gc);
 
-            for (SubFeature element2 : element.subfeatures.values()) {
+            for (valueFeature element2 : element.valuefeatures.values()) {
                 this.setStyling(gc, element.draw);
                 this.setStyling(gc, element2.draw);
 
@@ -61,7 +61,7 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    public void setStyling(GraphicsContext gc, WayDraw draw){
+    public void setStyling(GraphicsContext gc, featureDraw draw){
         if(draw != null) {
             if (draw.stroke_color != null) gc.setStroke(Color.web(draw.stroke_color));
             if (draw.line_width != 0) gc.setLineWidth(draw.line_width);
