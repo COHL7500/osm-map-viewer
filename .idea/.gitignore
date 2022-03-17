@@ -56,7 +56,7 @@ cmake-build-*/
 
 # Object Files
 *.obj
-*zip.obj
+*.zip.obj
 
 # IntelliJ
 out/
