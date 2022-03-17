@@ -6,11 +6,11 @@ import javafx.scene.canvas.GraphicsContext;
 
 // Defines the lines intended to draw the polygons on the map; typically used for ways.
 public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiable {
-    float[] coords;
+    private final float[] coords;
 
     // Constructs the line based on the given nodes for the particular polygon.
-    public PolyLine(List<OSMNode> nodes) {
-        coords = new float[nodes.size() * 2];
+    public PolyLine(final List<OSMNode> nodes) {
+        this.coords = new float[nodes.size() * 2];
         int i = 0;
         for (var node : nodes) {
             coords[i++] = node.lat;

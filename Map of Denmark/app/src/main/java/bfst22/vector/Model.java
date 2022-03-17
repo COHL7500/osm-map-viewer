@@ -145,6 +145,7 @@ public class Model {
                             if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = this.findNodesCenter(nodes);
                             }
                             subtype = suptype = name = null;
                             nodes.clear();
@@ -163,6 +164,20 @@ public class Model {
                     break;
             }
         }
+    }
+
+    private double[] findNodesCenter(final ArrayList<OSMNode> nodes){
+        double[] sum = new double[2];
+
+        for(OSMNode node : nodes){
+            sum[0] += node.lat;
+            sum[1] += node.lon;
+        }
+
+        sum[0] /= nodes.size();
+        sum[1] /= nodes.size();
+
+        return sum;
     }
 
     public void addObserver(Runnable observer) {
