@@ -62,7 +62,7 @@ public class Model {
         // Reads the .osm file, being an XML file.
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
 
-        // Converts IDs into nodes (uncertain about this).
+        // Map matching IDs with node.
         var id2node = new NodeMap();
 
         // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
@@ -102,8 +102,8 @@ public class Model {
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
-                            builder = builder.lat(-lat);
-                            builder = builder.lon(0.56f * lon);
+                            builder = builder.lat(lat);
+                            builder = builder.lon(lon);
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
@@ -144,7 +144,6 @@ public class Model {
                                             break;
                                     }
                                     addresses.add(builder.build());
-                                    for (Address address : addresses) System.out.println(address);
                                 }
                                 break;
 

@@ -19,7 +19,7 @@ public class Address {
     }
 
     public String toString() {
-        return street + " " + house + ", " + floor + " " + side + " " + postcode + " " + city + ", latitude: " + lat + ", longtitude: " + lon;
+        return (street !=null ? street + " " : "") + (house !=null ? house + ", " : "") + (floor != null ? floor + " " : "") + (side != null ? side + " " : "") + (postcode != null ? postcode + " " : "") + city;
     }
 
     private final static String REGEX = "^ *(?<street>[1-9A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö. ]+?) +(?<house>[0-9]+[., ]+)((?<floor>[0-9]?[., ]+)?(?<side>[A-Za-zæøå0-9]+[., ]?))?( +)?(?<postcode>[0-9]{4})?( +)?(?<city>[A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö .]+)?$";
