@@ -4,14 +4,19 @@ import bfst22.vector.OSMNode;
 import javafx.geometry.BoundingBox;
 
 import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+public class KDTree <Key extends Comparable<Key>, Value> implements SerialVersionIdentifiable{
 
-public class KDTree <Key extends Comparable<Key>, Value>  {
+    //Fields to be used in the future
+    private KDNode root;
+    //BoundingBox boundingBox = new BoundingBox();
 
-
+    //For search
+    private Key lo;
+    private Key hi;
+    private int depth;
+    private Point2D point;
 
     //internal  KD-Tree Node class
     private class KDNode {
@@ -27,30 +32,14 @@ public class KDTree <Key extends Comparable<Key>, Value>  {
         }
     }
 
-    //Fields to be used in the future
-    private KDNode root;
-    private KDNode best;
-    private double shortestDistance;
-    private int visited;
-
-    //For search
-    private Key lo;
-    private Key hi;
-
-    private Point2D point;
-
-    //BoundingBox boundingBox = new BoundingBox();
-
     //Initialize empty symbol table (Tree)
     public KDTree(){
         root = null;
     }
 
-    //Initialize a non-empy KD-Tree
-    public KDTree(List<OSMNode> elements){
-        for(OSMNode node : elements){
+    //Initialize a non-empty KD-Tree
+    public KDTree(List<? > elements){
 
-        }
     }
 
 
@@ -108,6 +97,11 @@ public class KDTree <Key extends Comparable<Key>, Value>  {
 
     public boolean add(Point2D point){
         return false;
+    }
+
+    //Can be used to see if we need to draw a vertical or horizontal line
+    public boolean isEven(){
+        return this.depth % 2 == 0;
     }
 
 }

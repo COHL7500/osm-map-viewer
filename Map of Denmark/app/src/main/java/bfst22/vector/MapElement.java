@@ -1,5 +1,12 @@
 package bfst22.vector;
 
-public abstract class MapElement implements Drawable {
+import javafx.geometry.Point2D;
+import javafx.geometry.BoundingBox.*;
+
+
+public abstract class MapElement {
+
+    public abstract Point2D get2DPoint();
+
 
 }

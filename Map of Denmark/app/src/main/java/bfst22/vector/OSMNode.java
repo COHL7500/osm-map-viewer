@@ -1,15 +1,15 @@
 package bfst22.vector;
 
+import javafx.geometry.Point2D;
 import java.io.Serializable;
+import java.util.List; //Can potentially be used
 
 // Defines what a node is in the OSM file and its properties.
-
-public class OSMNode implements Serializable {
-    public static final long serialVersionUID = 9082413;
+public class OSMNode implements Serializable, SerialVersionIdentifiable {
     long id;
     float lat, lon;
 
-    public OSMNode(long id, float lat, float lon) {
+    public OSMNode(final long id, final float lat, final float lon) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -26,4 +26,7 @@ public class OSMNode implements Serializable {
         return id;
     }
 
+    public Point2D getPoint(){
+        return new Point2D(this.lon,this.lat);
+    }
 }
