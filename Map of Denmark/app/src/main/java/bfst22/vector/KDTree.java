@@ -4,11 +4,14 @@ import bfst22.vector.OSMNode;
 import javafx.geometry.BoundingBox;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class KDTree <Key extends Comparable<Key>, Value> {
+public class KDTree <Key extends Comparable<Key>, Value>  {
+
+
 
     //internal  KD-Tree Node class
     private class KDNode {
@@ -23,6 +26,7 @@ public class KDTree <Key extends Comparable<Key>, Value> {
             this.val = val;
         }
     }
+
     //Fields to be used in the future
     private KDNode root;
     private KDNode best;
@@ -43,10 +47,12 @@ public class KDTree <Key extends Comparable<Key>, Value> {
     }
 
     //Initialize a non-empy KD-Tree
-    public KDTree(List<? extends MapElement> elements){
-        //Not yet implemented
+    public KDTree(List<OSMNode> elements){
+        for(OSMNode node : elements){
+
+        }
     }
-    
+
 
     //getValue methods
 
@@ -99,9 +105,6 @@ public class KDTree <Key extends Comparable<Key>, Value> {
         return get(key) != null;
     }
 
-    public Value keyRange(){
-        return null;
-    }
 
     public boolean add(Point2D point){
         return false;
