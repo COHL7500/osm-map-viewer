@@ -102,6 +102,8 @@ public class Model {
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            builder = builder.lat(-lat);
+                            builder = builder.lon(0.56f * lon);
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
