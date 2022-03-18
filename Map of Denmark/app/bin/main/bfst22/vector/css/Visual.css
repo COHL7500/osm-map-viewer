@@ -1,0 +1,8 @@
+#menu-button {
+  -fx-padding: 10px;
+  padding: 10px;
+  -fx-font-size: 20px;
+  font-size: 20px;
+  -fx-background-color: teal;
+  background-color: teal;
+}

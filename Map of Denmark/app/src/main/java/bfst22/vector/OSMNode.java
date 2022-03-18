@@ -1,3 +1,4 @@
+
 package bfst22.vector;
 
 import java.io.Serializable;
