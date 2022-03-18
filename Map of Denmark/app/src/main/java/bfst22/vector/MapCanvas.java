@@ -9,7 +9,9 @@ import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
@@ -45,7 +47,7 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        List<valueFeature> featureList = new ArrayList<>();
+        Set<valueFeature> featureList = new HashSet<>();
 
         // Loops through all the key features and sets the default styling for all its objects
         for(keyFeature element : model.yamlObj.ways.values()){

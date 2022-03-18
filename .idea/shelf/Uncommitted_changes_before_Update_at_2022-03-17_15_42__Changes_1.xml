@@ -1,0 +1,89 @@
+<changelist name="Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1" date="1647528174448" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2022-03-17 15:42 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/PolyLine.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/PolyLine.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/PolyLine.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/executionHistory.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/executionHistory.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/data/small.osm.zip.obj" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/data/small.osm.zip.obj" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/small.osm.zip.obj" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/featureDraw.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/featureDraw.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/featureDraw.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/Model.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/fileHashes.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/OSMWay.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/OSMWay.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/OSMWay.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/fileHashes.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/resourceHashesCache.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/View.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/View.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/View.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/valueFeature.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/valueFeature.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/valueFeature.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/MapCanvas.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapFeature.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapFeature.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/MapFeature.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/keyFeature.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/keyFeature.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/keyFeature.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/previous-compilation-data.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/buildOutputCleanup.lock" />
+  </binary>
+</changelist>

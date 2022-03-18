@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 // Defines the lines intended to draw the polygons on the map; typically used for ways.
 public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiable {
     private final float[] coords;
+    private double[] center;
 
     // Constructs the line based on the given nodes for the particular polygon.
     public PolyLine(final List<OSMNode> nodes) {
@@ -16,6 +17,7 @@ public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiab
             coords[i++] = node.lat;
             coords[i++] = node.lon;
         }
+        this.findCenter(nodes);
     }
 
     // traces the are needed to be drawn before drawing.
@@ -24,5 +26,22 @@ public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiab
         for (var i = 2 ; i < coords.length ; i += 2) {
             gc.lineTo(coords[i], coords[i+1]);
         }
+    }
+
+    private void findCenter(final List<OSMNode> nodes){
+        double[] sum = new double[2];
+
+        for(OSMNode node : nodes){
+            sum[0] += node.lat;
+            sum[1] += node.lon;
+        }
+
+        sum[0] /= nodes.size();
+        sum[1] /= nodes.size();
+        this.center = sum;
+    }
+
+    public double[] getCenter(){
+        return this.center;
     }
 }
