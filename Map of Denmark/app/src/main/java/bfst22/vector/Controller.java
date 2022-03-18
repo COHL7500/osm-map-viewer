@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -18,8 +17,6 @@ public class Controller {
     private MapCanvas canvas;
     @FXML
     private MenuButton dropdown;
-    @FXML
-    private Slider slider;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model) {

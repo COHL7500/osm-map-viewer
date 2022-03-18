@@ -1,8 +1,11 @@
 package bfst22.vector;
 
 import java.io.IOException;
+import java.net.URL;
+
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -16,7 +19,12 @@ public class View {
         primaryStage.setY((primScreenBounds.getHeight() - primaryStage.getHeight() / 2));
 
         var loader = new FXMLLoader(View.class.getResource("ViewNew.fxml"));
-        primaryStage.setScene(loader.load());
+
+        Scene scene = loader.load();
+
+        primaryStage.setScene(scene);
+
+        scene.getStylesheets().add("Map Of Denmark/app/src/main/resources/bfst22/vector/css/visual.css");
 
         primaryStage.setWidth(width);
         primaryStage.setMinWidth(width / 2);
