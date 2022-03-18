@@ -102,6 +102,7 @@ public class Model {
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            //add lat and lon to Address object
                             builder = builder.lat(lat);
                             builder = builder.lon(lon);
                             break;
@@ -128,6 +129,7 @@ public class Model {
                                 subtype = v;
                                 break;
                             }
+                            //Build Address object and add to list.
                             if (k.contains("addr:")) {
                                 switch (k) {
                                     case "addr:city":

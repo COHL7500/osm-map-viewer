@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="bfst22.vector.DADH" tests="2" skipped="0" failures="0" errors="0" timestamp="2022-03-16T14:12:36" hostname="Srens-MacBook-Pro.local" time="0.003">
-  <properties/>
-  <testcase name="testParserWithMissingInput()" classname="bfst22.vector.DADH" time="0.002"/>
-  <testcase name="testParser()" classname="bfst22.vector.DADH" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
