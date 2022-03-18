@@ -1,0 +1,17 @@
+.root {
+  -fx-font-size: 14px;
+  font-size: 14px;
+  -fx-font-family: sans-serif;
+  font-family: sans-serif;
+  -fx-background-color: #ffffff;
+  background-color: #ffffff;
+}
+
+#hBox {
+  -fx-padding: 10px;
+  padding: 10px;
+  -fx-font-size: 20px;
+  font-size: 20px;
+  -fx-background-color: teal;
+  background-color: teal;
+}

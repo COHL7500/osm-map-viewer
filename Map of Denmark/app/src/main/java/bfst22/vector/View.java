@@ -1,7 +1,6 @@
 package bfst22.vector;
 
 import java.io.IOException;
-import java.net.URL;
 
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -24,14 +23,19 @@ public class View {
 
         primaryStage.setScene(scene);
 
-        scene.getStylesheets().add("Map Of Denmark/app/src/main/resources/bfst22/vector/css/visual.css");
-
         primaryStage.setWidth(width);
         primaryStage.setMinWidth(width / 2);
         primaryStage.setHeight(height);
         primaryStage.setMinHeight(height / 2);
 
         primaryStage.show();
+
+        scene.getStylesheets().clear();
+
+        // scene.getStylesheets().add("Map of Denmark/app/src/main/css/someStyling.css");
+
+
+        // scene.getStylesheets().add(View.class.getResource("Map Of Denmark/app/src/main/resources/bfst22/vector/css/someStyling.css").toExternalForm());
 
         Controller controller = loader.getController();
         controller.init(model);
