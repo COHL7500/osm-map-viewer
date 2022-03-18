@@ -1,0 +1,34 @@
+<changelist name="Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]" date="1647528424660" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 17/03/2022, 15.47 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/data/small.osm.zip.obj" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/data/small.osm.zip.obj" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/small.osm.zip.obj" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/executionHistory.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/fileHashes.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/buildOutputCleanup.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/fileHashes.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_17_03_2022,_15_47_[Changes]/executionHistory.lock" />
+  </binary>
+</changelist>
