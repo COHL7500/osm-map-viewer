@@ -18,6 +18,8 @@ public class Model {
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     MapFeature yamlObj;
     List<Runnable> observers;
+    List<Address> addresses = new ArrayList<>();
+    Address.Builder builder = new Address.Builder();
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
@@ -119,11 +121,30 @@ public class Model {
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
-                            if(this.yamlObj.ways.containsKey(k)){
+                            if(this.yamlObj.ways.containsKey(k)) {
                                 suptype = k;
                                 subtype = v;
+                                break;
                             }
-                            break;
+                            if (k.contains("addr:")) {
+                                switch (k) {
+                                    case "addr:city":
+                                            builder = builder.city(v);
+                                            break;
+                                    case "addr:housenumber":
+                                            builder = builder.house(v);
+                                            break;
+                                    case "addr:postcode":
+                                            builder = builder.postcode(v);
+                                            break;
+                                    case "addr:street":
+                                            builder = builder.street(v);
+                                            break;
+                                    }
+                                    addresses.add(builder.build());
+                                    for (Address address : addresses) System.out.println(address);
+                                }
+                                break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
                         case "member":

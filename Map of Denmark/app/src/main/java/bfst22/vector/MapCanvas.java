@@ -32,8 +32,6 @@ public class MapCanvas extends Canvas {
         // Observer notifies the change in a particular state, being our repaint in this case.
         this.model.addObserver(this::repaint);
 
-        Arrays.stream(WayType.values()).forEach(type -> displayWay.put(type,true));
-
         // Instantly paints upon initialization
         this.repaint();
     }
