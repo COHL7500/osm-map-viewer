@@ -1,42 +1,29 @@
 package bfst22.vector;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.zip.ZipInputStream;
-
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 // Handles the logic of our data and storing it appropriately.
-
 public class Model {
     float minlat, minlon, maxlat, maxlon;
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
-    Map<WayType,List<Drawable>> lines = new EnumMap<>(WayType.class); {
-        for (var type : WayType.values()) lines.put(type, new ArrayList<>());
-    }
-    List<Runnable> observers = new ArrayList<>();
+    MapFeature yamlObj;
+    List<Runnable> observers;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
-    @SuppressWarnings("unchecked")
     public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
-        var time = -System.nanoTime();
+        this.observers = new ArrayList<>();
+        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
@@ -49,23 +36,21 @@ public class Model {
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                lines = (Map<WayType,List<Drawable>>) input.readObject();
+                yamlObj = (MapFeature) input.readObject();
             }
         }
 
-        time += System.nanoTime();
-        System.out.println("Load time: " + (long)(time / 1e6) + " ms");
         if (!filename.endsWith(".obj")) save(filename);
     }
 
     // Saves the .obj file in our project hierachy.
-    public void save(String basename) throws FileNotFoundException, IOException {
+    public void save(String basename) throws IOException {
         try (var out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
             out.writeFloat(minlat);
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
             out.writeFloat(maxlon);
-            out.writeObject(lines);
+            out.writeObject(yamlObj);
         }
     }
 
@@ -90,7 +75,7 @@ public class Model {
         // ID of the current relation.
         long relID = 0;
 
-        var type = WayType.UNKNOWN;
+        String suptype = null, subtype = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -98,8 +83,7 @@ public class Model {
 
                 // Reads the first element of a line.
                 case XMLStreamConstants.START_ELEMENT:
-                    var name = reader.getLocalName();
-                    switch (name) {
+                    switch (reader.getLocalName()) {
 
                         // Configures the longitude and latitude. An element present in all OSM files.
                         // Uncertain as to why, though adjusting the floats will make the map not draw.
@@ -128,17 +112,17 @@ public class Model {
                         // For future reference, type could probably be configured properly in this step.
                         case "way":
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            type = WayType.UNKNOWN;
                             break;
 
                         // Parses the key and value of tags, changing the waytype to the corresponding type.
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
-
-                            if (k.equals("natural") && v.equals("water")) type = WayType.WATER;
-                            if (k.equals("building")) type = WayType.BUILDING;
-
+                            if(k.equals("name")) name = v;
+                            if(this.yamlObj.ways.containsKey(k)){
+                                suptype = k;
+                                subtype = v;
+                            }
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -158,15 +142,28 @@ public class Model {
                         case "way":
                             var way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
-                            lines.get(type).add(way);
+                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
+                                //if(name != null)
+                                //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
+                            }
+                            subtype = suptype = name = null;
                             nodes.clear();
                             break;
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
-
-                            // if the relation is water, then it draws
-                            if (!rel.isEmpty()) lines.get(type).add(new MultiPolygon(rel));
+                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                var multipoly = new MultiPolygon(rel);
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
+                                //if(name != null)
+                                //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
+                            }
+                            subtype = suptype = name = null;
                             rel.clear();
                             break;
                     }
@@ -180,13 +177,6 @@ public class Model {
     }
 
     public void notifyObservers() {
-        for (var observer : observers) {
-            observer.run();
-        }
-    }
-
-    // iterates through arraylist of lines
-    public Iterable<Drawable> iterable(WayType type) {
-        return lines.get(type);
+        observers.forEach(Runnable::run);
     }
 }
