@@ -1,0 +1,48 @@
+Index: Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<?import javafx.geometry.Insets?>\n<?import javafx.scene.control.Button?>\n<?import javafx.scene.control.ButtonBar?>\n<?import javafx.scene.control.MenuButton?>\n<?import javafx.scene.control.MenuItem?>\n<?import javafx.scene.control.Slider?>\n<?import javafx.scene.control.TextField?>\n<?import javafx.scene.layout.BorderPane?>\n<?import bfst22.vector.MapCanvas?>\n<?import javafx.scene.Scene?>\n<Scene xmlns=\"http://javafx.com/javafx\"\n       xmlns:fx=\"http://javafx.com/fxml\"\n       fx:controller=\"bfst22.vector.Controller\"\n       fx:id=\"scene\"\n>\n    <root>\n<BorderPane xmlns=\"http://javafx.com/javafx/17\" xmlns:fx=\"http://javafx.com/fxml/1\">\n    <top>\n        <ButtonBar prefHeight=\"5.0\" prefWidth=\"600.0\" BorderPane.alignment=\"CENTER\">\n            <buttons>\n                <MenuButton mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"Menu\">\n                    <items>\n                        <MenuItem mnemonicParsing=\"false\" text=\"Action 1\" />\n                        <MenuItem mnemonicParsing=\"false\" text=\"Action 2\" />\n                    </items>\n                </MenuButton>\n                <TextField prefHeight=\"25.0\" text=\"Search\">\n                    <padding>\n                        <Insets right=\"40.0\" />\n                    </padding>\n                </TextField>\n                <Button minWidth=\"62.0\" mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"-\" />\n                <Slider />\n                <Button minWidth=\"66.0\" mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"+\" />\n            </buttons>\n        </ButtonBar><ButtonBar prefHeight=\"5.0\" prefWidth=\"600.0\" BorderPane.alignment=\"CENTER\">\n        <buttons>\n            <MenuButton mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"Menu\">\n                <items>\n                    <MenuItem mnemonicParsing=\"false\" text=\"Action 1\" />\n                    <MenuItem mnemonicParsing=\"false\" text=\"Action 2\" />\n                </items>\n            </MenuButton>\n            <TextField prefHeight=\"25.0\" text=\"Search\">\n                <padding>\n                    <Insets right=\"40.0\" />\n                </padding>\n            </TextField>\n            <Button minWidth=\"62.0\" mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"-\" />\n            <Slider />\n            <Button minWidth=\"66.0\" mnemonicParsing=\"false\" prefHeight=\"25.0\" text=\"+\" />\n        </buttons>\n    </ButtonBar>\n    </top>\n    <center>\n        <MapCanvas fx:id=\"canvas\"\n                   width=\"${scene.width}\"\n                   height=\"${scene.height}\"\n                   onScroll=\"#onScroll\"\n                   onMousePressed=\"#onMousePressed\"\n                   onMouseDragged=\"#onMouseDragged\"\n        />\n    </center>\n</BorderPane>\n    </root>\n</Scene>
+===================================================================
+diff --git a/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml b/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml
+--- a/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml	
++++ b/Map of Denmark/app/build/resources/main/bfst22/vector/ViewNew.fxml	
+@@ -20,12 +20,7 @@
+     <top>
+         <ButtonBar prefHeight="5.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+             <buttons>
+-                <MenuButton mnemonicParsing="false" prefHeight="25.0" text="Menu">
+-                    <items>
+-                        <MenuItem mnemonicParsing="false" text="Action 1" />
+-                        <MenuItem mnemonicParsing="false" text="Action 2" />
+-                    </items>
+-                </MenuButton>
++                <MenuButton fx:id="dropdown" mnemonicParsing="false" prefHeight="25.0" text="Menu" />
+                 <TextField prefHeight="25.0" text="Search">
+                     <padding>
+                         <Insets right="40.0" />
+@@ -35,24 +30,7 @@
+                 <Slider />
+                 <Button minWidth="66.0" mnemonicParsing="false" prefHeight="25.0" text="+" />
+             </buttons>
+-        </ButtonBar><ButtonBar prefHeight="5.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+-        <buttons>
+-            <MenuButton mnemonicParsing="false" prefHeight="25.0" text="Menu">
+-                <items>
+-                    <MenuItem mnemonicParsing="false" text="Action 1" />
+-                    <MenuItem mnemonicParsing="false" text="Action 2" />
+-                </items>
+-            </MenuButton>
+-            <TextField prefHeight="25.0" text="Search">
+-                <padding>
+-                    <Insets right="40.0" />
+-                </padding>
+-            </TextField>
+-            <Button minWidth="62.0" mnemonicParsing="false" prefHeight="25.0" text="-" />
+-            <Slider />
+-            <Button minWidth="66.0" mnemonicParsing="false" prefHeight="25.0" text="+" />
+-        </buttons>
+-    </ButtonBar>
++        </ButtonBar>
+     </top>
+     <center>
+         <MapCanvas fx:id="canvas"
