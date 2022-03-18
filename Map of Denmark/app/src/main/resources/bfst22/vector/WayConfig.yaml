@@ -19,6 +19,20 @@ ways:
       reflecting_pool: {}
       moat: {}
       wastewater: {}
+  natural:
+    valuefeatures:
+      water:
+        draw:
+          fill: true
+          fill_color: "#b5d2de"
+      coastline:
+        draw:
+          stroke: true
+          stroke_color: "#b0a1ba"
+      wood:
+          draw:
+              fill: true
+              fill_color: "#b7d09f"
   place:
     draw:
       fill: true
@@ -102,7 +116,6 @@ ways:
         draw:
             fill: true
             fill_color: "#d5ebb2"
-
       religious: {}
       village_green: {}
       winter_sports: {}
@@ -155,95 +168,6 @@ ways:
             stroke: true
             stroke_color: "#92a89b"
       water_park: {}
-
-  natural:
-      valuefeatures:
-        water:
-          draw:
-            fill: true
-            fill_color: "#b5d2de"
-        coastline:
-          draw:
-            stroke: true
-            stroke_color: "#b0a1ba"
-        wood:
-            draw:
-                fill: true
-                fill_color: "#b7d09f"
-
-  man_made:
-    draw:
-      stroke: true
-      fill: true
-      fill_color: "grey"
-    valuefeatures:
-      bridge:
-        draw:
-            fill: true
-            fill_color: "#8a8a8a"
-  highway:
-    draw:
-      stroke: true
-      stroke_color: "grey"
-      line_width: 0.00005
-      zoom_level: 30000
-    valuefeatures:
-      motorway: {}
-      trunk: {}
-      primary:
-        draw:
-          stroke: true
-          stroke_color: "#fdd7a1"
-          line_width: 0.00005
-          zoom_level: 20000
-      secondary:
-        draw:
-          stroke: true
-          stroke_color: "#f6faab"
-          line_width: 0.00004
-          zoom_level: 20000
-      tertiary:
-        draw:
-          stroke: true
-          stroke_color: "white"
-          line_width: 0.00010
-
-      unclassified: {}
-      residential: {}
-      motorwar_link: {}
-      trunk_link: {}
-      primary_link: {}
-      secondary_link: {}
-      teritary_link: {}
-      living_street: {}
-      service: {}
-      pedestrian: {}
-      track: {}
-      bus_guideway: {}
-      escape: {}
-      raceway: {}
-      road: {}
-      busway: {}
-      footway:
-        draw:
-            stroke: true
-            stroke_color: "#e29488"
-            dash_size: 0.0000175
-            line_width: 0.0000085
-            zoom_level: 45000
-      bridleway: {}
-      steps: {}
-      corridor: {}
-      path: {}
-      cycleway:
-        draw:
-            stroke: true
-            stroke_color: "#3333f8"
-            dash_size: 0.0000175
-            line_width: 0.0000085
-            zoom_level: 45000
-      proposed: {}
-      construction: {}
   building:
     draw:
       stroke: true
@@ -309,6 +233,109 @@ ways:
       union: {}
       visa: {}
       water_utility: {}
+
+  man_made:
+      draw:
+        stroke: true
+        fill: true
+        fill_color: "grey"
+      valuefeatures:
+        bridge:
+          draw:
+              fill: true
+              fill_color: "#8a8a8a"
+        unclassified: {}
+        residential: {}
+        motorwar_link: {}
+        trunk_link: {}
+        primary_link: {}
+        secondary_link: {}
+        teritary_link: {}
+        living_street: {}
+        service: {}
+        pedestrian:
+            draw:
+                stroke: true
+                stroke_color: "#c5c7cc"
+                fill: true
+                fill_color: "#dcdce7"
+
+        track: {}
+        bus_guideway: {}
+        escape: {}
+        raceway: {}
+        road: {}
+        busway: {}
+        footway:
+          draw:
+              stroke: true
+              stroke_color: "#e29488"
+              dash_size: 0.0000175
+              line_width: 0.0000085
+              zoom_level: 45000
+        bridleway: {}
+        steps: {}
+        corridor: {}
+        path: {}
+        cycleway:
+          draw:
+              stroke: true
+              stroke_color: "#3333f8"
+              dash_size: 0.0000175
+              line_width: 0.0000085
+              zoom_level: 45000
+        proposed: {}
+        construction: {}
+
+  highway:
+      draw:
+        stroke: true
+        stroke_color: "#ffffff"
+        line_width: 0.00005
+        zoom_level: 30000
+      valuefeatures:
+        motorway: {}
+        trunk: {}
+        primary:
+          draw:
+            stroke: true
+            stroke_color: "#fdd7a1"
+            line_width: 0.00005
+            zoom_level: 20000
+        secondary:
+          draw:
+            stroke: true
+            stroke_color: "#f6faab"
+            line_width: 0.00004
+            zoom_level: 20000
+        tertiary:
+          draw:
+            stroke: true
+            stroke_color: "white"
+            line_width: 0.00010
+        pedestrian:
+          draw:
+              stroke: true
+              stroke_color: "#c5c7cc"
+              fill: true
+              fill_color: "#dcdce7"
+        unclassified: {}
+
+  cycleway:
+    draw:
+        stroke: true
+        stroke_color: "purple"
+        fill: true
+        fill_color: "#ffffff"
+
+    valuefeatures:
+        track: {}
+        lane: {}
+        shared_lane: {}
+        share_busway: {}
+        share_busway: {}
+        separate: {}
+
   route:
     draw:
       stroke: true

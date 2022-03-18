@@ -11,7 +11,7 @@
 <?import javafx.scene.Scene?>
 <?import bfst22.vector.MapCanvas?>
 
-<Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene" stylesheets="@Style.css">
+<Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene">
     <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
         <top>
             <ButtonBar prefHeight="5.0" prefWidth="600.0" BorderPane.alignment="CENTER">
