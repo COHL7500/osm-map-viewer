@@ -8,10 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
@@ -31,8 +28,6 @@ public class MapCanvas extends Canvas {
 
         // Observer notifies the change in a particular state, being our repaint in this case.
         this.model.addObserver(this::repaint);
-
-        Arrays.stream(WayType.values()).forEach(type -> displayWay.put(type,true));
 
         // Instantly paints upon initialization
         this.repaint();
