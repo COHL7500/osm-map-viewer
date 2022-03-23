@@ -1,8 +1,9 @@
 package bfst22.vector;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class Address {
+public class Address implements Comparable<Address>{
     public final String street, house, floor, side, postcode, city;
     public final float lat, lon;
 
@@ -88,4 +89,29 @@ public class Address {
             return new Address(street, house, floor, side, postcode, city, lat, lon);
         }
     }
+
+    @Override
+    public int compareTo(Address that) {
+        if (that.street != null) {
+            String thisStreet = this.street.toLowerCase();
+            String thatStreet = that.street.toLowerCase();
+            return thisStreet.compareTo(thatStreet);
+        }
+
+        if (that.house != null) {
+            String thisHouse = this.house.toLowerCase();
+            String thatHouse = that.house.toLowerCase();
+            return thisHouse.compareTo(thatHouse);
+        }
+        if (that.postcode != null) {
+            return this.postcode.compareTo(that.postcode);
+        }
+        if (that.city != null) {
+            String thisCity = this.city.toLowerCase();
+            String thatCity = that.city.toLowerCase();
+            return thisCity.compareTo(thatCity);
+        }
+        else return -1;
+    }
+
 }
