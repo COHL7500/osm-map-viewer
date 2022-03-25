@@ -27,7 +27,6 @@ public class View {
         scene.getStylesheets().clear();
 
         getCSS(scene);
-
         setPrimaryStageSize(primaryStage);
 
         primaryStage.setScene(scene);

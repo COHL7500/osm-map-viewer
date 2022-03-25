@@ -34,8 +34,7 @@ public class Controller {
         this.canvas.init(model);
     }
 
-    // Handles an event of scrolling and increases/decreases the zoom level of the
-    // map.
+    // Handles an event of scrolling and increases/decreases the zoom level of the map.
     @FXML
     private void onScroll(ScrollEvent e) {
         var factor = e.getDeltaY();
@@ -52,11 +51,12 @@ public class Controller {
         this.lastMouse = new Point2D(e.getX(), e.getY());
     }
 
-    // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
+    // Updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
         this.lastMouse = new Point2D(e.getX(), e.getY());
     }
-        
+    
+    // Switch between disable and enable for leftPane wether it is visible or not
     @FXML
     private void onMenuButtonPress(ActionEvent e){  
         if (leftPaneVisibility == false){
