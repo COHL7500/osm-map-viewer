@@ -21,7 +21,7 @@ public class View {
 
         setDisplayBound(primaryStage);
 
-        var loader = new FXMLLoader(View.class.getResource("ViewDemo.fxml"));
+        var loader = new FXMLLoader(View.class.getResource("View.fxml"));
 
         Scene scene = loader.load();
         scene.getStylesheets().clear();
@@ -40,7 +40,7 @@ public class View {
 
     // Getting the CSS file and implement it on the scene
     public void getCSS(Scene scene){
-        String css = View.class.getResource("someStyling.css").toExternalForm();
+        String css = View.class.getResource("style.css").toExternalForm();
         scene.getStylesheets().add(css);
     }
 
