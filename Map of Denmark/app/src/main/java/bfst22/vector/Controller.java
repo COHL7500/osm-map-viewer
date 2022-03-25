@@ -4,14 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-
-import java.util.Arrays;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
@@ -32,6 +29,8 @@ public class Controller {
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model) {
+        someBorderPane.getLeft().setVisible(leftPaneVisibility);
+        someBorderPane.setLeft(null);
         this.canvas.init(model);
     }
 
