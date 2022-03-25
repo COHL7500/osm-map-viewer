@@ -4,12 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Add comments in Model">
-      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Search.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Searchtest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+    <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Experimented with address search feature&#10;&#10;Added comparablae method in Address class + new Search class">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/buildOutputCleanup.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/fileHashes.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/previous-compilation-data.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/resourceHashesCache.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-03-17_15_42__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Address$Builder.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Address$Builder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Address.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Address.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/App.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/classes/java/main/bfst22/vector/Model.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Search.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Search.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Searchtest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +126,7 @@
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/Map of Denmark" />
         <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="run" />
+        <option name="scriptParameters" value="run --stacktrace" />
         <option name="taskDescriptions">
           <list />
         </option>
@@ -131,7 +153,8 @@
       <workItem from="1646834258507" duration="1081000" />
       <workItem from="1646836450160" duration="15059000" />
       <workItem from="1647001408368" duration="10960000" />
-      <workItem from="1648033552345" duration="10348000" />
+      <workItem from="1648033552345" duration="13393000" />
+      <workItem from="1648198933614" duration="7381000" />
     </task>
     <task id="LOCAL-00001" summary="update .gitignore">
       <created>1646834535049</created>
@@ -231,7 +254,14 @@
       <option name="project" value="LOCAL" />
       <updated>1647609221937</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Experimented with address search feature&#10;&#10;Added comparablae method in Address class + new Search class">
+      <created>1648045833184</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1648045833184</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,6 +303,7 @@
     <MESSAGE value="Add longtitude and latitude to Address objects" />
     <MESSAGE value="Small changes to toString-method in Address class" />
     <MESSAGE value="Add comments in Model" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add comments in Model" />
+    <MESSAGE value="Experimented with address search feature&#10;&#10;Added comparablae method in Address class + new Search class" />
+    <option name="LAST_COMMIT_MESSAGE" value="Experimented with address search feature&#10;&#10;Added comparablae method in Address class + new Search class" />
   </component>
 </project>

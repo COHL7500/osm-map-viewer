@@ -1,25 +1,33 @@
 package bfst22.vector;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Search {
-    private String searchString;
-
-    public Search(String _searchString) {
-        this.searchString = _searchString;
-    }
+    private ArrayList<Address> sixBestResults;
 
     public ArrayList<Address> searchResults(String searchString, ArrayList<Address> addresses) {
-        Address _searchString = Address.parse(searchString);
-        ArrayList<Address> bestResults = new ArrayList<>();
+        Address _searchString = null;
+        sixBestResults = new ArrayList<>();
+
+        _searchString = Address.parse(searchString);
         int index = Collections.binarySearch(addresses, _searchString);
-        for (int i = 0; i < 5; i ++) {
+        sixBestResults = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
             if (index >= 0) {
-                bestResults.add(addresses.get(index+i));
+                sixBestResults.add(addresses.get(index + i));
+            }
+            else{
+                sixBestResults.add(addresses.get(-index - 1 + i));
+                }
+            }
+            return sixBestResults;
+        }
+
+        public void showResults() {
+            for (Address result : sixBestResults) {
+                System.out.println(result.toString());
             }
         }
-        return bestResults;
-    }
 }
+
