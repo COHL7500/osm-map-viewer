@@ -121,33 +121,38 @@ public class Model {
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
-                            switch(k) {
-                                case "motorcar":
-                                    vehicleType = VehicleType.MOTORCAR;
-                                    if (v.equals("yes")) e.isAllowed = true;
-                                    else e.isAllowed = false;
-                                    break;
+                            if(this.yamlObj.ways.containsKey(k))
+                            {
+                                suptype = k;
+                                subtype = v;
 
-                                case "bicycle":
-                                    vehicleType = VehicleType.BICYCLE;
-                                    if (v.equals("yes")) e.isAllowed = true;
-                                    else e.isAllowed = false;
-                                    break;
-                                case "foot":
-                                    vehicleType = VehicleType.FOOT;
-                                    if (v.equals("yes")) e.isAllowed = true;
-                                    else e.isAllowed = false;
-                                    break;
-                                case "oneway":
-                                    if(v.equals("yes")) e.isOneway = true;
-                                    break;
-                                case "maxspeed":
-                                    e.speedLimit = Integer.parseInt(v);
-                                case "restriction":
-                                    if(v.equals("no_left_turn")) e.leftTurn = false;
-                                    else if(v.equals("no_right_turn")) e.rightTurn = false;
+                                switch(k) {
+                                    case "motorcar":
+                                        vehicleType = VehicleType.MOTORCAR;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+
+                                    case "bicycle":
+                                        vehicleType = VehicleType.BICYCLE;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+                                    case "foot":
+                                        vehicleType = VehicleType.FOOT;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+                                    case "oneway":
+                                        if(v.equals("yes")) e.isOneway = true;
+                                        break;
+                                    case "maxspeed":
+                                        e.speedLimit = Integer.parseInt(v);
+                                        break;
+                                    case "restriction":
+                                        if(v.equals("no_left_turn")) e.leftTurn = false;
+                                        else if(v.equals("no_right_turn")) e.rightTurn = false;
+                                        break;
+                                }
                             }
-
+                            break;
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
