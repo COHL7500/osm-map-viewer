@@ -1,11 +1,15 @@
 package bfst22.vector;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
 
@@ -16,7 +20,15 @@ public class Controller {
     @FXML
     private MapCanvas canvas;
     @FXML
-    private MenuButton dropdown;
+    private Button menuActivation;
+    @FXML
+    private VBox vBox;
+    @FXML
+    private Pane somePane;
+    @FXML
+    private BorderPane someBorderPane;
+
+    private boolean leftPaneVisibility = false;;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model) {
@@ -44,5 +56,18 @@ public class Controller {
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
         this.lastMouse = new Point2D(e.getX(), e.getY());
+    }
+        
+    @FXML
+    private void onMenuButtonPress(ActionEvent e){  
+        if (leftPaneVisibility == false){
+            leftPaneVisibility = true;
+            someBorderPane.setLeft(vBox);
+            someBorderPane.getLeft().setVisible(leftPaneVisibility);
+        } else if (leftPaneVisibility == true){
+            leftPaneVisibility = false;
+            someBorderPane.getLeft().setVisible(leftPaneVisibility);
+            someBorderPane.setLeft(null);
+        }
     }
 }

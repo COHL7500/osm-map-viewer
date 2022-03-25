@@ -20,12 +20,8 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"  >
 
-    <stylesheets>
-        <URL value="someStyling.css">
-    </stylesheets>
-
     <top>
-        <HBox spacing="10" minWidth="325.0" alignment="CENTER" styleClass="hBox">
+        <HBox spacing="10" minWidth="325.0" alignment="CENTER">
             <padding>
                 <Insets top="5" bottom="5" left="10" right="10"/>
             </padding>
