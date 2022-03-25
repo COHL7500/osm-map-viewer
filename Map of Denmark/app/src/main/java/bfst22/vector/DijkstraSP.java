@@ -26,7 +26,7 @@ public class DijkstraSP {
         if(distTo[w] > distTo[v] + e.getWeight()){
             distTo[w] = distTo[v] + e.getWeight();
             edgeTo[w] = e;
-            
+
         }
     }
 
