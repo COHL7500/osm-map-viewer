@@ -16,13 +16,16 @@ public class Model {
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
-    MapFeature yamlObj;
+    //MapFeature yamlObj;
+    RTree rtree;
+    List<Drawable> lines;
     List<Runnable> observers;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.observers = new ArrayList<>();
-        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+        this.lines = new ArrayList<>();
+        //this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
 
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
@@ -30,15 +33,15 @@ public class Model {
             loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             loadOSM(new FileInputStream(filename));
-        } else if (filename.endsWith(".obj")) {
+        } /*else if (filename.endsWith(".obj")) {
             try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                yamlObj = (MapFeature) input.readObject();
+                //yamlObj = (MapFeature) input.readObject();
             }
-        }
+        }*/
 
         if (!filename.endsWith(".obj")) save(filename);
     }
@@ -50,7 +53,7 @@ public class Model {
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
             out.writeFloat(maxlon);
-            out.writeObject(yamlObj);
+            //out.writeObject(yamlObj);
         }
     }
 
@@ -75,7 +78,7 @@ public class Model {
         // ID of the current relation.
         long relID = 0;
 
-        String suptype = null, subtype = null, name = null;
+        //String suptype = null, subtype = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -88,9 +91,9 @@ public class Model {
                         // Configures the longitude and latitude. An element present in all OSM files.
                         // Uncertain as to why, though adjusting the floats will make the map not draw.
                         case "bounds":
-                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
+                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
                             minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
-                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
+                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
                             maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
 
@@ -99,7 +102,7 @@ public class Model {
                             var id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            id2node.add(new OSMNode(id, -lat, 0.56f * lon));
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
@@ -118,17 +121,17 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
-                            if(k.equals("name")) name = v;
-                            if(this.yamlObj.ways.containsKey(k)){
+                            //if(k.equals("name")) name = v;
+                            /*if(this.yamlObj.ways.containsKey(k)){
                                 suptype = k;
                                 subtype = v;
-                            }
+                            }*/
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.get(ref);
+                            var elm = id2way.remove(ref);
                             if (elm != null) rel.add(elm);
                             break;
                         }
@@ -140,36 +143,41 @@ public class Model {
 
                         // "way" - All lines in the program; linking point A to B
                         case "way":
-                            var way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
-                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                            lines.add(new PolyLine(nodes));
+                            nodes.clear();
+                            //var way = new PolyLine(nodes);
+                            /*if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
-                            }
-                            subtype = suptype = name = null;
-                            nodes.clear();
+                            }*/
+                            //subtype = suptype = name = null;
                             break;
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
-                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                            lines.add(new MultiPolygon(rel));
+                            rel.clear();
+                            //var multipoly = new MultiPolygon(rel);
+                            /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 var multipoly = new MultiPolygon(rel);
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
-                            }
-                            subtype = suptype = name = null;
-                            rel.clear();
+                            }*/
+                            //subtype = suptype = name = null;
                             break;
                     }
                     break;
             }
         }
+
+        this.rtree = new RTree(new double[]{minlat,minlon},new double[]{maxlat,maxlon},lines);
     }
 
     public void addObserver(Runnable observer) {

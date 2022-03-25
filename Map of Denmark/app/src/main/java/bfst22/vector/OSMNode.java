@@ -1,7 +1,6 @@
 package bfst22.vector;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 // Defines what a node is in the OSM file and its properties.
 public class OSMNode implements Serializable, SerialVersionIdentifiable {

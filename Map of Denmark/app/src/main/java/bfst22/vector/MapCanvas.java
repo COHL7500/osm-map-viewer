@@ -8,9 +8,7 @@ import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 // defines the canvas of our map; panning, zooming, painting etc.
@@ -32,8 +30,6 @@ public class MapCanvas extends Canvas {
         // Observer notifies the change in a particular state, being our repaint in this case.
         this.model.addObserver(this::repaint);
 
-        Arrays.stream(WayType.values()).forEach(type -> displayWay.put(type,true));
-
         // Instantly paints upon initialization
         this.repaint();
     }
@@ -52,7 +48,7 @@ public class MapCanvas extends Canvas {
         Set<valueFeature> featureList = new HashSet<>();
 
         // Loops through all the key features and sets the default styling for all its objects
-        for(keyFeature element : model.yamlObj.ways.values()){
+        /*for(keyFeature element : model.yamlObj.ways.values()){
             this.setStylingDefault();
 
             // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
@@ -76,9 +72,9 @@ public class MapCanvas extends Canvas {
                     }
                 }
             }
-        }
+        }*/
 
-        featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
+        //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
 
     // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided
