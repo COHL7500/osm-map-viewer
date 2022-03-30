@@ -9,12 +9,18 @@ public class Address implements Comparable<Address> {
 
     private Address(
             String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon) {
-        street = _street;
-        house = _house;
-        floor = _floor;
-        side = _side;
-        postcode = _postcode;
-        city = _city;
+        if (_street != null) street = _street.intern();
+        else street = _street;
+        if (_house != null) house = _house.intern();
+        else house = _house;
+        if (_floor != null) floor = _floor.intern();
+        else floor = _floor;
+        if (_side != null) side = _side.intern();
+        else side = _side;
+        if (_postcode != null) postcode = _postcode.intern();
+        else postcode = _postcode;
+        if (_city != null) city = _city.intern();
+        else city = _city;
         lon = _lon;
         lat = _lat;
     }
