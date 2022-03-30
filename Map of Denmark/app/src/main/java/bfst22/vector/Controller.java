@@ -1,42 +1,41 @@
 package bfst22.vector;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-
-import java.util.Arrays;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
-
 public class Controller {
-
     private Point2D lastMouse;
 
-    @FXML private MapCanvas canvas;
-    @FXML private MenuButton dropdown;
+    @FXML
+    private MapCanvas canvas;
+    @FXML
+    private Button menuActivation;
+    @FXML
+    private VBox vBox;
+    @FXML
+    private Pane somePane;
+    @FXML
+    private BorderPane someBorderPane;
+
+    private boolean leftPaneVisibility = false;;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
-    public void init(Model model) {
-        Arrays.stream(WayType.values()).forEach(way -> {
-            CheckMenuItem checkbox = new CheckMenuItem(way.toString().toLowerCase());
-            dropdown.getItems().add(checkbox);
-            checkbox.setSelected(true);
-            checkbox.setOnAction(e -> {
-                WayType way1 = WayType.valueOf(((CheckMenuItem) e.getSource()).getText().toUpperCase());
-                boolean checked = ((CheckMenuItem) e.getSource()).isSelected();
-                canvas.setDisplayStatus(way1, checked);
-                canvas.repaint();
-            });
-        });
-        canvas.init(model);
+    public void init(final Model model) {
+        someBorderPane.getLeft().setVisible(leftPaneVisibility);
+        someBorderPane.setLeft(null);
+        this.canvas.init(model);
     }
 
-    // Handles an event of scrolling and increases/decreases the zoom level of the map.
+    // Handles an event of scrolling and increases/decreases the zoom level of the
+    // map.
     @FXML
     private void onScroll(ScrollEvent e) {
         var factor = e.getDeltaY();
@@ -46,17 +45,28 @@ public class Controller {
     }
 
     // Handles panning in the program
-    @FXML
-    private void onMouseDragged(MouseEvent e) {
-        var dx = e.getX() - lastMouse.getX();
-        var dy = e.getY() - lastMouse.getY();
-        canvas.pan(dx, dy);
-        lastMouse = new Point2D(e.getX(), e.getY());
+    @FXML private void onMouseDragged(final MouseEvent e) {
+        double dx = e.getX() - lastMouse.getX();
+        double dy = e.getY() - lastMouse.getY();
+        this.canvas.pan(dx, dy);
+        this.lastMouse = new Point2D(e.getX(), e.getY());
     }
 
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
+    @FXML private void onMousePressed(final MouseEvent e) {
+        this.lastMouse = new Point2D(e.getX(), e.getY());
+    }
+        
     @FXML
-    private void onMousePressed(MouseEvent e) {
-        lastMouse = new Point2D(e.getX(), e.getY());
+    private void onMenuButtonPress(ActionEvent e){  
+        if (leftPaneVisibility == false){
+            leftPaneVisibility = true;
+            someBorderPane.setLeft(vBox);
+            someBorderPane.getLeft().setVisible(leftPaneVisibility);
+        } else if (leftPaneVisibility == true){
+            leftPaneVisibility = false;
+            someBorderPane.getLeft().setVisible(leftPaneVisibility);
+            someBorderPane.setLeft(null);
+        }
     }
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 // A HashMap exclusively designed for nodes.
-
 public class NodeMap extends ArrayList<OSMNode> {
     boolean sorted;
 
@@ -16,7 +15,7 @@ public class NodeMap extends ArrayList<OSMNode> {
 
     // gets the node from the map based on the given reference and sorts the map.
     // Uncertain as to why it sorts the map? Perhaps performance improvement?
-    public OSMNode get(long ref) {
+    public OSMNode get(final long ref) {
         if (!sorted) {
             sort(Comparator.comparing(node -> node.id));
             sorted = true;
