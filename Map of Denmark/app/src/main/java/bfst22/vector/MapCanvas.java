@@ -17,7 +17,7 @@ public class MapCanvas extends Canvas {
     Model model;
     Affine trans = new Affine();
     GraphicsContext gc = super.getGraphicsContext2D();
-    double zoom_current = 1;
+    double zoom_current = 1, x = 0, y = 0;
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
@@ -36,6 +36,8 @@ public class MapCanvas extends Canvas {
 
     // Draws all of the elements of our map.
     private void repaint() {
+        Set<Drawable> elements = new HashSet<>();
+
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
@@ -45,7 +47,14 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        Set<valueFeature> featureList = new HashSet<>();
+        for(Node node : this.model.kdtree.rangeSearch(new float[]{(float) (x-getWidth()*zoom_current/2),(float) (y-getHeight()*zoom_current/2)},
+                new float[]{(float) (x+getWidth()*zoom_current/2),(float) (y+getHeight()*zoom_current/2)}))
+            elements.add(node.obj);
+
+        for(Drawable obj : elements)
+            obj.draw(gc);
+
+        //Set<valueFeature> featureList = new HashSet<>();
 
         // Loops through all the key features and sets the default styling for all its objects
         /*for(keyFeature element : model.yamlObj.ways.values()){
@@ -107,6 +116,8 @@ public class MapCanvas extends Canvas {
     // this is used in onMouseDragged from Controller.
     public void pan(final double dx, final double dy) {
         this.trans.prependTranslation(dx, dy);
+        this.x = dx;
+        this.y = dy;
         this.repaint();
     }
 
@@ -117,6 +128,8 @@ public class MapCanvas extends Canvas {
         this.trans.prependTranslation(-x, -y);
         this.trans.prependScale(factor, factor);
         this.trans.prependTranslation(x, y);
+        this.x = x;
+        this.y = y;
         this.repaint();
     }
 

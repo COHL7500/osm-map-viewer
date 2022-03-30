@@ -17,8 +17,8 @@ public class Model {
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     //MapFeature yamlObj;
-    RTree rtree;
-    List<Drawable> lines;
+    KdTree kdtree;
+    List<Node> lines;
     List<Runnable> observers;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -144,7 +144,7 @@ public class Model {
                         // "way" - All lines in the program; linking point A to B
                         case "way":
                             id2way.put(relID, new OSMWay(nodes));
-                            lines.add(new PolyLine(nodes));
+                            lines.addAll(new PolyLine(nodes).getNodes());
                             nodes.clear();
                             //var way = new PolyLine(nodes);
                             /*if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
@@ -159,7 +159,7 @@ public class Model {
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
-                            lines.add(new MultiPolygon(rel));
+                            lines.addAll(new MultiPolygon(rel).getNodes());
                             rel.clear();
                             //var multipoly = new MultiPolygon(rel);
                             /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
@@ -177,7 +177,8 @@ public class Model {
             }
         }
 
-        this.rtree = new RTree(new double[]{minlat,minlon},new double[]{maxlat,maxlon},lines);
+        this.kdtree = new KdTree(this.lines);
+        //this.rtree = new RTree(new double[]{minlat,minlon},new double[]{maxlat,maxlon},lines);
     }
 
     public void addObserver(Runnable observer) {

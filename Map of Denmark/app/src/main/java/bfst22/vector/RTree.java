@@ -3,7 +3,7 @@ package bfst22.vector;
 import java.util.*;
 
 public class RTree {
-	private final RNode root;
+	/*private final RNode root;
 
 	public RTree(double[] min, double[] max, List<Drawable> elements){
 		this.root = new RNode();
@@ -63,5 +63,5 @@ public class RTree {
 	private static class RNode extends AABB {
 		public List<Drawable> elements = new ArrayList<>();
 		public RNode left, right;
-	}
+	}*/
 }
