@@ -13,6 +13,8 @@ import org.yaml.snakeyaml.constructor.Constructor;
 // Handles the logic of our data and storing it appropriately.
 public class Model {
     float minlat, minlon, maxlat, maxlon;
+    VehicleType vehicleType;
+    Edge e;
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
@@ -119,12 +121,38 @@ public class Model {
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
-                            if(this.yamlObj.ways.containsKey(k)){
+                            if(this.yamlObj.ways.containsKey(k))
+                            {
                                 suptype = k;
                                 subtype = v;
+
+                                switch(k) {
+                                    case "motorcar":
+                                        vehicleType = VehicleType.MOTORCAR;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+
+                                    case "bicycle":
+                                        vehicleType = VehicleType.BICYCLE;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+                                    case "foot":
+                                        vehicleType = VehicleType.FOOT;
+                                        e.isAllowed = v.equals("yes");
+                                        break;
+                                    case "oneway":
+                                        if(v.equals("yes")) e.isOneway = true;
+                                        break;
+                                    case "maxspeed":
+                                        e.speedLimit = Integer.parseInt(v);
+                                        break;
+                                    case "restriction":
+                                        if(v.equals("no_left_turn")) e.leftTurn = false;
+                                        else if(v.equals("no_right_turn")) e.rightTurn = false;
+                                        break;
+                                }
                             }
                             break;
-
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
