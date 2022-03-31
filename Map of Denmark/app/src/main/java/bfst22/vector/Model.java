@@ -91,9 +91,9 @@ public class Model {
                         // Configures the longitude and latitude. An element present in all OSM files.
                         // Uncertain as to why, though adjusting the floats will make the map not draw.
                         case "bounds":
-                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
+                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
                             minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
-                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
+                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
                             maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
 
@@ -102,7 +102,7 @@ public class Model {
                             var id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            id2node.add(new OSMNode(id, -lat, 0.56f * lon));
+                            id2node.add(new OSMNode(id, 0.56f * lon, -lat));
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.

@@ -20,7 +20,7 @@ public class MapCanvas extends Canvas {
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
-        this.pan(-model.minlat,-model.minlon);
+        this.pan(-model.minlon, -model.minlat);
 
         // Default zoom level: 700
         this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
