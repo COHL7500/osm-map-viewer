@@ -7,9 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
@@ -22,19 +20,17 @@ public class MapCanvas extends Canvas {
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
-        //this.pan(-model.minlon, -model.minlat);
+        this.pan(-model.minlat,-model.minlon);
 
         // Default zoom level: 700
-        //this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
+        this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
 
         // Observer notifies the change in a particular state, being our repaint in this case.
-        //this.model.addObserver(this::repaint);
+        this.model.addObserver(this::repaint);
     }
 
     // Draws all of the elements of our map.
     private void repaint() {
-        List<Drawable> elements = new ArrayList<>();
-
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
@@ -46,20 +42,18 @@ public class MapCanvas extends Canvas {
 
         //float[] min = new float[]{(float) (x-getWidth()*zoom_current/2),(float) (y-getHeight()*zoom_current/2)};
         //float[] max = new float[]{(float) (x+getWidth()*zoom_current/2),(float) (y+getHeight()*zoom_current/2)};
-        List<Node> range = this.model.kdtree.rangeSearch(new float[]{-1000,-1000},new float[]{1000,1000});
+        Set<Drawable> range = this.model.kdtree.rangeSearch(new float[]{-1000,-1000},new float[]{1000,1000});
 
         //System.out.println("range: " + range.size());
-        this.strokeCursor();
-        this.strokeBox(100);
+        //this.strokeCursor();
+        //this.strokeBox(100);
 
-        /*this.setStylingDefault();
+        this.setStylingDefault();
+        this.gc.setLineWidth(0.00001);
 
-        for(Node node : range){
-            if(!elements.contains(node.obj)){
-                elements.add(node.obj);
-                node.obj.draw(this.gc);
-            }
-        }*/
+        for(Drawable obj : range) {
+            obj.draw(this.gc);
+        }
 
         //Set<valueFeature> featureList = new HashSet<>();
 
@@ -111,8 +105,9 @@ public class MapCanvas extends Canvas {
         this.gc.setLineDashes(1);
     }
 
-    private void strokeBox(int padding){
+    private void strokeBox(double padding){
         padding /= zoom_current;
+        double csize = 5 / zoom_current;
         this.gc.setLineWidth(1/zoom_current);
         this.gc.setStroke(Color.BLUE);
         this.gc.setLineDashes(3/zoom_current);
@@ -126,16 +121,16 @@ public class MapCanvas extends Canvas {
         this.gc.stroke();
         this.gc.closePath();
         this.gc.setFill(Color.BLACK);
-        this.gc.fillOval(originx,originy,5/zoom_current,5/zoom_current);
-        this.gc.fillOval(minx+padding-5/zoom_current,miny+padding-5/zoom_current,5/zoom_current,5/zoom_current);
-        this.gc.fillOval(maxx-padding,miny+padding-5/zoom_current,5/zoom_current,5/zoom_current);
-        this.gc.fillOval(maxx-padding,maxy-padding,5/zoom_current,5/zoom_current);
-        this.gc.fillOval(minx+padding-5/zoom_current,maxy-padding,5/zoom_current,5/zoom_current);
-        this.gc.fillText("origin (" + Math.round(originx) + "," + Math.round(originy) + ")",originx+5,originy-5);
-        this.gc.fillText("min x, min y (" + Math.round(minx+padding) + "," + Math.round(miny+padding) + ")",minx+padding+5,miny+padding-5);
-        this.gc.fillText("max x, min y (" + Math.round(maxx-padding) + "," + Math.round(miny+padding) + ")",maxx-padding+5,miny+padding-5);
-        this.gc.fillText("max x, max y (" + Math.round(maxx-padding) + "," + Math.round(maxy-padding) + ")",maxx-padding+5,maxy-padding-5);
-        this.gc.fillText("min x, max y (" + Math.round(minx+padding) + "," + Math.round(maxy-padding) + ")",minx+padding+5,maxy-padding-5);
+        this.gc.fillOval(originx,originy,csize,csize);
+        this.gc.fillOval(minx+padding-csize,miny+padding-csize,csize,csize);
+        this.gc.fillOval(maxx-padding,miny+padding-csize,csize,csize);
+        this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
+        this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
+        this.gc.fillText("origin (" + Math.round(originx) + "," + Math.round(originy) + ")",originx+csize,originy-csize);
+        this.gc.fillText("min x, min y (" + Math.round(minx+padding) + "," + Math.round(miny+padding) + ")",minx+padding+csize,miny+padding-csize);
+        this.gc.fillText("max x, min y (" + Math.round(maxx-padding) + "," + Math.round(miny+padding) + ")",maxx-padding+csize,miny+padding-csize);
+        this.gc.fillText("max x, max y (" + Math.round(maxx-padding) + "," + Math.round(maxy-padding) + ")",maxx-padding+csize,maxy-padding-csize);
+        this.gc.fillText("min x, max y (" + Math.round(minx+padding) + "," + Math.round(maxy-padding) + ")",minx+padding+csize,maxy-padding-csize);
     }
 
     private void strokeCursor(){
@@ -158,7 +153,6 @@ public class MapCanvas extends Canvas {
     // Allows the user to navigate around the map by panning.
     // this is used in onMouseDragged from Controller.
     public void pan(final double dx, final double dy) {
-        //System.out.println(dx + ", " + dy);
         this.trans.prependTranslation(dx, dy);
         this.setScale(dx,dy);
         this.repaint();
@@ -168,14 +162,7 @@ public class MapCanvas extends Canvas {
     // this is used in onScroll from Controller.
     public void zoom(final double factor, final double dx, final double dy){
         this.zoom_current *= factor;
-        //this.trans.prependTranslation(-dx, -dy);
         this.trans.prependScale(factor, factor);
-        //this.trans.prependTranslation(dx, dy);
-        //this.setMousePos(new Point2D(dx*zoom_current, dy*zoom_current));
-        //this.setScale(dx/zoom_current,dy/zoom_current);
-        System.out.println(zoom_current + ", " + dx + ", " + dy);
-        //if(zoom_current > 1) setScale(dx-this.mousex,dy-this.mousey);
-        //else setScale(dx-this.mousex,dy-this.mousey);
         this.repaint();
     }
 

@@ -11,7 +11,8 @@
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -245,11 +246,6 @@
           <url>file://$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Drawable.java</url>
           <line>11</line>
           <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java</url>
-          <line>59</line>
-          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

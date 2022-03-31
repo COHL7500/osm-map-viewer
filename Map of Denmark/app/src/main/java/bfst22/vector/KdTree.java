@@ -44,9 +44,9 @@ public class KdTree {
 		}
 	}
 
-	public List<Node> rangeSearch(float[] min, float[] max){
+	public Set<Drawable> rangeSearch(float[] min, float[] max){
 		Queue<intNode> intNodes = new LinkedList<>();
-		List<Node> allElements = new ArrayList<>();
+		Set<Drawable> allElements = new HashSet<>();
 		boolean depth = true;
 		intNodes.add(this.root.left);
 		intNodes.add(this.root.right);
@@ -60,7 +60,8 @@ public class KdTree {
 
 				if(lnode.point >= min[depth ? 1 : 0] && lnode.point <= max[depth ? 1 : 0]){
 					if(lnode.left == null){
-						allElements.addAll(lnode.elements);
+						for(Node node : lnode.elements)
+							allElements.add(node.obj);
 						continue;
 					}
 
