@@ -2,19 +2,49 @@ package bfst22.vector;
 
 import java.io.IOException;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 // Responsible for displaying model data.
 public class View {
     public View(Model model, Stage primaryStage) throws IOException {
-        primaryStage.show();
         var loader = new FXMLLoader(View.class.getResource("View.fxml"));
-        primaryStage.setWidth(Screen.getPrimary().getBounds().getWidth()/1.5);
-        primaryStage.setHeight(Screen.getPrimary().getBounds().getHeight()/1.5);
-        primaryStage.setScene(loader.load());
+        Scene scene = loader.load();
+
+        this.setDisplayBound(primaryStage);
+        this.getCSS(scene);
+        this.setPrimaryStageSize(primaryStage);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Danmarkskort - Gruppe #1");
+        primaryStage.show();
+
         Controller controller = loader.getController();
         controller.init(model);
-        primaryStage.setTitle("Danmarkskort - Gruppe #1");
+    }
+
+    // Getting the CSS file and implement it on the scene
+    public void getCSS(Scene scene){
+        String css = View.class.getResource("style.css").toExternalForm();
+        scene.getStylesheets().add(css);
+    }
+
+    // Setting the stage size for the application
+    public void setPrimaryStageSize(Stage primaryStage){
+        double width = 800, height = 600;
+        primaryStage.setWidth(width);
+        primaryStage.setMinWidth(width / 2);
+        primaryStage.setHeight(height);
+        primaryStage.setMinHeight(height / 2);
+    }
+
+    // Setting the window displaybound so the scene spawns within the screen
+    public void setDisplayBound(Stage primaryStage){
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+
+        primaryStage.setX((primScreenBounds.getWidth() - primaryStage.getWidth()) / 2);
+        primaryStage.setY((primScreenBounds.getHeight() - primaryStage.getHeight() / 2));
     }
 }

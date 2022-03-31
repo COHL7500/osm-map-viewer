@@ -80,6 +80,6 @@ public class KdTree {
 	private static class intNode {
 		public float point;
 		public intNode left, right;
-		public List<Node> elements;
+		public List<Node> elements = new ArrayList<>();
 	}
 }

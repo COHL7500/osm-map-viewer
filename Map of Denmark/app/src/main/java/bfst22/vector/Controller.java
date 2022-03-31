@@ -1,15 +1,9 @@
 package bfst22.vector;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-
-import java.util.Arrays;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
@@ -38,5 +32,11 @@ public class Controller {
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
         this.lastMouse = new Point2D(e.getX(), e.getY());
+    }
+
+    // updates the mouse position on the screen upon moving
+    @FXML private void onMouseMoved(final MouseEvent e){
+        this.lastMouse = new Point2D(e.getX(), e.getY());
+        this.canvas.setMousePos(new Point2D(e.getX(), e.getY()));
     }
 }

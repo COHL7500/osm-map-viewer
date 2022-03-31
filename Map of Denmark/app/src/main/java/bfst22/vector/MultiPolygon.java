@@ -10,14 +10,13 @@ public class MultiPolygon implements Drawable, Serializable, SerialVersionIdenti
     List<Drawable> parts = new ArrayList<>(); // List of what constitutes the relation.
 
     public MultiPolygon(final ArrayList<OSMWay> rel) {
-        for (OSMWay way : rel) {
-            this.parts.add(new PolyLine(way.nodes));
-        }
+        for (OSMWay way : rel) this.parts.add(new PolyLine(way.nodes));
     }
 
     public List<Node> getNodes() {
         List<Node> nodes = new ArrayList<>();
         this.parts.forEach(polyline -> nodes.addAll(((PolyLine) polyline).getNodes()));
+        for(Node node : nodes) node.obj = this;
         return nodes;
     }
 

@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="updates in WayConfig.yaml">
-      <change afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" afterDir="false" />
@@ -13,12 +12,15 @@
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Drawable.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Drawable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/build/resources/main/bfst22/vector/View.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MultiPolygon.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MultiPolygon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/PolyLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/PolyLine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/RTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/RTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/View.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/View.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/View.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -248,9 +250,14 @@
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/KdTree.java</url>
-          <line>35</line>
-          <option name="timeStamp" value="4" />
+          <url>file://$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Drawable.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/MapCanvas.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -258,6 +265,8 @@
       <configuration name="GradleRunConfiguration">
         <watch expression="this" />
         <watch expression="lnode" />
+        <watch expression="this.model.kdtree.root" />
+        <watch expression="range" />
       </configuration>
     </watches-manager>
   </component>
