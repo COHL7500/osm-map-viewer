@@ -36,7 +36,6 @@ public class Controller {
 
     // updates the mouse position on the screen upon moving
     @FXML private void onMouseMoved(final MouseEvent e){
-        this.lastMouse = new Point2D(e.getX(), e.getY());
         this.canvas.setMousePos(new Point2D(e.getX(), e.getY()));
     }
 }

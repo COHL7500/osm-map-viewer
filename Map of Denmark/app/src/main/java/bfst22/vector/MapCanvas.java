@@ -51,7 +51,6 @@ public class MapCanvas extends Canvas {
         //System.out.println("range: " + range.size());
         this.strokeCursor();
         this.strokeBox(100);
-        //this.setStylingDefault();
 
         /*this.setStylingDefault();
 
@@ -113,9 +112,10 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeBox(int padding){
-        this.gc.setLineWidth(1);
+        padding /= zoom_current;
+        this.gc.setLineWidth(1/zoom_current);
         this.gc.setStroke(Color.BLUE);
-        this.gc.setLineDashes(3);
+        this.gc.setLineDashes(3/zoom_current);
         this.gc.beginPath();
         this.gc.moveTo(this.minx+padding,this.miny+padding);
         this.gc.lineTo(this.minx+padding,this.miny+padding);
@@ -126,11 +126,11 @@ public class MapCanvas extends Canvas {
         this.gc.stroke();
         this.gc.closePath();
         this.gc.setFill(Color.BLACK);
-        this.gc.fillOval(originx,originy,5,5);
-        this.gc.fillOval(minx+padding-5,miny+padding-5,5,5);
-        this.gc.fillOval(maxx-padding,miny+padding-5,5,5);
-        this.gc.fillOval(maxx-padding,maxy-padding,5,5);
-        this.gc.fillOval(minx+padding-5,maxy-padding,5,5);
+        this.gc.fillOval(originx,originy,5/zoom_current,5/zoom_current);
+        this.gc.fillOval(minx+padding-5/zoom_current,miny+padding-5/zoom_current,5/zoom_current,5/zoom_current);
+        this.gc.fillOval(maxx-padding,miny+padding-5/zoom_current,5/zoom_current,5/zoom_current);
+        this.gc.fillOval(maxx-padding,maxy-padding,5/zoom_current,5/zoom_current);
+        this.gc.fillOval(minx+padding-5/zoom_current,maxy-padding,5/zoom_current,5/zoom_current);
         this.gc.fillText("origin (" + Math.round(originx) + "," + Math.round(originy) + ")",originx+5,originy-5);
         this.gc.fillText("min x, min y (" + Math.round(minx+padding) + "," + Math.round(miny+padding) + ")",minx+padding+5,miny+padding-5);
         this.gc.fillText("max x, min y (" + Math.round(maxx-padding) + "," + Math.round(miny+padding) + ")",maxx-padding+5,miny+padding-5);
@@ -141,9 +141,10 @@ public class MapCanvas extends Canvas {
     private void strokeCursor(){
         this.gc.setLineWidth(1);
         this.gc.setFill(Color.RED);
-        this.gc.fillOval(mousex,mousey,5,5);
+        this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
         this.gc.setFill(Color.BLACK);
-        this.gc.fillText("cursor (" + Math.round(mousex) + "," + Math.round(mousey) + ")",mousex+5,mousey-5);
+        this.gc.setFont(new Font("Arial",11/zoom_current));
+        this.gc.fillText("cursor (" + Math.round(mousex) + "," + Math.round(mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
     }
 
     // Draws any kind of provided text to the screen
@@ -167,25 +168,29 @@ public class MapCanvas extends Canvas {
     // this is used in onScroll from Controller.
     public void zoom(final double factor, final double dx, final double dy){
         this.zoom_current *= factor;
-        this.trans.prependTranslation(-dx, -dy);
+        //this.trans.prependTranslation(-dx, -dy);
         this.trans.prependScale(factor, factor);
-        this.trans.prependTranslation(dx, dy);
+        //this.trans.prependTranslation(dx, dy);
+        //this.setMousePos(new Point2D(dx*zoom_current, dy*zoom_current));
+        //this.setScale(dx/zoom_current,dy/zoom_current);
         System.out.println(zoom_current + ", " + dx + ", " + dy);
+        //if(zoom_current > 1) setScale(dx-this.mousex,dy-this.mousey);
+        //else setScale(dx-this.mousex,dy-this.mousey);
         this.repaint();
     }
 
     public void setScale(final double dx, final double dy){
-        this.minx -= dx;
-        this.miny -= dy;
-        this.maxx = this.minx+super.getWidth();
-        this.maxy = this.miny+super.getHeight()-25;
-        this.originx = minx+(maxx-minx)/2;
-        this.originy = miny+(maxy-miny)/2;
+        this.minx -= dx / zoom_current;
+        this.miny -= dy / zoom_current;
+        this.maxx = this.minx+super.getWidth() / zoom_current;
+        this.maxy = (this.miny+super.getHeight() / zoom_current) - 25/zoom_current;
+        this.originx = minx+(maxx-minx) / 2;
+        this.originy = miny+(maxy-miny) / 2;
     }
 
     public void setMousePos(final Point2D point){
-        this.mousex = point.getX() + this.minx;
-        this.mousey = point.getY() + this.miny;
+        this.mousex = point.getX() / zoom_current + this.minx;
+        this.mousey = point.getY() / zoom_current + this.miny;
         this.repaint();
     }
 
