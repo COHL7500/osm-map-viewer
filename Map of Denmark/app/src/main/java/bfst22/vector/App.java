@@ -16,5 +16,6 @@ public class App extends Application {
 
         Model model = new Model("data/small.osm.zip"); // Reads OSM file from data folder.
         new View(model, primaryStage); // primaryStage is our main window
+
     }
 }

@@ -16,9 +16,11 @@ public class Model {
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
+    // Declares list of adressess
+    // Declares builder object for constructing addresses from OSM-data.
     MapFeature yamlObj;
     List<Runnable> observers;
-    List<Address> addresses = new ArrayList<>();
+    ArrayList<Address> addresses = new ArrayList<>();
     Address.Builder builder = new Address.Builder();
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -103,8 +105,8 @@ public class Model {
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
                             //add lat and lon to Address object
-                            builder = builder.lat(lat);
-                            builder = builder.lon(lon);
+                            builder = builder.lat(-lat);
+                            builder = builder.lon(0.56f * lon);
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
@@ -194,6 +196,7 @@ public class Model {
                     break;
             }
         }
+        Collections.sort(addresses);
     }
 
     public void addObserver(Runnable observer) {
@@ -202,5 +205,9 @@ public class Model {
 
     public void notifyObservers() {
         observers.forEach(Runnable::run);
+    }
+
+    public ArrayList<Address> getAddresses() {
+        return addresses;
     }
 }
