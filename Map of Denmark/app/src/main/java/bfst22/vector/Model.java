@@ -20,6 +20,8 @@ public class Model {
     public boolean isOMSloaded = false;
     public float minlat, minlon, maxlat, maxlon;
 
+    public String currFileName;
+
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         if (filename.endsWith(".zip")) {
