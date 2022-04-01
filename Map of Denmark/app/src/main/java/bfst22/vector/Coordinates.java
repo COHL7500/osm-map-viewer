@@ -25,19 +25,19 @@ public class Coordinates {
         }
     }
 
-    public float getMinX(){
+    public double getMinX(){
         return this.minX;
     }
 
-    public float getMinY(){
+    public double getMinY(){
         return this.minY;
     }
 
-    public float getMaxX(){
+    public double getMaxX(){
         return this.maxX;
     }
 
-    public float getMaxY(){
+    public double getMaxY(){
         return this.maxY;
     }
 

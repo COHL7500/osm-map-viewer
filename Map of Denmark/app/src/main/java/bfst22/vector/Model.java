@@ -13,8 +13,10 @@ import org.yaml.snakeyaml.constructor.Constructor;
 // Handles the logic of our data and storing it appropriately.
 public class Model {
     float minlat, minlon, maxlat, maxlon;
+    int way;
     VehicleType vehicleType;
     Edge e;
+    Graph g;
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
@@ -114,6 +116,7 @@ public class Model {
                         // For future reference, type could probably be configured properly in this step.
                         case "way":
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
+                            g.incrementE();
                             break;
 
                         // Parses the key and value of tags, changing the waytype to the corresponding type.
