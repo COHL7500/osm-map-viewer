@@ -27,7 +27,6 @@ public class Controller {
     public void init(final Model model, final Stage stage) {
         this.model = model;
         this.stage = stage;
-        this.canvas.init(model);
     }
 
     // Handles an event of scrolling and increases/decreases the zoom level of the map.
@@ -71,8 +70,9 @@ public class Controller {
 
     @FXML private void unloadFileButtonClicked(final ActionEvent e){
         this.canvas.clearScreen();
-        this.canvas.setDisable(true);
-        this.unloadFileButton.setDisable(true);
+        //this.canvas.setDisable(true);
+        //this.canvas = new MapCanvas();
+        //this.unloadFileButton.setDisable(true);
     }
 
     @FXML private void exitButtonClicked(final ActionEvent e){

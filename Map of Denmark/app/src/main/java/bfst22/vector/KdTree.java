@@ -61,13 +61,9 @@ public class KdTree {
 				if(lnode.left == null){
 					for(Node node : lnode.elements)
 						allElements.add(node.obj);
-				} else if(lnode.left.left == null && lnode.point < min[depth%2]){
-					intNodes.add(lnode.left);
-				} else if(lnode.right.left == null && lnode.point < min[depth%2]){
-					intNodes.add(lnode.right);
 				} else {
-					intNodes.add(lnode.left);
-					intNodes.add(lnode.right);
+					if(lnode.point < max[depth%2]) intNodes.add(lnode.left);
+					if(lnode.point < max[depth%2]) intNodes.add(lnode.right);
 				}
 			}
 		}
