@@ -21,11 +21,15 @@ public class Model {
     List<Node> lines;
     List<Runnable> observers;
 
+    public String currFileName;
+
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.observers = new ArrayList<>();
         this.lines = new ArrayList<>();
         //this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+
+        currFileName = filename;
 
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));

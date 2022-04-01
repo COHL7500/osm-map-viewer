@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
@@ -27,6 +28,7 @@ public class Controller {
     public void init(final Model model, final Stage stage) {
         this.model = model;
         this.stage = stage;
+        canvas.init(model);
     }
 
     // Handles an event of scrolling and increases/decreases the zoom level of the map.
@@ -53,19 +55,34 @@ public class Controller {
         this.canvas.setMousePos(new Point2D(e.getX(), e.getY()));
     }
 
-    @FXML private void onBrowseOSMClicked(final ActionEvent e) throws IOException, XMLStreamException {
+    @FXML private void onBrowseOSMClicked(final ActionEvent e) throws XMLStreamException, FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose OSM File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("OSM File", "*.osm"));
 
         File file = fileChooser.showOpenDialog(this.stage);
 
-        if(file != null) {
-            this.model.loadOSM(new FileInputStream(file.getAbsolutePath()));
-            this.canvas.init(model);
-            this.canvas.setDisable(false);
-            this.unloadFileButton.setDisable(false);
+        try {
+            if (file != null) {
+                if (("data/" + file.getName()).equals(model.currFileName))
+                {
+                    System.out.println("File is already loaded!");
+                }
+                else
+                {
+                    this.canvas.clearScreen();
+                    this.model.loadOSM(new FileInputStream(file.getAbsolutePath()));
+                    this.canvas.init(model);
+                }
+            }
         }
+        catch(FileNotFoundException exc)
+        {
+            System.out.println("ERROR: File could not be found.");
+        }
+
+        //System.out.println("data/" + file.getName());
+        //System.out.println(model.currFileName);
     }
 
     @FXML private void unloadFileButtonClicked(final ActionEvent e){
