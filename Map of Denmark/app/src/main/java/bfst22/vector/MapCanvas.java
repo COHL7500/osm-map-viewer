@@ -16,11 +16,12 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     GraphicsContext gc = super.getGraphicsContext2D();
     double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
+    boolean debugCursor = true, debugVisBox = true, debugDisableHelpText = true;
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
-        this.pan(-model.minlat,-model.minlon);
+        this.pan(-model.minlon, -model.minlat);
 
         // Default zoom level: 700
         this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
@@ -40,20 +41,18 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        //float[] min = new float[]{(float) (x-getWidth()*zoom_current/2),(float) (y-getHeight()*zoom_current/2)};
-        //float[] max = new float[]{(float) (x+getWidth()*zoom_current/2),(float) (y+getHeight()*zoom_current/2)};
-        Set<Drawable> range = this.model.kdtree.rangeSearch(new float[]{-1000,-1000},new float[]{1000,1000});
-
-        //System.out.println("range: " + range.size());
-        //this.strokeCursor();
-        //this.strokeBox(100);
+        double padding = 100 / zoom_current;
+        Set<Drawable> range;
 
         this.setStylingDefault();
-        this.gc.setLineWidth(0.00001);
 
-        for(Drawable obj : range) {
-            obj.draw(this.gc);
-        }
+        if(this.debugVisBox) range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
+        else range = this.model.kdtree.rangeSearch(new double[]{this.miny, this.minx}, new double[]{this.maxy, this.maxx});
+
+        for(Drawable obj : range) obj.draw(this.gc);
+
+        this.strokeCursor();
+        this.strokeBox(100);
 
         //Set<valueFeature> featureList = new HashSet<>();
 
@@ -106,40 +105,47 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeBox(double padding){
-        padding /= zoom_current;
-        double csize = 5 / zoom_current;
-        this.gc.setLineWidth(1/zoom_current);
-        this.gc.setStroke(Color.BLUE);
-        this.gc.setLineDashes(3/zoom_current);
-        this.gc.beginPath();
-        this.gc.moveTo(this.minx+padding,this.miny+padding);
-        this.gc.lineTo(this.minx+padding,this.miny+padding);
-        this.gc.lineTo(this.minx+padding,this.maxy-padding);
-        this.gc.lineTo(this.maxx-padding,this.maxy-padding);
-        this.gc.lineTo(this.maxx-padding,this.miny+padding);
-        this.gc.lineTo(this.minx+padding,this.miny+padding);
-        this.gc.stroke();
-        this.gc.closePath();
-        this.gc.setFill(Color.BLACK);
-        this.gc.fillOval(originx,originy,csize,csize);
-        this.gc.fillOval(minx+padding-csize,miny+padding-csize,csize,csize);
-        this.gc.fillOval(maxx-padding,miny+padding-csize,csize,csize);
-        this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
-        this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
-        this.gc.fillText("origin (" + Math.round(originx) + "," + Math.round(originy) + ")",originx+csize,originy-csize);
-        this.gc.fillText("min x, min y (" + Math.round(minx+padding) + "," + Math.round(miny+padding) + ")",minx+padding+csize,miny+padding-csize);
-        this.gc.fillText("max x, min y (" + Math.round(maxx-padding) + "," + Math.round(miny+padding) + ")",maxx-padding+csize,miny+padding-csize);
-        this.gc.fillText("max x, max y (" + Math.round(maxx-padding) + "," + Math.round(maxy-padding) + ")",maxx-padding+csize,maxy-padding-csize);
-        this.gc.fillText("min x, max y (" + Math.round(minx+padding) + "," + Math.round(maxy-padding) + ")",minx+padding+csize,maxy-padding-csize);
+        if(this.debugVisBox){
+            padding /= zoom_current;
+            double csize = 5 / zoom_current;
+            this.gc.setLineWidth(1/zoom_current);
+            this.gc.setStroke(Color.BLUE);
+            this.gc.setLineDashes(3/zoom_current);
+            this.gc.setFont(new Font("Arial",11/zoom_current));
+            this.gc.beginPath();
+            this.gc.moveTo(this.minx+padding,this.miny+padding);
+            this.gc.lineTo(this.minx+padding,this.miny+padding);
+            this.gc.lineTo(this.minx+padding,this.maxy-padding);
+            this.gc.lineTo(this.maxx-padding,this.maxy-padding);
+            this.gc.lineTo(this.maxx-padding,this.miny+padding);
+            this.gc.lineTo(this.minx+padding,this.miny+padding);
+            this.gc.stroke();
+            this.gc.closePath();
+            this.gc.setFill(Color.BLACK);
+            this.gc.fillOval(originx,originy,csize,csize);
+            this.gc.fillOval(minx+padding-csize,miny+padding-csize,csize,csize);
+            this.gc.fillOval(maxx-padding,miny+padding-csize,csize,csize);
+            this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
+            this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
+            if(this.debugDisableHelpText) {
+                this.gc.fillText("origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
+                this.gc.fillText("top left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", miny + padding) + ")", minx + padding + csize, miny + padding - csize);
+                this.gc.fillText("top right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", miny + padding) + ")", maxx - padding + csize, miny + padding - csize);
+                this.gc.fillText("bottom right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", maxy - padding) + ")", maxx - padding + csize, maxy - padding - csize);
+                this.gc.fillText("bottom left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", maxy - padding) + ")", minx + padding + csize, maxy - padding - csize);
+            }
+        }
     }
 
     private void strokeCursor(){
-        this.gc.setLineWidth(1);
-        this.gc.setFill(Color.RED);
-        this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
-        this.gc.setFill(Color.BLACK);
-        this.gc.setFont(new Font("Arial",11/zoom_current));
-        this.gc.fillText("cursor (" + Math.round(mousex) + "," + Math.round(mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+        if(this.debugCursor){
+            this.gc.setLineWidth(1);
+            this.gc.setFill(Color.RED);
+            this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
+            this.gc.setFill(Color.BLACK);
+            this.gc.setFont(new Font("Arial",11/zoom_current));
+            if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+        }
     }
 
     // Draws any kind of provided text to the screen
@@ -188,5 +194,9 @@ public class MapCanvas extends Canvas {
         } catch (NonInvertibleTransformException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void clearScreen(){
+        this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
     }
 }

@@ -22,7 +22,7 @@ public class View {
         primaryStage.show();
 
         Controller controller = loader.getController();
-        controller.init(model);
+        controller.init(model,primaryStage);
     }
 
     // Getting the CSS file and implement it on the scene

@@ -27,13 +27,13 @@ public class Model {
         this.lines = new ArrayList<>();
         //this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
 
-        if (filename.endsWith(".zip")) {
+        /*if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
             loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             loadOSM(new FileInputStream(filename));
-        } /*else if (filename.endsWith(".obj")) {
+        }*/ /*else if (filename.endsWith(".obj")) {
             try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
@@ -43,7 +43,7 @@ public class Model {
             }
         }*/
 
-        if (!filename.endsWith(".obj")) save(filename);
+        //if (!filename.endsWith(".obj")) save(filename);
     }
 
     // Saves the .obj file in our project hierachy.
@@ -58,7 +58,7 @@ public class Model {
     }
 
     // Parses and reads the loaded .osm file, interpreting the data however it is configured.
-    private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
+    public void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
 
         // Reads the .osm file, being an XML file.
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
@@ -91,9 +91,9 @@ public class Model {
                         // Configures the longitude and latitude. An element present in all OSM files.
                         // Uncertain as to why, though adjusting the floats will make the map not draw.
                         case "bounds":
-                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
+                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
                             minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
-                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
+                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
                             maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
 
@@ -102,7 +102,7 @@ public class Model {
                             var id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            id2node.add(new OSMNode(id, -lat, 0.56f * lon));
+                            id2node.add(new OSMNode(id, 0.56f * lon, -lat));
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.

@@ -44,29 +44,26 @@ public class KdTree {
 		}
 	}
 
-	public Set<Drawable> rangeSearch(float[] min, float[] max){
+	public Set<Drawable> rangeSearch(double[] min, double[] max){
 		Queue<intNode> intNodes = new LinkedList<>();
 		Set<Drawable> allElements = new HashSet<>();
-		boolean depth = true;
+		int depth = -1;
 		intNodes.add(this.root.left);
 		intNodes.add(this.root.right);
 
 		while(!intNodes.isEmpty()){
 			int queueSize = intNodes.size();
-			depth = !depth;
+			depth++;
 
 			for(int i = 0; i < queueSize; i++){
 				intNode lnode = intNodes.remove();
 
-				if(lnode.point >= min[depth ? 1 : 0] && lnode.point <= max[depth ? 1 : 0]){
-					if(lnode.left == null){
-						for(Node node : lnode.elements)
-							allElements.add(node.obj);
-						continue;
-					}
-
-					intNodes.add(lnode.left);
-					intNodes.add(lnode.right);
+				if(lnode.left == null){
+					for(Node node : lnode.elements)
+						allElements.add(node.obj);
+				} else {
+					if(lnode.point < max[depth%2]) intNodes.add(lnode.left);
+					if(lnode.point < max[depth%2]) intNodes.add(lnode.right);
 				}
 			}
 		}
