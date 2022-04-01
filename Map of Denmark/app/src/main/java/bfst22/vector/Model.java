@@ -12,27 +12,22 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 // Handles the logic of our data and storing it appropriately.
 public class Model {
-    float minlat, minlon, maxlat, maxlon;
-
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
-    //MapFeature yamlObj;
-    KdTree kdtree;
-    List<Node> lines;
-    List<Runnable> observers;
+    MapFeature yamlObj;
+    public KdTree kdtree;
+    public List<Runnable> observers;
+    public boolean isOMSloaded = false;
+    public float minlat, minlon, maxlat, maxlon;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
-    public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
-        this.observers = new ArrayList<>();
-        this.lines = new ArrayList<>();
-        //this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
-
+    public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
-            loadOSM(zip);
+            this.loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
-            loadOSM(new FileInputStream(filename));
+            this.loadOSM(new FileInputStream(filename));
         } /*else if (filename.endsWith(".obj")) {
             try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
@@ -59,6 +54,10 @@ public class Model {
 
     // Parses and reads the loaded .osm file, interpreting the data however it is configured.
     public void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
+        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+        this.observers = new ArrayList<>();
+        this.kdtree = new KdTree();
+        this.isOMSloaded = true;
 
         // Reads the .osm file, being an XML file.
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
@@ -78,7 +77,7 @@ public class Model {
         // ID of the current relation.
         long relID = 0;
 
-        //String suptype = null, subtype = null, name = null;
+        String suptype = null, subtype = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -121,11 +120,11 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
-                            //if(k.equals("name")) name = v;
-                            /*if(this.yamlObj.ways.containsKey(k)){
+                            if(k.equals("name")) name = v;
+                            if(this.yamlObj.ways.containsKey(k)){
                                 suptype = k;
                                 subtype = v;
-                            }*/
+                            }
                             break;
 
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -143,42 +142,46 @@ public class Model {
 
                         // "way" - All lines in the program; linking point A to B
                         case "way":
+                            var way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
-                            lines.addAll(new PolyLine(nodes).getNodes());
+                            this.kdtree.add(way);
                             nodes.clear();
-                            //var way = new PolyLine(nodes);
-                            /*if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
-                            }*/
-                            //subtype = suptype = name = null;
+                            }
+                            subtype = suptype = name = null;
                             break;
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
-                            lines.addAll(new MultiPolygon(rel).getNodes());
+                            var multipoly = new MultiPolygon(rel);
+                            this.kdtree.add(multipoly);
                             rel.clear();
-                            //var multipoly = new MultiPolygon(rel);
-                            /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                                var multipoly = new MultiPolygon(rel);
+                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
-                            }*/
-                            //subtype = suptype = name = null;
+                            }
+                            subtype = suptype = name = null;
                             break;
                     }
                     break;
             }
         }
 
-        this.kdtree = new KdTree(this.lines);
+        this.kdtree.generate(maxlat, minlon, minlat, maxlon);
         //this.rtree = new RTree(new double[]{minlat,minlon},new double[]{maxlat,maxlon},lines);
+    }
+
+    public void unloadOSM(){
+        this.isOMSloaded = false;
+        this.kdtree = new KdTree();
     }
 
     public void addObserver(Runnable observer) {
