@@ -28,7 +28,7 @@
                 <Menu text="Dev Tools">
                     <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true" />
                     <CheckMenuItem text="Enable Kd-Tree VisBox" onAction="#debugVisBoxClicked" selected="true" />
-                    <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked" selected="false" />
+                    <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked"/>
                 </Menu>
                 <Menu text="Help">
                     <MenuItem text="Help" />
@@ -67,8 +67,7 @@
                        BorderPane.alignment="BOTTOM_LEFT"
                        onMousePressed="#onMousePressed"
                        onMouseDragged="#onMouseDragged"
-                       onMouseMoved="#onMouseMoved"
-                       disable="true" />
+                       onMouseMoved="#onMouseMoved" />
         </bottom>
     </BorderPane>
 </Scene>

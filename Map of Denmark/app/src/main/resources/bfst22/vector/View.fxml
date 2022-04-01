@@ -67,8 +67,7 @@
                        BorderPane.alignment="BOTTOM_LEFT"
                        onMousePressed="#onMousePressed"
                        onMouseDragged="#onMouseDragged"
-                       onMouseMoved="#onMouseMoved"
-                       disable="true" />
+                       onMouseMoved="#onMouseMoved" />
         </bottom>
     </BorderPane>
 </Scene>
