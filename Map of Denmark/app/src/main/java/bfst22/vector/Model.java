@@ -27,13 +27,13 @@ public class Model {
         this.lines = new ArrayList<>();
         //this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
 
-        /*if (filename.endsWith(".zip")) {
+        if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
             loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             loadOSM(new FileInputStream(filename));
-        }*/ /*else if (filename.endsWith(".obj")) {
+        } /*else if (filename.endsWith(".obj")) {
             try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
