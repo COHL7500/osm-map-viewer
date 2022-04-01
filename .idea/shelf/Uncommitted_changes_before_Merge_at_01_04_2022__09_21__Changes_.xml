@@ -1,0 +1,49 @@
+<changelist name="Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]" date="1648797733912" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Merge at 01/04/2022, 09.21 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/buildOutputCleanup.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/fileHashes.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/MapCanvas.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/MapCanvas.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/Controller.class" />
+    <option name="AFTER_PATH" value="Map of Denmark/app/build/classes/java/main/bfst22/vector/Controller.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/Controller.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/fileHashes/fileHashes.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/fileHashes.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/file-system.probe" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/file-system.probe" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/file-system.probe" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/executionHistory.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/outputFiles.bin" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/buildOutputCleanup/outputFiles.bin" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/outputFiles.bin" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="AFTER_PATH" value="Map of Denmark/.gradle/7.3.3/executionHistory/executionHistory.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Merge_at_01_04_2022,_09_21_[Changes]/executionHistory.lock" />
+  </binary>
+</changelist>
