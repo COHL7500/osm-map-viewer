@@ -2,7 +2,7 @@ package bfst22.vector;
 
 import java.util.regex.Pattern;
 
-public class Address {
+public class Address implements Comparable<Address> {
     public final String street, house, floor, side, postcode, city;
     public final float lat, lon;
 
@@ -105,5 +105,38 @@ public class Address {
         public Address build() {
             return new Address(street, house, floor, side, postcode, city, lat, lon);
         }
+    }
+    @Override
+    public int compareTo(Address that) {
+        if ((this.street == null) && (that.street == null)) return 0;
+        if (this.street == null) return 1;
+        if (that.street == null) return -1;
+        if ((this.street != null) && (that.street != null)) {
+            String thisStreet = this.street.toLowerCase();
+            String thatStreet = that.street.toLowerCase();
+            return thisStreet.compareTo(thatStreet);
+        }
+
+        if ((this.house == null) && (that.house == null)) return 0;
+        if (this.house == null) return 1;
+        if (that.house == null) return -1;
+        if ((this.house != null) && (that.house != null)){
+            String thisHouse = this.house.toLowerCase();
+            String thatHouse = that.house.toLowerCase();
+            return thisHouse.compareTo(thatHouse);
+        }
+
+        if ((this.city == null) && (that.city == null)) return 0;
+        if (this.city == null) return 1;
+        if (that.city == null) return -1;
+        if ((this.city != null) && (that.city != null)){
+            String thisCity = this.city.toLowerCase();
+            String thatCity = that.city.toLowerCase();
+            return thisCity.compareTo(thatCity);
+        }
+        if ((this.postcode == null) && (that.postcode == null)) return 0;
+        if (this.postcode == null) return 1;
+        if (that.postcode == null) return -1;
+        else return this.postcode.compareTo(that.postcode);
     }
 }
