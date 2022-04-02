@@ -174,7 +174,7 @@ ways:
       line_width: 0.000001
       fill: true
       fill_color: "#d8d0c9"
-      zoom_level: 10000
+      zoom_level: 20000
     valuefeatures:
       yes: {}
       office: {}
@@ -332,7 +332,6 @@ ways:
         track: {}
         lane: {}
         shared_lane: {}
-        share_busway: {}
         share_busway: {}
         separate: {}
 

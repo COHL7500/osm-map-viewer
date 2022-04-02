@@ -7,6 +7,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 // defines the canvas of our map; panning, zooming, painting etc.
@@ -16,7 +19,7 @@ public class MapCanvas extends Canvas {
     Affine trans = new Affine();
     GraphicsContext gc = super.getGraphicsContext2D();
     double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    boolean debugCursor = true, debugVisBox = true, debugDisableHelpText = true;
+    boolean debugCursor = true, debugVisBox = true, debugSplits = true, debugInfo = true, debugDisableHelpText = true;
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
@@ -41,23 +44,13 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = 100 / zoom_current;
-        Set<Drawable> range;
-
-        this.setStylingDefault();
-
-        if(this.debugVisBox) range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
-        else range = this.model.kdtree.rangeSearch(new double[]{this.miny, this.minx}, new double[]{this.maxy, this.maxx});
-
-        for(Drawable obj : range) obj.draw(this.gc);
-
-        this.strokeCursor();
-        this.strokeBox(100);
+        double padding = this.debugVisBox ? (100 / zoom_current) : 0;
+        Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
 
         //Set<valueFeature> featureList = new HashSet<>();
 
         // Loops through all the key features and sets the default styling for all its objects
-        /*for(keyFeature element : model.yamlObj.ways.values()){
+        for(keyFeature element : model.yamlObj.ways.values()){
             this.setStylingDefault();
 
             // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
@@ -67,21 +60,30 @@ public class MapCanvas extends Canvas {
                     // Checks if the styling requires them to be drawn with filling and/or strokes
                     // and then proceed to draw the value feature in the way it has been told to
                     for (Drawable draw : element2.drawable) {
-                        this.setStyling(element.draw);
-                        this.setStyling(element2.draw);
+                        if(range.contains(draw)){
+                            this.setStyling(element.draw);
+                            this.setStyling(element2.draw);
 
-                        if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current)
-                            draw.fill(this.gc);
-                        if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
-                                || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
-                            draw.draw(this.gc);
-                        if (element2.name != null && element2.nameCenter != null && element2.name.length() > 0)
-                            featureList.add(element2);
+                            if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                                    || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
+                                draw.fill(this.gc);
+                                draw.draw(this.gc);
+                            }
+                            if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
+                                    || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
+                                draw.draw(this.gc);
+                        /*if (element2.name != null && element2.nameCenter != null && element2.name.length() > 0)
+                            featureList.add(element2);*/
+                        }
                     }
                 }
             }
-        }*/
+        }
+
+        //this.splitsTree();
+        this.strokeCursor();
+        this.strokeBox(100);
+        this.debugInfo();
 
         //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
@@ -105,7 +107,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeBox(double padding){
-        if(this.debugVisBox){
+        if(this.debugVisBox && this.model.isOMSloaded){
             padding /= zoom_current;
             double csize = 5 / zoom_current;
             this.gc.setLineWidth(1/zoom_current);
@@ -138,13 +140,47 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeCursor(){
-        if(this.debugCursor){
+        if(this.debugCursor && this.model.isOMSloaded){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.RED);
             this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
             this.gc.setFill(Color.BLACK);
             this.gc.setFont(new Font("Arial",11/zoom_current));
             if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+        }
+    }
+
+    private void splitsTree(){
+        if(this.debugSplits && this.model.isOMSloaded){
+            List<float[][]> lines = this.model.kdtree.getSplit();
+            this.gc.setLineWidth(2.5/zoom_current);
+            this.gc.setStroke(Color.GREEN);
+
+            for(float[][] coord : lines){
+                this.gc.beginPath();
+                this.gc.moveTo(coord[0][0],coord[0][1]);
+                this.gc.lineTo(coord[1][0],coord[1][1]);
+                this.gc.stroke();
+                this.gc.closePath();
+            }
+        }
+    }
+
+    private void debugInfo(){
+        if(this.debugInfo && this.model.isOMSloaded) {
+            this.gc.setFill(Color.BLACK);
+            this.gc.setGlobalAlpha(0.5);
+            this.gc.fillRect(minx,miny,150 / zoom_current,80 / zoom_current);
+            this.gc.setGlobalAlpha(1);
+            this.gc.setFill(Color.WHITE);
+            this.gc.setFont(new Font("Arial", 10 / zoom_current));
+
+            double x = minx + 5 / zoom_current, y = miny + 15 / zoom_current;
+            this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), x, y);
+            this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), x, y + 15 / zoom_current);
+            this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), x, y + 30 / zoom_current);
+            this.gc.fillText(String.format("%-8s%s", "mouse:", String.format("%.5f", mousex) + ", " + String.format("%.5f", mousey)), x, y + 45 / zoom_current);
+            this.gc.fillText(String.format("%-9s%s", "zoom:", String.format("%.5f", zoom_current)), x, y + 60 / zoom_current);
         }
     }
 
@@ -197,6 +233,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void clearScreen(){
-        this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+        this.gc.setFill(Color.WHITE);
+        this.repaint();
     }
 }

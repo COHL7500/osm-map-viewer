@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 
 // Responsible for displaying model data.
 public class View {
-    public View(Model model, Stage primaryStage) throws IOException {
+    public View(Model model, Stage primaryStage) throws Exception {
         var loader = new FXMLLoader(View.class.getResource("View.fxml"));
         Scene scene = loader.load();
 

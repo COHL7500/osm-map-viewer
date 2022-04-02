@@ -20,21 +20,21 @@
         <top>
             <MenuBar BorderPane.alignment="TOP_LEFT">
                 <Menu text="File">
-                    <MenuItem text="Import .osm file" onAction="#onBrowseOSMClicked" />
-                    <MenuItem text="Unload file" disable="true" fx:id="unloadFileButton" onAction="#unloadFileButtonClicked" />
+                    <MenuItem text="Load Default map" onAction="#onDefaultLoadClicked"/>
+                    <MenuItem text="Import Custom map" onAction="#onBrowseOSMClicked" />
+                    <MenuItem text="Unload map" fx:id="unloadFileButton" onAction="#unloadFileButtonClicked" />
                     <SeparatorMenuItem />
                     <MenuItem text="Exit" onAction="#exitButtonClicked" />
                 </Menu>
                 <Menu text="Dev Tools">
                     <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true" />
                     <CheckMenuItem text="Enable Kd-Tree VisBox" onAction="#debugVisBoxClicked" selected="true" />
+                    <CheckMenuItem text="Enable Kd-Tree Splits" onAction="#debugSplitsClicked" selected="true" />
                     <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked"/>
+                    <CheckMenuItem text="Disable Debug Box" onAction="#debugInfoTextClicked"/>
                 </Menu>
                 <Menu text="Help">
-                    <MenuItem text="Help" />
-                    <MenuItem text="Getting Started" />
-                    <MenuItem text="Tip of the Day" />
-                    <MenuItem text="About"/>
+                    <MenuItem text="About" onAction="#aboutButtonClicked"/>
                 </Menu>
             </MenuBar>
         </top>
