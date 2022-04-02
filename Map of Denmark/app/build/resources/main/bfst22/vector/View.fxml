@@ -68,7 +68,7 @@
                        onMousePressed="#onMousePressed"
                        onMouseDragged="#onMouseDragged"
                        onMouseMoved="#onMouseMoved"
-                       disable="true" />
+                        />
         </bottom>
     </BorderPane>
 </Scene>

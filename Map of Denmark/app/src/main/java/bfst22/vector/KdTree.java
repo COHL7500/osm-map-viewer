@@ -28,7 +28,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		Queue<intNode> intNodes = new LinkedList<>();
 		int depth = -1;
 
-		this.root.size = new float[][]{new float[]{minlon,maxlon},new float[]{maxlat,minlat}};
+		this.root.size = new float[][]{new float[]{minlon,maxlat},new float[]{maxlon,minlat}};
 		this.root.elements = this.lines;
 		intNodes.add(this.root);
 
@@ -39,7 +39,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			for(int i = 0; i < queueSize; i++){
 				intNode lnode = intNodes.remove();
 
-				if(depth < 5/*lnode.elements.size() > 1000*/) {
+				if(lnode.elements.size() > 1000) {
 					for (Node k : lnode.elements)
 						k.setCompareAxis(depth%2);
 					Collections.sort(lnode.elements);
@@ -48,17 +48,17 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 					intNodes.add(lnode.left = new intNode());
 					intNodes.add(lnode.right = new intNode());
 
-					lnode.left.size[depth%2] = new float[]{lnode.size[depth%2][0],lnode.point};
-					lnode.left.size[(depth+1)%2] = lnode.size[(depth+1)%2];
-					lnode.right.size[depth%2] = new float[]{lnode.point,lnode.size[depth%2][1]};
-					lnode.right.size[(depth+1)%2] = lnode.size[(depth+1)%2];
+					//lnode.left.size = lnode.size;
+					//lnode.left.size[(depth+1)%2][depth%2] = lnode.point;
+					//lnode.right.size = lnode.size;
+					//lnode.right.size[depth%2][depth%2] = lnode.point;
 
 					for (Node node : lnode.elements) {
 						if (node.coords[depth%2] < lnode.point) lnode.right.elements.add(node);
 						else lnode.left.elements.add(node);
 					}
 
-					lnode.left.parent = lnode.right.parent = lnode;
+					//lnode.left.parent = lnode.right.parent = lnode;
 					lnode.elements = null;
 				}
 			}
@@ -71,8 +71,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			Set<Drawable> allElements = new HashSet<>();
 			boolean depth = true;
 
-			intNodes.add(this.root.left);
-			intNodes.add(this.root.right);
+			intNodes.add(this.root);
 
 			while(!intNodes.isEmpty()){
 				int queueSize = intNodes.size();
@@ -81,10 +80,19 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 				for(int i = 0; i < queueSize; i++){
 					intNode lnode = intNodes.remove();
 
-					if(lnode.left == null){
+					/*if(lnode.left == null || lnode.right == null){
 						for(Node node : lnode.elements)
 							allElements.add(node.obj);
-					} else if(lnode.point > min[depth ? 1 : 0]) {
+					} else {
+						intNodes.add(lnode.left);
+						intNodes.add(lnode.right);
+					}*/
+
+					if(lnode.left == null || lnode.right == null){
+						for(Node node : lnode.elements)
+							if(node.coords[0] >= min[1] && node.coords[0] <= max[1] && node.coords[1] >= min[0] && node.coords[1] <= max[0])
+								allElements.add(node.obj);
+					} else {
 						intNodes.add(lnode.left);
 						intNodes.add(lnode.right);
 					}
@@ -94,7 +102,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			return allElements;
 		}
 
-		return new HashSet<>();
+		return null;
 	}
 
 	public List<float[][]> getSplit(){

@@ -44,15 +44,8 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = 100 / zoom_current;
-        Set<Drawable> range;
-
-        this.setStylingDefault();
-
-        if(this.debugVisBox) range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
-        else range = this.model.kdtree.rangeSearch(new double[]{this.miny, this.minx}, new double[]{this.maxy, this.maxx});
-
-        for(Drawable obj : range) obj.draw(this.gc);
+        double padding = this.debugVisBox ? (100 / zoom_current) : 0;
+        Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
 
         //Set<valueFeature> featureList = new HashSet<>();
 
@@ -72,8 +65,10 @@ public class MapCanvas extends Canvas {
                             this.setStyling(element2.draw);
 
                             if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                                    || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current)
+                                    || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
                                 draw.fill(this.gc);
+                                draw.draw(this.gc);
+                            }
                             if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
                                     || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
                                 draw.draw(this.gc);
@@ -85,7 +80,7 @@ public class MapCanvas extends Canvas {
             }
         }
 
-        this.splitsTree();
+        //this.splitsTree();
         this.strokeCursor();
         this.strokeBox(100);
         this.debugInfo();

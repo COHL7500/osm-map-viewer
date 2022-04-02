@@ -132,7 +132,7 @@ public class Model {
                         // parses a member (a reference to a way belonging to a collection of ways; relations)
                         case "member":
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.remove(ref);
+                            var elm = id2way.get(ref);
                             if (elm != null) rel.add(elm);
                             break;
                         }
