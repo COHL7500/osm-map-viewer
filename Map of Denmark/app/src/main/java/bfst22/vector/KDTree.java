@@ -1,107 +1,160 @@
 package bfst22.vector;
 
-import bfst22.vector.OSMNode;
-import javafx.geometry.BoundingBox;
+import java.io.Serializable;
+import java.util.*;
 
-import java.awt.geom.Point2D;
-import java.util.List;
+public class KdTree implements Serializable, SerialVersionIdentifiable {
+	private final intNode root = new intNode();
+	private final List<Node> lines = new ArrayList<>();
 
-public class KDTree <Key extends Comparable<Key>, Value> implements SerialVersionIdentifiable{
+	public void add(Drawable element){
+		if(element instanceof PolyLine) this.add((PolyLine) element);
+		else this.add((MultiPolygon) element);
+	}
 
-    //Fields to be used in the future
-    private KDNode root;
-    //BoundingBox boundingBox = new BoundingBox();
+	public void add(PolyLine element){
+		for(int i = 0; i < element.coords.length; i+=2)
+			this.lines.add(new Node(element.coords[i],element.coords[i+1],element));
+	}
 
-    //For search
-    private Key lo;
-    private Key hi;
-    private int depth;
-    private Point2D point;
+	public void add(MultiPolygon element){
+		element.parts.forEach(polyline -> {
+			for(int i = 0; i < ((PolyLine) polyline).coords.length; i+=2)
+				this.lines.add(new Node(((PolyLine) polyline).coords[i], ((PolyLine) polyline).coords[i+1], element));
+		});
+	}
 
-    //internal  KD-Tree Node class
-    private class KDNode {
-        private Key key;
-        private Value val;
-        private KDNode left, right;
-        private int size;
+	public void generate(float minlat, float minlon, float maxlat, float maxlon){
+		Queue<intNode> intNodes = new LinkedList<>();
+		int depth = -1;
 
-        //Constructor
-        public KDNode(Key key, Value val) {
-            this.key = key;
-            this.val = val;
-        }
-    }
+		this.root.size = new float[][]{new float[]{minlon,maxlat},new float[]{maxlon,minlat}};
+		this.root.elements = this.lines;
+		intNodes.add(this.root);
 
-    //Initialize empty symbol table (Tree)
-    public KDTree(){
-        root = null;
-    }
+		while(!intNodes.isEmpty()){
+			int queueSize = intNodes.size();
+			depth++;
 
-    //Initialize a non-empty KD-Tree
-    public KDTree(List<? > elements){
+			for(int i = 0; i < queueSize; i++){
+				intNode lnode = intNodes.remove();
 
-    }
+				if(lnode.elements.size() > 1000) {
+					for (Node k : lnode.elements)
+						k.setCompareAxis(depth%2);
+					Collections.sort(lnode.elements);
 
+					lnode.point = lnode.elements.get((int) lnode.elements.size() / 2).coords[depth%2];
+					intNodes.add(lnode.left = new intNode());
+					intNodes.add(lnode.right = new intNode());
 
-    //getValue methods
+					//lnode.left.size = lnode.size;
+					//lnode.left.size[(depth+1)%2][depth%2] = lnode.point;
+					//lnode.right.size = lnode.size;
+					//lnode.right.size[depth%2][depth%2] = lnode.point;
 
-    public Value get(Key key){
-        return get(root, key);
-    }
+					for (Node node : lnode.elements) {
+						if (node.coords[depth%2] < lnode.point) lnode.right.elements.add(node);
+						else lnode.left.elements.add(node);
+					}
 
-    public Value get(KDNode node, Key key){
-        if(key == null) throw new IllegalArgumentException("You may not call get() with a key with value of null");
-        if(node == null) return null;
-        int compareKey = key.compareTo(node.key);
+					//lnode.left.parent = lnode.right.parent = lnode;
+					lnode.elements = null;
+				}
+			}
+		}
+	}
 
-        if(compareKey < 0) return get(node.left, key);
-        if(compareKey > 0) return get(node.right, key);
-        else {
-            return node.val;
-        }
-    }
+	public Set<Drawable> rangeSearch(double[] min, double[] max){
+		if(this.root.left != null && this.root.right != null){
+			Queue<intNode> intNodes = new LinkedList<>();
+			Set<Drawable> allElements = new HashSet<>();
+			boolean depth = true;
 
-    public void insert(Key key, Value val){
-        if(key == null){
-            throw new IllegalArgumentException("You can't call this method using a null key");
-        } if(val == null){
-            //Ikke sikker på hvad man skal gøre her
-            throw new IllegalArgumentException("null value");
-        }
-        root = insert(root, key, val);
-    }
+			intNodes.add(this.root);
 
-    public KDNode insert(KDNode node, Key key, Value value){
-        if (node == null){
-            //bruh
-        }
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0){
-            node.left = insert(node.left, key, value);
-        } else if(compareKey > 0) {
-            node.right = insert(node.right, key, value);
-        } else {
-            node.val = value;
-        }
-        return node;
-    }
+			while(!intNodes.isEmpty()){
+				int queueSize = intNodes.size();
+				depth = !depth;
 
+				for(int i = 0; i < queueSize; i++){
+					intNode lnode = intNodes.remove();
 
-    public boolean contains(Key key){
-        if (key == null){
-            return false;
-        }
-        return get(key) != null;
-    }
+					if(lnode.left == null || lnode.right == null){
+						for(Node node : lnode.elements)
+							if(node.coords[0] >= min[1] && node.coords[0] <= max[1] && node.coords[1] >= min[0] && node.coords[1] <= max[0])
+								allElements.add(node.obj);
+					} else {
+						intNodes.add(lnode.left);
+						intNodes.add(lnode.right);
+					}
+				}
+			}
 
+			return allElements;
+		}
 
-    public boolean add(Point2D point){
-        return false;
-    }
+		return new HashSet<>();
+	}
 
-    //Can be used to see if we need to draw a vertical or horizontal line
-    public boolean isEven(){
-        return this.depth % 2 == 0;
-    }
+	public List<float[][]> getSplit(){
+		/*if(this.root.left != null && this.root.right != null){
+			Queue<intNode> intNodes = new LinkedList<>();
+			List<float[][]> lines = new ArrayList<>();
+			boolean depth = true;
 
+			intNodes.add(this.root.left);
+			intNodes.add(this.root.right);
+
+			while(!intNodes.isEmpty()){
+				int queueSize = intNodes.size();
+				depth = !depth;
+
+				for(int i = 0; i < queueSize; i++){
+					intNode lnode = intNodes.remove();
+					if(depth) lines.add(new float[][]{{lnode.size[0][0],lnode.parent.point},{lnode.size[0][1],lnode.parent.point}});
+					else lines.add(new float[][]{{lnode.parent.point,lnode.size[1][0]},{lnode.parent.point,lnode.size[1][1]}});
+					if(lnode.left != null){
+						intNodes.add(lnode.left);
+						intNodes.add(lnode.right);
+					}
+				}
+			}
+
+			return lines;
+		}*/
+
+		return new ArrayList<>();
+	}
+
+	/*public List<Node> NNSearch(){
+
+	}*/
+
+	private static class intNode {
+		public float point;
+		public float[][] size = new float[2][2];
+		public intNode left, right, parent;
+		public List<Node> elements = new ArrayList<>();
+	}
+
+	private static class Node implements Comparable<Node> {
+		public float[] coords;
+		public Drawable obj;
+		private int compareAxis;
+
+		public Node(float lat, float lon, Drawable objRef){
+			this.coords = new float[]{lat,lon};
+			this.obj = objRef;
+			this.compareAxis = 0;
+		}
+
+		public void setCompareAxis(int i){
+			this.compareAxis = i;
+		}
+
+		@Override public int compareTo(Node node){
+			return Float.compare(this.coords[this.compareAxis], node.coords[this.compareAxis]);
+		}
+	}
 }

@@ -16,7 +16,7 @@ public class MapCanvas extends Canvas {
     public Affine trans = new Affine();
     public GraphicsContext gc = super.getGraphicsContext2D();
     public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    public boolean debugCursor = true, debugVisBox = true, debugSplits = true, debugInfo = true, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false;
+    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false;
     public long repaintTime;
 
     // Runs upon startup (setting default pan, zoom for example).
@@ -43,7 +43,7 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = this.debugVisBox ? (100 / zoom_current) : 0;
+        double padding = (this.debugVisBox ? 100 : -25) / zoom_current;
         Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
 
         //Set<valueFeature> featureList = new HashSet<>();
@@ -81,7 +81,7 @@ public class MapCanvas extends Canvas {
 
         this.repaintTime = System.nanoTime() - this.repaintTime;
 
-        //this.splitsTree();
+        this.splitsTree();
         this.drawBounds();
         this.strokeCursor();
         this.strokeBox(100);
@@ -193,13 +193,13 @@ public class MapCanvas extends Canvas {
             this.gc.setGlobalAlpha(0.5);
             this.gc.fillRect(minx,miny,160 / zoom_current,85 / zoom_current);
             this.gc.fillRect(maxx-165 / zoom_current,miny,165 / zoom_current,85 / zoom_current);
-            this.gc.fillRect(minx,maxy-50 / zoom_current,this.model.currFileName.length() * 5.25 / zoom_current,35 / zoom_current);
-            this.gc.fillRect(minx,maxy-105 / zoom_current,150 / zoom_current,52 / zoom_current);
+            this.gc.fillRect(minx,maxy,this.model.currFileName.length() * 5.25 / zoom_current,20 / zoom_current);
+            this.gc.fillRect(minx,maxy-57 / zoom_current,150 / zoom_current,52 / zoom_current);
             this.gc.setGlobalAlpha(1);
             this.gc.setFill(Color.WHITE);
             this.gc.setFont(new Font("Arial", 10 / zoom_current));
 
-            double min_x = minx + 5 / zoom_current, max_x = maxx - 155 / zoom_current, min_y = miny + 15 / zoom_current, max_y = maxy - 35 / zoom_current;
+            double min_x = minx + 5 / zoom_current, max_x = maxx - 155 / zoom_current, min_y = miny + 15 / zoom_current, max_y = maxy + 13 / zoom_current;
             this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), min_x, min_y);
             this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), min_x, min_y + 15 / zoom_current);
             this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), min_x, min_y + 30 / zoom_current);
@@ -260,6 +260,11 @@ public class MapCanvas extends Canvas {
     public void setMousePos(final Point2D point){
         this.mousex = point.getX() / zoom_current + this.minx;
         this.mousey = point.getY() / zoom_current + this.miny;
+        this.repaint();
+    }
+
+    public void update(){
+        this.setScale(0,0);
         this.repaint();
     }
 

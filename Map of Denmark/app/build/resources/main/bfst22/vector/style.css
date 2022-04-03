@@ -1,5 +1,11 @@
 #menuActivation {
-  -fx-background-color: rgb(255, 0, 212);
+    -fx-background-color: rgb(255, 0, 212);
+}
+
+#vBox {
+    -fx-border-style: hidden solid hidden hidden;
+    -fx-border-width: 1;
+    -fx-border-color: black;
 }
 
 center {

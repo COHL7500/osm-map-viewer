@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.util.LinkedList;
+import java.util.Optional;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
@@ -31,14 +32,25 @@ public class Controller {
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
-		this.someBorderPane.getLeft().setVisible(this.leftPaneVisibility);
-        this.someBorderPane.setLeft(null);
+		this.someBorderPane.setLeft(null);
         this.model = model;
         this.stage = primarystage;
         this.canvas.init(model);
         this.addRecentLoadedMap(this.model.currFileName);
         this.centerPos();
         this.centerPos();
+        this.canvas.update();
+
+        this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
+        this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
+        this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
+            this.canvas.setWidth(newValue.doubleValue() - (this.leftPaneVisibility ? 200 : 14));
+            this.canvas.update();
+        });
+        this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
+            this.canvas.setHeight(newValue.doubleValue() - 130);
+            this.canvas.update();
+        });
     }
 
     private void addRecentLoadedMap(String filename){
@@ -99,16 +111,11 @@ public class Controller {
         this.lastMouse = new Point2D(e.getX(), e.getY());
     }
         
-    @FXML private void onMenuButtonPress(ActionEvent e){  
-        if (leftPaneVisibility == false){
-            leftPaneVisibility = true;
-            someBorderPane.setLeft(vBox);
-            someBorderPane.getLeft().setVisible(leftPaneVisibility);
-        } else if (leftPaneVisibility == true){
-            leftPaneVisibility = false;
-            someBorderPane.getLeft().setVisible(leftPaneVisibility);
-            someBorderPane.setLeft(null);
-        }
+    @FXML private void onMenuButtonPress(ActionEvent e){
+        this.leftPaneVisibility = !this.leftPaneVisibility;
+        this.someBorderPane.setLeft(this.leftPaneVisibility ? vBox : null);
+        this.canvas.setWidth(this.someBorderPane.getWidth() - (this.leftPaneVisibility ? 200 : 0));
+        this.canvas.update();
     }
 
     // updates the mouse position on the screen upon moving
@@ -164,8 +171,13 @@ public class Controller {
         dialog.setResizable(false);
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
-        String[] value = dialog.showAndWait().get().split(",");
-        this.goToPosAbsolute(Double.parseDouble(value[0]),Double.parseDouble(value[1]));
+
+        String value = dialog.showAndWait().get();
+
+        if(value.length() > 0){
+            String[] dialogvalue = value.split(",");
+            this.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        }
     }
 
     // when the menubar 'Dev Tools' section button 'Change Relative Coordinates' is clicked
@@ -176,8 +188,13 @@ public class Controller {
         dialog.setResizable(false);
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
-        String[] value = dialog.showAndWait().get().split(",");
-        this.goToPosRelative(Double.parseDouble(value[0]),Double.parseDouble(value[1]));
+
+        String value = dialog.showAndWait().get();
+
+        if(value.length() > 0){
+            String[] dialogvalue = value.split(",");
+            this.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        }
     }
 
     // when the menubar 'Dev Tools' section button 'Center Screen Position' is clicked

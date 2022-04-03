@@ -98,7 +98,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 	}
 
 	public List<float[][]> getSplit(){
-		if(this.root.left != null && this.root.right != null){
+		/*if(this.root.left != null && this.root.right != null){
 			Queue<intNode> intNodes = new LinkedList<>();
 			List<float[][]> lines = new ArrayList<>();
 			boolean depth = true;
@@ -122,7 +122,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			}
 
 			return lines;
-		}
+		}*/
 
 		return new ArrayList<>();
 	}
