@@ -1,8 +1,8 @@
+
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
 import java.io.Serializable;
-import java.util.List; //Can potentially be used
 
 // Defines what a node is in the OSM file and its properties.
 public class OSMNode implements Serializable, SerialVersionIdentifiable {

@@ -1,6 +1,8 @@
 package bfst22.vector;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.FactoryConfigurationError;
@@ -12,37 +14,40 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 // Handles the logic of our data and storing it appropriately.
 public class Model {
-    float minlat, minlon, maxlat, maxlon;
-    VehicleType vehicleType;
-    Edge e;
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     MapFeature yamlObj;
-    List<Runnable> observers;
+    public KdTree kdtree;
+    public List<Runnable> observers;
+    public boolean isOMSloaded = false;
+    public float minlat, minlon, maxlat, maxlon;
+    public int nodecount, waycount, relcount;
+    public String currFileName;
+    public long loadTime, filesize;
+	public VehicleType vehicleType;
+    public Edge e;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
-    public Model(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
-        this.observers = new ArrayList<>();
-        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
-
+    public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
+        this.currFileName = filename;
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
-            loadOSM(zip);
+            this.loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
-            loadOSM(new FileInputStream(filename));
-        } else if (filename.endsWith(".obj")) {
+            this.loadOSM(new FileInputStream(filename));
+        } /*else if (filename.endsWith(".obj")) {
             try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                yamlObj = (MapFeature) input.readObject();
+                //yamlObj = (MapFeature) input.readObject();
             }
-        }
+        }*/
 
-        if (!filename.endsWith(".obj")) save(filename);
+        //if (!filename.endsWith(".obj")) save(filename);
     }
 
     // Saves the .obj file in our project hierachy.
@@ -52,12 +57,24 @@ public class Model {
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
             out.writeFloat(maxlon);
-            out.writeObject(yamlObj);
+            //out.writeObject(yamlObj);
         }
     }
 
     // Parses and reads the loaded .osm file, interpreting the data however it is configured.
-    private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError {
+    public void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError, IOException {
+        this.loadTime = System.nanoTime();
+        this.filesize = Files.size(Paths.get(this.currFileName));
+        /*
+        long start = System.nanoTime();
+        methodToBeTimed();
+        long elapsedTime = System.nanoTime() - start;
+        * */
+
+        this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
+        this.observers = new ArrayList<>();
+        this.kdtree = new KdTree();
+        this.isOMSloaded = true;
 
         // Reads the .osm file, being an XML file.
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
@@ -102,6 +119,7 @@ public class Model {
                             var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            this.nodecount++;
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
@@ -170,34 +188,46 @@ public class Model {
                         case "way":
                             var way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
+                            this.kdtree.add(way);
+                            this.waycount++;
+                            nodes.clear();
                             if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
                             }
                             subtype = suptype = name = null;
-                            nodes.clear();
                             break;
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
                         case "relation":
+                            var multipoly = new MultiPolygon(rel);
+                            this.kdtree.add(multipoly);
+                            this.relcount++;
+                            rel.clear();
                             if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                                var multipoly = new MultiPolygon(rel);
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
+                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
                                 //if(name != null)
                                 //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
                             }
                             subtype = suptype = name = null;
-                            rel.clear();
                             break;
                     }
                     break;
             }
         }
+
+        this.kdtree.generate(maxlat, minlon, minlat, maxlon);
+        this.loadTime = System.nanoTime() - this.loadTime;
+    }
+
+    public void unloadOSM(){
+        this.isOMSloaded = false;
+        this.kdtree = new KdTree();
     }
 
     public void addObserver(Runnable observer) {

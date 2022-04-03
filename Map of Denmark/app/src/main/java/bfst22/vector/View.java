@@ -12,30 +12,22 @@ import javafx.stage.Stage;
 
 // Responsible for displaying model data.
 public class View {
-
-    @FXML
-    private BorderPane someBorderPane;
-
-    // Main method for displaying the program
-    public View(Model model, Stage primaryStage) throws IOException {
-
-        setDisplayBound(primaryStage);
-
+	@FXML private BorderPane someBorderPane;
+	
+    public View(Model model, Stage primaryStage) throws Exception {
         var loader = new FXMLLoader(View.class.getResource("View.fxml"));
-
         Scene scene = loader.load();
-        scene.getStylesheets().clear();
 
-        getCSS(scene);
-
-        setPrimaryStageSize(primaryStage);
+        this.setDisplayBound(primaryStage);
+        this.getCSS(scene);
+        this.setPrimaryStageSize(primaryStage);
 
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Danmarkskort - Gruppe #1");
         primaryStage.show();
 
         Controller controller = loader.getController();
-        controller.init(model);
-        primaryStage.setTitle("Map Of Denmark");
+        controller.init(model,primaryStage);
     }
 
     // Getting the CSS file and implement it on the scene
