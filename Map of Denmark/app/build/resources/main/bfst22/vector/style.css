@@ -1,3 +1,9 @@
 #menuActivation {
   -fx-background-color: rgb(255, 0, 212);
 }
+
+center {
+    -fx-border-color: blue;
+    -fx-border-width: 5;
+    -fx-border-style: segments(10, 15, 15, 15)  line-cap round;
+}
