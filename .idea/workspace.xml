@@ -88,7 +88,9 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -103,6 +105,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/Map of Denmark/app/src/main/resources/bfst22/vector" />
       <recent name="$PROJECT_DIR$/Map of Denmark/app/data" />
       <recent name="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector" />
     </key>
@@ -233,6 +236,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="update .gitignore" />
     <MESSAGE value="Final version" />
     <MESSAGE value="Added YAML implementation of different map elements" />
