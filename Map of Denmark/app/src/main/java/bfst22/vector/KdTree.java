@@ -80,14 +80,6 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 				for(int i = 0; i < queueSize; i++){
 					intNode lnode = intNodes.remove();
 
-					/*if(lnode.left == null || lnode.right == null){
-						for(Node node : lnode.elements)
-							allElements.add(node.obj);
-					} else {
-						intNodes.add(lnode.left);
-						intNodes.add(lnode.right);
-					}*/
-
 					if(lnode.left == null || lnode.right == null){
 						for(Node node : lnode.elements)
 							if(node.coords[0] >= min[1] && node.coords[0] <= max[1] && node.coords[1] >= min[0] && node.coords[1] <= max[0])
@@ -102,7 +94,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			return allElements;
 		}
 
-		return null;
+		return new HashSet<>();
 	}
 
 	public List<float[][]> getSplit(){

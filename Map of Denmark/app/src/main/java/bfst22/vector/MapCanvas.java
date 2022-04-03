@@ -15,11 +15,12 @@ import java.util.Set;
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
 public class MapCanvas extends Canvas {
-    Model model;
-    Affine trans = new Affine();
-    GraphicsContext gc = super.getGraphicsContext2D();
-    double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    boolean debugCursor = true, debugVisBox = true, debugSplits = true, debugInfo = true, debugDisableHelpText = true;
+    public Model model;
+    public Affine trans = new Affine();
+    public GraphicsContext gc = super.getGraphicsContext2D();
+    public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
+    public boolean debugCursor = true, debugVisBox = true, debugSplits = true, debugInfo = true, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false;
+    public long repaintTime;
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
@@ -27,7 +28,7 @@ public class MapCanvas extends Canvas {
         this.pan(-model.minlon, -model.minlat);
 
         // Default zoom level: 700
-        this.zoom(700 / (model.maxlon - model.minlon), 0, 0);
+        this.zoom(700 / (model.maxlon - model.minlon));
 
         // Observer notifies the change in a particular state, being our repaint in this case.
         this.model.addObserver(this::repaint);
@@ -35,6 +36,7 @@ public class MapCanvas extends Canvas {
 
     // Draws all of the elements of our map.
     private void repaint() {
+        this.repaintTime = System.nanoTime();
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
@@ -80,7 +82,10 @@ public class MapCanvas extends Canvas {
             }
         }
 
+        this.repaintTime = System.nanoTime() - this.repaintTime;
+
         //this.splitsTree();
+        this.drawBounds();
         this.strokeCursor();
         this.strokeBox(100);
         this.debugInfo();
@@ -110,6 +115,7 @@ public class MapCanvas extends Canvas {
         if(this.debugVisBox && this.model.isOMSloaded){
             padding /= zoom_current;
             double csize = 5 / zoom_current;
+
             this.gc.setLineWidth(1/zoom_current);
             this.gc.setStroke(Color.BLUE);
             this.gc.setLineDashes(3/zoom_current);
@@ -129,6 +135,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(maxx-padding,miny+padding-csize,csize,csize);
             this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
             this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
+
             if(this.debugDisableHelpText) {
                 this.gc.fillText("origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
                 this.gc.fillText("top left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", miny + padding) + ")", minx + padding + csize, miny + padding - csize);
@@ -166,21 +173,50 @@ public class MapCanvas extends Canvas {
         }
     }
 
+    private void drawBounds(){
+        if(this.debugBoundingBox && this.model.isOMSloaded){
+            this.gc.setLineWidth(1/zoom_current);
+            this.gc.setLineDashes(0);
+            this.gc.setStroke(Color.RED);
+            this.gc.beginPath();
+            this.gc.moveTo(this.model.minlon,this.model.minlat);
+            this.gc.lineTo(this.model.maxlon,this.model.minlat);
+            this.gc.lineTo(this.model.maxlon,this.model.maxlat);
+            this.gc.lineTo(this.model.minlon,this.model.maxlat);
+            this.gc.lineTo(this.model.minlon,this.model.minlat);
+            this.gc.stroke();
+            this.gc.closePath();
+            this.gc.setFill(Color.RED);
+        }
+    }
+
     private void debugInfo(){
         if(this.debugInfo && this.model.isOMSloaded) {
             this.gc.setFill(Color.BLACK);
             this.gc.setGlobalAlpha(0.5);
-            this.gc.fillRect(minx,miny,150 / zoom_current,80 / zoom_current);
+            this.gc.fillRect(minx,miny,160 / zoom_current,85 / zoom_current);
+            this.gc.fillRect(maxx-165 / zoom_current,miny,165 / zoom_current,85 / zoom_current);
+            this.gc.fillRect(minx,maxy-50 / zoom_current,this.model.currFileName.length() * 5.25 / zoom_current,35 / zoom_current);
+            this.gc.fillRect(minx,maxy-105 / zoom_current,150 / zoom_current,52 / zoom_current);
             this.gc.setGlobalAlpha(1);
             this.gc.setFill(Color.WHITE);
             this.gc.setFont(new Font("Arial", 10 / zoom_current));
 
-            double x = minx + 5 / zoom_current, y = miny + 15 / zoom_current;
-            this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), x, y);
-            this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), x, y + 15 / zoom_current);
-            this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), x, y + 30 / zoom_current);
-            this.gc.fillText(String.format("%-8s%s", "mouse:", String.format("%.5f", mousex) + ", " + String.format("%.5f", mousey)), x, y + 45 / zoom_current);
-            this.gc.fillText(String.format("%-9s%s", "zoom:", String.format("%.5f", zoom_current)), x, y + 60 / zoom_current);
+            double min_x = minx + 5 / zoom_current, max_x = maxx - 155 / zoom_current, min_y = miny + 15 / zoom_current, max_y = maxy - 35 / zoom_current;
+            this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), min_x, min_y);
+            this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), min_x, min_y + 15 / zoom_current);
+            this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), min_x, min_y + 30 / zoom_current);
+            this.gc.fillText(String.format("%-8s%s", "mouse:", String.format("%.5f", mousex) + ", " + String.format("%.5f", mousey)), min_x, min_y + 45 / zoom_current);
+            this.gc.fillText(String.format("%-9s%s", "zoom:", String.format("%.5f", zoom_current)), min_x, min_y + 60 / zoom_current);
+            this.gc.fillText(String.format("%-14s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)), max_x, min_y);
+            this.gc.fillText(String.format("%-13s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)), max_x, min_y + 15 / zoom_current);
+            this.gc.fillText(String.format("%-18s%s", "nodes:", this.model.nodecount), max_x, min_y + 30 / zoom_current);
+            this.gc.fillText(String.format("%-19s%s", "ways:", this.model.waycount), max_x, min_y + 45 / zoom_current);
+            this.gc.fillText(String.format("%-18s%s", "relations:", this.model.relcount), max_x, min_y + 60 / zoom_current);
+            this.gc.fillText(String.format("%5s", this.model.currFileName), min_x, max_y);
+            this.gc.fillText(String.format("%-18s%d bytes", "file size:", this.model.filesize), min_x, max_y - 25 / zoom_current);
+            this.gc.fillText(String.format("%-16s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
+            this.gc.fillText(String.format("%-15s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
         }
     }
 
@@ -194,15 +230,22 @@ public class MapCanvas extends Canvas {
 
     // Allows the user to navigate around the map by panning.
     // this is used in onMouseDragged from Controller.
-    public void pan(final double dx, final double dy) {
-        this.trans.prependTranslation(dx, dy);
+    public void pan(double dx, double dy) {
         this.setScale(dx,dy);
+
+        if(!this.debugFreeMovement && (this.originx < this.model.minlon || this.originx > this.model.maxlon
+                || this.originy < this.model.minlat || this.originy > this.model.maxlat)){
+            this.setScale(-dx,-dy);
+        } else {
+            this.trans.prependTranslation(dx,dy);
+        }
+
         this.repaint();
     }
 
     // Allows the user to zoom in on the map.
     // this is used in onScroll from Controller.
-    public void zoom(final double factor, final double dx, final double dy){
+    public void zoom(final double factor){
         this.zoom_current *= factor;
         this.trans.prependScale(factor, factor);
         this.repaint();
