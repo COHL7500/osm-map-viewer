@@ -221,7 +221,7 @@ public class Model {
             }
         }
 
-        this.kdtree.generate(maxlat, minlon, minlat, maxlon);
+        this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
     }
 

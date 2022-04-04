@@ -24,11 +24,9 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		});
 	}
 
-	public void generate(float minlat, float minlon, float maxlat, float maxlon){
+	public void generate(){
 		Queue<intNode> intNodes = new LinkedList<>();
 		int depth = -1;
-
-		this.root.size = new float[][]{new float[]{minlon,maxlat},new float[]{maxlon,minlat}};
 		this.root.elements = this.lines;
 		intNodes.add(this.root);
 
@@ -44,21 +42,18 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 						k.setCompareAxis(depth%2);
 					Collections.sort(lnode.elements);
 
-					lnode.point = lnode.elements.get((int) lnode.elements.size() / 2).coords[depth%2];
+					lnode.point = lnode.elements.get(lnode.elements.size()/2).coords;
+					lnode.min   = lnode.elements.get(0).coords[depth%2];
+					lnode.max   = lnode.elements.get(lnode.elements.size()-1).coords[depth%2];
+
 					intNodes.add(lnode.left = new intNode());
 					intNodes.add(lnode.right = new intNode());
 
-					//lnode.left.size = lnode.size;
-					//lnode.left.size[(depth+1)%2][depth%2] = lnode.point;
-					//lnode.right.size = lnode.size;
-					//lnode.right.size[depth%2][depth%2] = lnode.point;
-
 					for (Node node : lnode.elements) {
-						if (node.coords[depth%2] < lnode.point) lnode.right.elements.add(node);
+						if (node.coords[(depth+1)%2] > lnode.point[(depth+1)%2]) lnode.right.elements.add(node);
 						else lnode.left.elements.add(node);
 					}
 
-					//lnode.left.parent = lnode.right.parent = lnode;
 					lnode.elements = null;
 				}
 			}
@@ -66,65 +61,56 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 	}
 
 	public Set<Drawable> rangeSearch(double[] min, double[] max){
-		if(this.root.left != null && this.root.right != null){
-			Queue<intNode> intNodes = new LinkedList<>();
-			Set<Drawable> allElements = new HashSet<>();
-			boolean depth = true;
+		Queue<intNode> intNodes = new LinkedList<>();
+		Set<Drawable> allElements = new HashSet<>();
+		boolean depth = true;
 
-			intNodes.add(this.root);
+		intNodes.add(this.root);
 
-			while(!intNodes.isEmpty()){
-				int queueSize = intNodes.size();
-				depth = !depth;
+		while(!intNodes.isEmpty()){
+			int queueSize = intNodes.size();
+			depth = !depth;
 
-				for(int i = 0; i < queueSize; i++){
-					intNode lnode = intNodes.remove();
+			for(int i = 0; i < queueSize; i++){
+				intNode lnode = intNodes.remove();
 
-					if(lnode.left == null || lnode.right == null){
-						for(Node node : lnode.elements)
-							if(node.coords[0] >= min[1] && node.coords[0] <= max[1] && node.coords[1] >= min[0] && node.coords[1] <= max[0])
-								allElements.add(node.obj);
-					} else {
-						intNodes.add(lnode.left);
-						intNodes.add(lnode.right);
-					}
+				if(lnode.left == null || lnode.right == null) {
+					for (Node node : lnode.elements)
+						allElements.add(node.obj);
+				} else {
+					if(lnode.min < max[depth?0:1]) intNodes.add(lnode.left);
+					if(lnode.max > min[depth?0:1]) intNodes.add(lnode.right);
 				}
 			}
-
-			return allElements;
 		}
 
-		return new HashSet<>();
+		return allElements;
 	}
 
-	public List<float[][]> getSplit(){
-		/*if(this.root.left != null && this.root.right != null){
-			Queue<intNode> intNodes = new LinkedList<>();
-			List<float[][]> lines = new ArrayList<>();
-			boolean depth = true;
+	public List<float[]> getSplit(){
+		Queue<intNode> intNodes = new LinkedList<>();
+		List<float[]> lines = new ArrayList<>();
+		boolean depth = true;
 
-			intNodes.add(this.root.left);
-			intNodes.add(this.root.right);
+		intNodes.add(this.root);
 
-			while(!intNodes.isEmpty()){
-				int queueSize = intNodes.size();
-				depth = !depth;
+		while(!intNodes.isEmpty()){
+			int queueSize = intNodes.size();
+			depth = !depth;
 
-				for(int i = 0; i < queueSize; i++){
-					intNode lnode = intNodes.remove();
-					if(depth) lines.add(new float[][]{{lnode.size[0][0],lnode.parent.point},{lnode.size[0][1],lnode.parent.point}});
-					else lines.add(new float[][]{{lnode.parent.point,lnode.size[1][0]},{lnode.parent.point,lnode.size[1][1]}});
-					if(lnode.left != null){
-						intNodes.add(lnode.left);
-						intNodes.add(lnode.right);
-					}
+			for(int i = 0; i < queueSize; i++){
+				intNode lnode = intNodes.remove();
+
+				if(lnode.left != null || lnode.right != null){
+					lines.add(depth ? new float[]{lnode.point[0],lnode.min} : new float[]{lnode.min,lnode.point[1]});
+					lines.add(depth ? new float[]{lnode.point[0],lnode.max} : new float[]{lnode.max,lnode.point[1]});
+					intNodes.add(lnode.left);
+					intNodes.add(lnode.right);
 				}
 			}
+		}
 
-			return lines;
-		}*/
-
-		return new ArrayList<>();
+		return lines;
 	}
 
 	/*public List<Node> NNSearch(){
@@ -132,9 +118,9 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 	}*/
 
 	private static class intNode {
-		public float point;
-		public float[][] size = new float[2][2];
-		public intNode left, right, parent;
+		public float[] point;
+		public float min, max;
+		public intNode left, right;
 		public List<Node> elements = new ArrayList<>();
 	}
 

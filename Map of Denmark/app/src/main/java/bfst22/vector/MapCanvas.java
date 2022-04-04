@@ -43,8 +43,9 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = (this.debugVisBox ? 100 : -25) / zoom_current;
-        Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding, this.minx+padding}, new double[]{this.maxy-padding, this.maxx-padding});
+        double padding = this.debugVisBox ? 200 : -25;
+        Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
+                                                            new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
 
         //Set<valueFeature> featureList = new HashSet<>();
 
@@ -84,7 +85,7 @@ public class MapCanvas extends Canvas {
         this.splitsTree();
         this.drawBounds();
         this.strokeCursor();
-        this.strokeBox(100);
+        this.strokeBox(padding);
         this.debugInfo();
 
         //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
@@ -156,14 +157,14 @@ public class MapCanvas extends Canvas {
 
     private void splitsTree(){
         if(this.debugSplits && this.model.isOMSloaded){
-            List<float[][]> lines = this.model.kdtree.getSplit();
+            List<float[]> lines = this.model.kdtree.getSplit();
             this.gc.setLineWidth(2.5/zoom_current);
             this.gc.setStroke(Color.GREEN);
 
-            for(float[][] coord : lines){
+            for(int i = 0; i < lines.size(); i+=2){
                 this.gc.beginPath();
-                this.gc.moveTo(coord[0][0],coord[0][1]);
-                this.gc.lineTo(coord[1][0],coord[1][1]);
+                this.gc.moveTo(lines.get(i)[0],lines.get(i)[1]);
+                this.gc.lineTo(lines.get(i+1)[0],lines.get(i+1)[1]);
                 this.gc.stroke();
                 this.gc.closePath();
             }
