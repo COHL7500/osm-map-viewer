@@ -15,6 +15,8 @@
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.Scene?>
 
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ToggleGroup?>
 <Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene">
     <BorderPane fx:id="someBorderPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
         <top>
@@ -44,22 +46,48 @@
                             </accelerator>
                         </MenuItem>
                     </Menu>
-                    <Menu text="Dev Tools">
+                    <Menu text="Edit">
+                        <MenuItem text="Zoom In" onAction="#zoomInClicked">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem text="Zoom Out" onAction="#zoomOutClicked">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="PERIOD" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                    </Menu>
+                    <Menu text="Tools">
+                        <fx:define>
+                            <ToggleGroup fx:id="mapdisplay" />
+                        </fx:define>
                         <MenuItem text="Change Absolute Coordinates" onAction="#changeAbsoluteCoordClicked">
                             <accelerator>
-                                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
                         <MenuItem text="Change Relative Coordinates" onAction="#changeRelativeCoordClicked">
                             <accelerator>
-                                <KeyCodeCombination alt="UP" code="H" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
                         <MenuItem text="Center Screen Position" onAction="#centerScreenPosition">
                             <accelerator>
-                                <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                                <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
+                        <SeparatorMenuItem />
+                        <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </RadioMenuItem>
+                        <RadioMenuItem text="Display Wireframe" onAction="#debugDisplayWireframeClicked" toggleGroup="$mapdisplay">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </RadioMenuItem>
                         <SeparatorMenuItem />
                         <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true">
                             <accelerator>
@@ -98,7 +126,7 @@
                         </CheckMenuItem>
                     </Menu>
                     <Menu text="Help">
-                        <MenuItem text="About" onAction="#aboutButtonClicked">
+                        <MenuItem text="About..." onAction="#aboutButtonClicked">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>

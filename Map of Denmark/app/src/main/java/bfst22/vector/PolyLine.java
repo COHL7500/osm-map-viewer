@@ -20,7 +20,7 @@ public class PolyLine implements Drawable {
     // traces the are needed to be drawn before drawing.
     @Override public void trace(GraphicsContext gc) {
         gc.moveTo(coords[0], coords[1]);
-        for (var i = 2 ; i < coords.length ; i += 2)
+        for (var i = 2; i < coords.length; i += 2)
             gc.lineTo(coords[i], coords[i+1]);
     }
 }

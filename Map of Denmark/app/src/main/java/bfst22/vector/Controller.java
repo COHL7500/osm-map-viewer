@@ -12,7 +12,9 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
@@ -21,6 +23,7 @@ public class Controller {
     private Point2D lastMouse;
 	private Model model;
 	private boolean leftPaneVisibility = false;
+    private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
 	@FXML private Button menuActivation;
@@ -29,6 +32,7 @@ public class Controller {
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
+    @FXML private ToggleGroup mapdisplay;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
@@ -39,6 +43,7 @@ public class Controller {
         this.addRecentLoadedMap(this.model.currFileName);
         this.centerPos();
         this.centerPos();
+        this.canvas.pan(0,-50);
         this.canvas.update();
 
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
@@ -54,25 +59,31 @@ public class Controller {
     }
 
     private void addRecentLoadedMap(String filename){
-        if(recentMapsSubmenu.getItems().size() > 4)
-            recentMapsSubmenu.getItems().remove(recentMapsSubmenu.getItems().size()-1);
-        String[] nameSplit = filename.replace("\\","/").split("/");
-        MenuItem entry = new MenuItem(recentMapsSubmenu.getItems().size() + ". " + nameSplit[nameSplit.length-1]);
-        entry.setUserData(filename);
-        entry.setOnAction(event -> {
-            model.unloadOSM();
-            try {
-                model.loadMapFile(entry.getUserData().toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            this.centerPos();
-            canvas.setDisable(false);
-            this.unloadFileButton.setDisable(false);
-        });
+        this.loadedMaps.remove(filename);
+        this.loadedMaps.add(filename);
+        if (loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size()-1);
+        this.recentMapsSubmenu.getItems().clear();
 
-        this.recentMapsSubmenu.getItems().add(entry);
-        this.recentMapsSubmenu.setDisable(false);
+        for (int i = this.loadedMaps.size()-1; i > -1; i--) {
+            String map = this.loadedMaps.get(i).replace("\\","/");
+            //String[] nameSplit = map.replace("\\", "/").split("/");
+            MenuItem entry = new MenuItem((this.loadedMaps.size()-1-i) + ". " + map);
+            entry.setUserData(map);
+            entry.setOnAction(event -> {
+                model.unloadOSM();
+                try {
+                    model.loadMapFile(entry.getUserData().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                this.centerPos();
+                canvas.setDisable(false);
+                this.unloadFileButton.setDisable(false);
+            });
+
+            this.recentMapsSubmenu.getItems().add(entry);
+            this.recentMapsSubmenu.setDisable(false);
+        }
     }
 
     private void goToPosAbsolute(final double x, final double y){
@@ -82,7 +93,7 @@ public class Controller {
     }
 
     private void goToPosRelative(final double x, final double y){
-        this.canvas.pan(x,y);
+        this.canvas.pan(x*this.canvas.zoom_current,y*this.canvas.zoom_current);
     }
 
     private void centerPos(){
@@ -145,6 +156,7 @@ public class Controller {
             this.model.unloadOSM();
             this.model.loadMapFile(file.getAbsolutePath());
             this.centerPos();
+            this.canvas.pan(0,-50);
             this.canvas.setDisable(false);
             this.unloadFileButton.setDisable(false);
         }
@@ -163,7 +175,19 @@ public class Controller {
         System.exit(0);
     }
 
-    // when the menubar 'Dev Tools' section button 'Change Absolute Coordinates' is clicked
+    // when the menubar 'Edit' section button 'Zoom In' is clicked
+    @FXML private void zoomInClicked(final ActionEvent e){
+        this.canvas.zoom(1.2);
+        this.canvas.pan(1,1);
+    }
+
+    // when the menubar 'Edit' section button 'Zoom Out' is clicked
+    @FXML private void zoomOutClicked(final ActionEvent e){
+        this.canvas.zoom(0.8);
+        this.canvas.pan(1,1);
+    }
+
+    // when the menubar 'Tools' section button 'Change Absolute Coordinates' is clicked
     @FXML private void changeAbsoluteCoordClicked(final ActionEvent e){
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Change Absolute Coordinates");
@@ -172,15 +196,15 @@ public class Controller {
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
 
-        String value = dialog.showAndWait().get();
+        Optional<String> value = dialog.showAndWait();
 
-        if(value.length() > 0){
-            String[] dialogvalue = value.split(",");
-            this.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        if(value.isPresent()){
+            String[] dialogvalue = value.get().split(",");
+            if(dialogvalue.length == 2) this.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
         }
     }
 
-    // when the menubar 'Dev Tools' section button 'Change Relative Coordinates' is clicked
+    // when the menubar 'Tools' section button 'Change Relative Coordinates' is clicked
     @FXML private void changeRelativeCoordClicked(final ActionEvent e){
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Change Relative Coordinates");
@@ -189,56 +213,69 @@ public class Controller {
         dialog.setHeaderText(null);
         dialog.setGraphic(null);
 
-        String value = dialog.showAndWait().get();
+        Optional<String> value = dialog.showAndWait();
 
-        if(value.length() > 0){
-            String[] dialogvalue = value.split(",");
-            this.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        if(value.isPresent()){
+            String[] dialogvalue = value.get().split(",");
+            if(dialogvalue.length == 2) this.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
         }
     }
 
-    // when the menubar 'Dev Tools' section button 'Center Screen Position' is clicked
+    // when the menubar 'Tools' section button 'Center Screen Position' is clicked
     @FXML private void centerScreenPosition(final ActionEvent e){
         this.centerPos();
+        this.canvas.pan(0,-50);
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Cursor Pointer' is clicked
+    // when the menubar 'Tools' section button 'Display Filled' is clicked
+    @FXML private void debugDisplayFilledClicked(final ActionEvent e){
+        this.canvas.debugDisplayWireframe = false;
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Display Wireframe' is clicked
+    @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
+        this.canvas.debugDisplayWireframe = true;
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
     @FXML private void debugCursorClicked(final ActionEvent e){
         this.canvas.debugCursor = !this.canvas.debugCursor;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Kd-Tree VisBox' is clicked
+    // when the menubar 'Tools' section button 'Enable Kd-Tree VisBox' is clicked
     @FXML private void debugVisBoxClicked(final ActionEvent e){
         this.canvas.debugVisBox = !this.canvas.debugVisBox;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Kd-Tree Splits' is clicked
+    // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
     @FXML private void debugSplitsClicked(final ActionEvent e){
         this.canvas.debugSplits = !this.canvas.debugSplits;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Free Movement' is clicked
+    // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e){
         this.canvas.debugFreeMovement = !this.canvas.debugFreeMovement;
         if(!this.canvas.debugFreeMovement) this.centerPos();
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Help Text' is clicked
+    // when the menubar 'Tools' section button 'Disable Help Text' is clicked
     @FXML private void debugHelpTextClicked(final ActionEvent e){
         this.canvas.debugDisableHelpText = !this.canvas.debugDisableHelpText;
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Debug Box' is clicked
+    // when the menubar 'Tools' section button 'Disable Debug Box' is clicked
     @FXML private void debugInfoTextClicked(final ActionEvent e){
         this.canvas.debugInfo = !this.canvas.debugInfo;
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Bounding Box' is clicked
+    // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
     @FXML private void debugBoundingBoxClicked(final ActionEvent e){
         this.canvas.debugBoundingBox = !this.canvas.debugBoundingBox;
     }
 
-    // when the menubar 'Help' section button 'About' is clicked
+    // when the menubar 'Help' section button 'About...' is clicked
     @FXML private void aboutButtonClicked(final ActionEvent e){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("About");

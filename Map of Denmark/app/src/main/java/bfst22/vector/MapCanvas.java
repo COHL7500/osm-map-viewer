@@ -16,8 +16,10 @@ public class MapCanvas extends Canvas {
     public Affine trans = new Affine();
     public GraphicsContext gc = super.getGraphicsContext2D();
     public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false;
-    public long repaintTime;
+    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true,
+            debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false;
+    public long repaintTime, avgRT = 0, avgRTNum = 0;
+    // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
@@ -43,7 +45,7 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = this.debugVisBox ? 200 : -25;
+        double padding = this.debugVisBox ? 100 : -25;
         Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
                                                             new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
 
@@ -60,13 +62,13 @@ public class MapCanvas extends Canvas {
                     // Checks if the styling requires them to be drawn with filling and/or strokes
                     // and then proceed to draw the value feature in the way it has been told to
                     for (Drawable draw : element2.drawable) {
-                        if(range.contains(draw)){
+                        if(range.contains(draw) || element2.draw != null && element2.draw.always_draw && this.model.isOMSloaded){
                             this.setStyling(element.draw);
                             this.setStyling(element2.draw);
 
                             if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
                                     || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                draw.fill(this.gc);
+                                if(!this.debugDisplayWireframe) draw.fill(this.gc);
                                 draw.draw(this.gc);
                             }
                             if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
@@ -81,6 +83,7 @@ public class MapCanvas extends Canvas {
         }
 
         this.repaintTime = System.nanoTime() - this.repaintTime;
+        this.calcRollingAvg();
 
         this.splitsTree();
         this.drawBounds();
@@ -109,6 +112,11 @@ public class MapCanvas extends Canvas {
         this.gc.setLineDashes(1);
     }
 
+    private void calcRollingAvg(){
+        this.avgRTNum = this.avgRTNum < 100 ? this.avgRTNum+1 : 1;
+        this.avgRT = (this.avgRT * (this.avgRTNum-1) + this.repaintTime) / this.avgRTNum;
+    }
+
     private void strokeBox(double padding){
         if(this.debugVisBox && this.model.isOMSloaded){
             padding /= zoom_current;
@@ -135,7 +143,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
 
             if(this.debugDisableHelpText) {
-                this.gc.fillText("origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
+                this.gc.fillText("relative origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
                 this.gc.fillText("top left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", miny + padding) + ")", minx + padding + csize, miny + padding - csize);
                 this.gc.fillText("top right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", miny + padding) + ")", maxx - padding + csize, miny + padding - csize);
                 this.gc.fillText("bottom right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", maxy - padding) + ")", maxx - padding + csize, maxy - padding - csize);
@@ -147,11 +155,11 @@ public class MapCanvas extends Canvas {
     private void strokeCursor(){
         if(this.debugCursor && this.model.isOMSloaded){
             this.gc.setLineWidth(1);
-            this.gc.setFill(Color.RED);
+            this.gc.setFill(Color.BLUE);
             this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
-            this.gc.setFill(Color.BLACK);
             this.gc.setFont(new Font("Arial",11/zoom_current));
             if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+            this.gc.setFill(Color.BLACK);
         }
     }
 
@@ -160,6 +168,7 @@ public class MapCanvas extends Canvas {
             List<float[]> lines = this.model.kdtree.getSplit();
             this.gc.setLineWidth(2.5/zoom_current);
             this.gc.setStroke(Color.GREEN);
+            this.gc.setLineDashes(0);
 
             for(int i = 0; i < lines.size(); i+=2){
                 this.gc.beginPath();
@@ -185,6 +194,12 @@ public class MapCanvas extends Canvas {
             this.gc.stroke();
             this.gc.closePath();
             this.gc.setFill(Color.RED);
+
+            double bbx = (this.model.maxlon+this.model.minlon)/2, bby = (this.model.maxlat+this.model.minlat)/2;
+            double csize = 5/zoom_current;
+
+            this.gc.fillOval(bbx,bby, csize, csize);
+            this.gc.fillText("boundary origin (" + String.format("%.5f", bbx) + "," + String.format("%.5f", bby) + ")", bbx + csize, bby - csize);
         }
     }
 
@@ -195,7 +210,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillRect(minx,miny,160 / zoom_current,85 / zoom_current);
             this.gc.fillRect(maxx-165 / zoom_current,miny,165 / zoom_current,85 / zoom_current);
             this.gc.fillRect(minx,maxy,this.model.currFileName.length() * 5.25 / zoom_current,20 / zoom_current);
-            this.gc.fillRect(minx,maxy-57 / zoom_current,150 / zoom_current,52 / zoom_current);
+            this.gc.fillRect(minx,maxy-70 / zoom_current,175 / zoom_current,65 / zoom_current);
             this.gc.setGlobalAlpha(1);
             this.gc.setFill(Color.WHITE);
             this.gc.setFont(new Font("Arial", 10 / zoom_current));
@@ -212,9 +227,10 @@ public class MapCanvas extends Canvas {
             this.gc.fillText(String.format("%-19s%s", "ways:", this.model.waycount), max_x, min_y + 45 / zoom_current);
             this.gc.fillText(String.format("%-18s%s", "relations:", this.model.relcount), max_x, min_y + 60 / zoom_current);
             this.gc.fillText(String.format("%5s", this.model.currFileName), min_x, max_y);
-            this.gc.fillText(String.format("%-18s%d bytes", "file size:", this.model.filesize), min_x, max_y - 25 / zoom_current);
-            this.gc.fillText(String.format("%-16s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
-            this.gc.fillText(String.format("%-15s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
+            this.gc.fillText(String.format("%-27s%d bytes", "file size:", this.model.filesize), min_x, max_y - 25 / zoom_current);
+            this.gc.fillText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
+            this.gc.fillText(String.format("%-23s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
+            this.gc.fillText(String.format("%-20s%d ms", "avg repaint time:", this.avgRT/1000000), min_x, max_y - 70 / zoom_current);
         }
     }
 
