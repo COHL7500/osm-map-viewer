@@ -14,14 +14,13 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
     private Stage stage;
     private Point2D lastMouse;
 	private Model model;
-	private boolean leftPaneVisibility = false;
+	private final boolean[] paneVisibility = new boolean[]{false,true};
     private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
@@ -33,12 +32,29 @@ public class Controller {
     @FXML private Menu recentMapsSubmenu;
     @FXML private ToggleGroup mapdisplay;
 
+    // Debug menu variables
+    @FXML private VBox vbox_debug;
+    @FXML private Label canvas_min;
+    @FXML private Label canvas_max;
+    @FXML private Label canvas_origin;
+    @FXML private Label canvas_mouse;
+    @FXML private Label canvas_zoom;
+    @FXML private Label canvas_bounds_min;
+    @FXML private Label canvas_bounds_max;
+    @FXML private Label canvas_nodes;
+    @FXML private Label canvas_ways;
+    @FXML private Label canvas_relations;
+    @FXML private Label canvas_filesize;
+    @FXML private Label canvas_load_time;
+    @FXML private Label canvas_repaint_time;
+    @FXML private Label canvas_avg_repaint_time;
+
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
-		this.someBorderPane.setLeft(null);
+        this.someBorderPane.setLeft(null);
         this.model = model;
         this.stage = primarystage;
-        this.canvas.init(model);
+        this.canvas.init(model,this);
         this.addRecentLoadedMap(this.model.currFileName);
         this.canvas.centerPos();
         this.canvas.centerPos();
@@ -48,7 +64,8 @@ public class Controller {
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.leftPaneVisibility ? 200 : 14));
+            this.canvas.setWidth(newValue.doubleValue() - (this.paneVisibility[0] ? 200 : 14));
+            this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : 0));
             this.canvas.update();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
@@ -84,6 +101,36 @@ public class Controller {
         }
     }
 
+    public void updateDebugInfo(){
+        if(this.model.isOMSloaded && this.paneVisibility[1]){
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minx) + ", " + String.format("%.5f", this.canvas.miny)));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxx) + ", " + String.format("%.5f", this.canvas.maxy)));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originx) + ", " + String.format("%.5f", this.canvas.originy)));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousex) + ", " + String.format("%.5f", this.canvas.mousey)));
+            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
+            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)));
+            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)));
+            this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
+            this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
+            this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
+            this.canvas_filesize.setText(String.format("%-27s%d bytes", "file size:", this.model.filesize));
+            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
+            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
+            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+        }
+    }
+
+    private String inputWindow(String title, String contentText){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setContentText(contentText);
+        dialog.setResizable(false);
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+
+        return dialog.showAndWait().orElse(null);
+    }
+
     /* ---------- Mouse Methods ---------- */
     // handles an event of scrolling and increases/decreases the zoom level of the map.
     @FXML private void onScroll(final ScrollEvent e) {
@@ -103,11 +150,10 @@ public class Controller {
     @FXML private void onMousePressed(final MouseEvent e) {
         this.lastMouse = new Point2D(e.getX(), e.getY());
     }
-        
+
     @FXML private void onMenuButtonPress(ActionEvent e){
-        this.leftPaneVisibility = !this.leftPaneVisibility;
-        this.someBorderPane.setLeft(this.leftPaneVisibility ? vBox : null);
-        this.canvas.setWidth(this.someBorderPane.getWidth() - (this.leftPaneVisibility ? 200 : 0));
+        this.someBorderPane.setLeft((this.paneVisibility[0] = !this.paneVisibility[0]) ? vBox : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[0] ? 200 : -200));
         this.canvas.update();
     }
 
@@ -169,37 +215,30 @@ public class Controller {
         this.canvas.pan(1,1);
     }
 
+    // when the menubar 'Edit' section button 'Change Zoom Level' is clicked
+    @FXML private void changeZoomLevelClicked(final ActionEvent e){
+        String zlevel = this.inputWindow("Change Zoom Level","Syntax: 42000");
+        if(zlevel != null){
+            this.canvas.zoom(Integer.parseInt(zlevel)/this.canvas.zoom_current);
+            this.canvas.update();
+        }
+    }
+
     // when the menubar 'Tools' section button 'Change Absolute Coordinates' is clicked
     @FXML private void changeAbsoluteCoordClicked(final ActionEvent e){
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Change Absolute Coordinates");
-        dialog.setContentText("Syntax: -12.345, 67.890");
-        dialog.setResizable(false);
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-
-        Optional<String> value = dialog.showAndWait();
-
-        if(value.isPresent()){
-            String[] dialogvalue = value.get().split(",");
-            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        String abscoords = this.inputWindow("Change Absolute Coordinates","Syntax: -12.345, 67.890");
+        if(abscoords != null){
+            String[] dialogvalue = abscoords.split(",");
+            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1]));
         }
     }
 
     // when the menubar 'Tools' section button 'Change Relative Coordinates' is clicked
     @FXML private void changeRelativeCoordClicked(final ActionEvent e){
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Change Relative Coordinates");
-        dialog.setContentText("Syntax: -12.345, 67.890");
-        dialog.setResizable(false);
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-
-        Optional<String> value = dialog.showAndWait();
-
-        if(value.isPresent()){
-            String[] dialogvalue = value.get().split(",");
-            if(dialogvalue.length == 2) this.canvas.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        String relcoords = this.inputWindow("Change Relative Coordinates","Syntax: -12.345, 67.890");
+        if(relcoords != null){
+            String[] dialogvalue = relcoords.split(",");
+            if(dialogvalue.length == 2) this.canvas.goToPosRelative(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1]));
         }
     }
 
@@ -207,6 +246,13 @@ public class Controller {
     @FXML private void centerScreenPosition(final ActionEvent e){
         this.canvas.centerPos();
         this.canvas.pan(0,-50);
+    }
+
+    // when the menubar 'Tools' section button 'Toggle Debug Sidebar' is clicked
+    @FXML private void debugSidebarClicked(final ActionEvent e){
+        this.someBorderPane.setRight((this.paneVisibility[1] = !this.paneVisibility[1]) ? vbox_debug : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : -250));
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Filled' is clicked
@@ -263,7 +309,7 @@ public class Controller {
         alert.setTitle("About");
         alert.setHeaderText(null);
         alert.setGraphic(null);
-        alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022");
+        alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022 - Group #1");
         alert.setResizable(false);
         alert.show();
     }

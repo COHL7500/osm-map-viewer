@@ -1,11 +1,12 @@
 package bfst22.vector;
 
+import java.io.Serializable;
 import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 
 // Defines the lines intended to draw the polygons on the map; typically used for ways.
-public class PolyLine implements Drawable {
-    final float[] coords;
+public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiable {
+    public final float[] coords;
 
     // Constructs the line based on the given nodes for the particular polygon.
     public PolyLine(final List<OSMNode> nodes) {

@@ -5,19 +5,21 @@ import java.util.*;
 
 public class KdTree implements Serializable, SerialVersionIdentifiable {
 	private final intNode root;
-	private final List<Node> lines;
+	private List<Node> lines;
 
 	public KdTree(){
 		this.root = new intNode();
 		this.lines = new ArrayList<>();
 	}
 
-	public void add(PolyLine element){
+	public void add(PolyLine element) throws RuntimeException {
+		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
 		for(int i = 0; i < element.coords.length; i+=2)
 			this.lines.add(new Node(element.coords[i],element.coords[i+1],element));
 	}
 
-	public void add(MultiPolygon element){
+	public void add(MultiPolygon element) throws RuntimeException {
+		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
 		element.parts.forEach(polyline -> {
 			for(int i = 0; i < ((PolyLine) polyline).coords.length; i+=2)
 				this.lines.add(new Node(((PolyLine) polyline).coords[i], ((PolyLine) polyline).coords[i+1], element));
@@ -61,18 +63,21 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 				}
 
 				n.elements = null;
+			} else {
+				n.objects = new HashSet<>();
+				for(Node node : n.elements) n.objects.add(node.obj);
+				n.elements = null;
 			}
 		};
 		this.bfs(kd,null);
+		this.lines = null;
 	}
 
 	public Set<Drawable> rangeSearch(double[] min, double[] max){
 		Set<Drawable> allElements = new HashSet<>();
 		bfsCall rs = (q,n,d,a) -> {
-			if(n.left == null || n.right == null) {
-				for (Node node : n.elements)
-					allElements.add(node.obj);
-			} else {
+			if(a != null && (n.left == null || n.right == null)) a.addAll(n.objects);
+			else {
 				if(n.min < max[d?0:1]) q.add(n.left);
 				if(n.max > min[d?0:1]) q.add(n.right);
 			}
@@ -103,11 +108,12 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		void call(Queue<intNode> queue, intNode node, boolean depth, Collection array);
 	}
 
-	private static class intNode {
+	private static class intNode implements Serializable, SerialVersionIdentifiable {
 		public float[] point;
 		public float min, max;
 		public intNode left, right;
 		public List<Node> elements = new ArrayList<>();
+		public Set<Drawable> objects = new HashSet<>();
 	}
 
 	private static class Node implements Comparable<Node> {

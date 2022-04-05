@@ -5,10 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipInputStream;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -36,32 +33,37 @@ public class Model {
     public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.currFileName = filename;
         if (filename.endsWith(".zip")) {
-            var zip = new ZipInputStream(new FileInputStream(filename));
+            ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
             zip.getNextEntry();
             this.loadOSM(zip);
         } else if (filename.endsWith(".osm")) {
             this.loadOSM(new FileInputStream(filename));
-        } /*else if (filename.endsWith(".obj")) {
-            try (var input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+        } else if (filename.endsWith(".obj")) {
+            try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
                 maxlat = input.readFloat();
                 maxlon = input.readFloat();
-                //yamlObj = (MapFeature) input.readObject();
+                kdtree = (KdTree) input.readObject();
+                yamlObj = (MapFeature) input.readObject();
             }
-        }*/
 
-        //if (!filename.endsWith(".obj")) save(filename);
+            this.isOMSloaded = true;
+            this.observers = new ArrayList<>();
+        }
+
+        if (!filename.endsWith(".obj")) save(filename);
     }
 
     // Saves the .obj file in our project hierachy.
     public void save(String basename) throws IOException {
-        try (var out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
             out.writeFloat(minlat);
             out.writeFloat(minlon);
             out.writeFloat(maxlat);
             out.writeFloat(maxlon);
-            //out.writeObject(yamlObj);
+            out.writeObject(kdtree);
+            out.writeObject(yamlObj);
         }
     }
 
@@ -69,79 +71,47 @@ public class Model {
     public void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError, IOException {
         this.loadTime = System.nanoTime();
         this.filesize = Files.size(Paths.get(this.currFileName));
-        /*
-        long start = System.nanoTime();
-        methodToBeTimed();
-        long elapsedTime = System.nanoTime() - start;
-        * */
-
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.observers = new ArrayList<>();
         this.kdtree = new KdTree();
         this.isOMSloaded = true;
 
-        // Reads the .osm file, being an XML file.
-        var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
-
-        // Converts IDs into nodes (uncertain about this).
-        var id2node = new NodeMap();
-
-        // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
-        var id2way = new HashMap<Long, OSMWay>();
-
-        // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
-        var nodes = new ArrayList<OSMNode>();
-
-        // Saves all relations.
-        var rel = new ArrayList<OSMWay>();
-
-        // ID of the current relation.
-        long relID = 0;
-
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
+        NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
+        Map<Long, OSMWay> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
+        List<OSMNode> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
+        List<OSMWay> rel = new ArrayList<>(); // Saves all relations.
+        long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
             switch (reader.next()) {
-
-                // Reads the first element of a line.
-                case XMLStreamConstants.START_ELEMENT:
+                case XMLStreamConstants.START_ELEMENT: // Reads the first element of a line.
                     switch (reader.getLocalName()) {
-
-                        // Configures the longitude and latitude. An element present in all OSM files.
-                        // Uncertain as to why, though adjusting the floats will make the map not draw.
-                        case "bounds":
-                            maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
-                            minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
-                            minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
-                            maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
+                        case "bounds":// Configures the longitude and latitude. An element present in all OSM files. Uncertain as to why, though adjusting the floats will make the map not draw.
+                            this.maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
+                            this.minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
+                            this.minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
+                            this.maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
                             break;
-
-                        // Parses information from a node, adding it to the id2node list.
-                        case "node":
-                            var id = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            var lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
-                            var lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
+                        case "node": // Parses information from a node, adding it to the id2node list.
+                            long id = Long.parseLong(reader.getAttributeValue(null, "id"));
+                            float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
+                            float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new OSMNode(id, 0.56f * lon, -lat));
                             this.nodecount++;
                             break;
-
-                        // parses reference to a node (ID) and adds it to the node list.
-                        case "nd":
-                            var ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
+                        case "nd": // parses reference to a node (ID) and adds it to the node list.
+                            long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             nodes.add(id2node.get(ref));
                             break;
-
-                        // Parses the ID of the way and sets a default type.
-                        // For future reference, type could probably be configured properly in this step.
-                        case "way":
+                        case "way":// Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
                             break;
-
-                        // Parses the key and value of tags, changing the waytype to the corresponding type.
-                        case "tag":
-                            var k = reader.getAttributeValue(null, "k");
-                            var v = reader.getAttributeValue(null, "v");
+                        case "tag": // Parses the key and value of tags, changing the waytype to the corresponding type.
+                            String k = reader.getAttributeValue(null, "k");
+                            String v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
                             if(this.yamlObj.ways.containsKey(k))
                             {
@@ -175,22 +145,17 @@ public class Model {
                                 }
                             }
                             break;
-                        // parses a member (a reference to a way belonging to a collection of ways; relations)
-                        case "member":
+                        case "member": // parses a member (a reference to a way belonging to a collection of ways; relations)
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            var elm = id2way.get(ref);
+                            OSMWay elm = id2way.get(ref);
                             if (elm != null) rel.add(elm);
                             break;
                         }
                         break;
-
-                // Reads the last element, such as "way", "relation" etc.
-                case XMLStreamConstants.END_ELEMENT:
+                case XMLStreamConstants.END_ELEMENT: // Reads the last element, such as "way", "relation" etc.
                     switch (reader.getLocalName()) {
-
-                        // "way" - All lines in the program; linking point A to B
-                        case "way":
-                            var way = new PolyLine(nodes);
+                        case "way": // "way" - All lines in the program; linking point A to B
+                            PolyLine way = new PolyLine(nodes);
                             id2way.put(relID, new OSMWay(nodes));
                             this.kdtree.add(way);
                             this.waycount++;
@@ -204,10 +169,8 @@ public class Model {
                             }
                             subtype = suptype = name = null;
                             break;
-
-                        // is a collection of ways and has to be drawn separately with MultiPolygon.
-                        case "relation":
-                            var multipoly = new MultiPolygon(rel);
+                        case "relation": // is a collection of ways and has to be drawn separately with MultiPolygon.
+                            MultiPolygon multipoly = new MultiPolygon(rel);
                             this.kdtree.add(multipoly);
                             this.relcount++;
                             rel.clear();

@@ -14,9 +14,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.Scene?>
-
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.Label?>
 <Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene">
     <BorderPane fx:id="someBorderPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
         <top>
@@ -57,6 +59,11 @@
                                 <KeyCodeCombination alt="UP" code="PERIOD" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
+                        <MenuItem text="Change Zoom Level" onAction="#changeZoomLevelClicked">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
                     </Menu>
                     <Menu text="Tools">
                         <fx:define>
@@ -77,6 +84,11 @@
                                 <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
+                        <CheckMenuItem text="Toggle Debug Sidebar" onAction="#debugSidebarClicked" selected="true">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT4" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </CheckMenuItem>
                         <SeparatorMenuItem />
                         <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
                             <accelerator>
@@ -150,10 +162,37 @@
         <left>
             <VBox fx:id="vBox" id="vBox" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" />
         </left>
+        <right>
+            <VBox fx:id="vbox_debug" id="vbox_debug" prefWidth="250.0" BorderPane.alignment="TOP_RIGHT" spacing="10">
+                <VBox styleClass="vbox_debug_section">
+                    <Label text="Updating" styleClass="debugSectionHeader" />
+                    <Label fx:id="canvas_load_time" styleClass="debugText" />
+                    <Label fx:id="canvas_repaint_time" styleClass="debugText" />
+                    <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
+                </VBox>
+                <VBox styleClass="vbox_debug_section">
+                    <Label text="Coordinates" styleClass="debugSectionHeader" />
+                    <Label fx:id="canvas_min" styleClass="debugText" />
+                    <Label fx:id="canvas_max" styleClass="debugText" />
+                    <Label fx:id="canvas_origin" styleClass="debugText" />
+                    <Label fx:id="canvas_mouse" styleClass="debugText" />
+                    <Label fx:id="canvas_zoom" styleClass="debugText" />
+                </VBox>
+                <VBox styleClass="vbox_debug_section">
+                    <Label text="File Data" styleClass="debugSectionHeader" />
+                    <Label fx:id="canvas_filesize" styleClass="debugText" />
+                    <Label fx:id="canvas_bounds_min" styleClass="debugText" />
+                    <Label fx:id="canvas_bounds_max" styleClass="debugText" />
+                    <Label fx:id="canvas_nodes" styleClass="debugText" />
+                    <Label fx:id="canvas_ways" styleClass="debugText" />
+                    <Label fx:id="canvas_relations" styleClass="debugText" />
+                </VBox>
+            </VBox>
+        </right>
         <center>
             <MapCanvas fx:id="canvas"
                        id="canvas"
-                       width="786"
+                       width="536"
                        height="470"
                        onScroll="#onScroll"
                        BorderPane.alignment="TOP_LEFT"

@@ -14,16 +14,18 @@ import java.util.*;
 public class MapCanvas extends Canvas {
     public Model model;
     public Affine trans = new Affine();
+    public Controller controller;
     public GraphicsContext gc = super.getGraphicsContext2D();
     public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
     public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true,
             debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false;
-    private long repaintTime, avgRT = 0, avgRTNum = 0;
+    public long repaintTime, avgRT = 0, avgRTNum = 0;
     // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
 
     // Runs upon startup (setting default pan, zoom for example).
-    public void init(final Model model) {
+    public void init(final Model model, final Controller controller) {
         this.model = model;
+        this.controller = controller;
         this.pan(-model.minlon, -model.minlat);
 
         // Default zoom level: 700
@@ -89,7 +91,7 @@ public class MapCanvas extends Canvas {
         this.drawBounds();
         this.strokeCursor();
         this.strokeBox(padding);
-        this.debugInfo();
+        this.controller.updateDebugInfo();
 
         //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
@@ -200,37 +202,6 @@ public class MapCanvas extends Canvas {
 
             this.gc.fillOval(bbx,bby, csize, csize);
             this.gc.fillText("boundary origin (" + String.format("%.5f", bbx) + "," + String.format("%.5f", bby) + ")", bbx + csize, bby - csize);
-        }
-    }
-
-    private void debugInfo(){
-        if(this.debugInfo && this.model.isOMSloaded) {
-            this.gc.setFill(Color.BLACK);
-            this.gc.setGlobalAlpha(0.5);
-            this.gc.fillRect(minx,miny,160 / zoom_current,85 / zoom_current);
-            this.gc.fillRect(maxx-165 / zoom_current,miny,165 / zoom_current,85 / zoom_current);
-            this.gc.fillRect(minx,maxy,this.model.currFileName.length() * 5.25 / zoom_current,20 / zoom_current);
-            this.gc.fillRect(minx,maxy-70 / zoom_current,175 / zoom_current,65 / zoom_current);
-            this.gc.setGlobalAlpha(1);
-            this.gc.setFill(Color.WHITE);
-            this.gc.setFont(new Font("Arial", 10 / zoom_current));
-
-            double min_x = minx + 5 / zoom_current, max_x = maxx - 155 / zoom_current, min_y = miny + 15 / zoom_current, max_y = maxy + 13 / zoom_current;
-            this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), min_x, min_y);
-            this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), min_x, min_y + 15 / zoom_current);
-            this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), min_x, min_y + 30 / zoom_current);
-            this.gc.fillText(String.format("%-8s%s", "mouse:", String.format("%.5f", mousex) + ", " + String.format("%.5f", mousey)), min_x, min_y + 45 / zoom_current);
-            this.gc.fillText(String.format("%-9s%s", "zoom:", String.format("%.5f", zoom_current)), min_x, min_y + 60 / zoom_current);
-            this.gc.fillText(String.format("%-14s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)), max_x, min_y);
-            this.gc.fillText(String.format("%-13s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)), max_x, min_y + 15 / zoom_current);
-            this.gc.fillText(String.format("%-18s%s", "nodes:", this.model.nodecount), max_x, min_y + 30 / zoom_current);
-            this.gc.fillText(String.format("%-19s%s", "ways:", this.model.waycount), max_x, min_y + 45 / zoom_current);
-            this.gc.fillText(String.format("%-18s%s", "relations:", this.model.relcount), max_x, min_y + 60 / zoom_current);
-            this.gc.fillText(String.format("%5s", this.model.currFileName), min_x, max_y);
-            this.gc.fillText(String.format("%-27s%d bytes", "file size:", this.model.filesize), min_x, max_y - 25 / zoom_current);
-            this.gc.fillText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
-            this.gc.fillText(String.format("%-23s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
-            this.gc.fillText(String.format("%-20s%d ms", "avg repaint time:", this.avgRT/1000000), min_x, max_y - 70 / zoom_current);
         }
     }
 
