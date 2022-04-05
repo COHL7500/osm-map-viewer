@@ -13,7 +13,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,8 +40,8 @@ public class Controller {
         this.stage = primarystage;
         this.canvas.init(model);
         this.addRecentLoadedMap(this.model.currFileName);
-        this.centerPos();
-        this.centerPos();
+        this.canvas.centerPos();
+        this.canvas.centerPos();
         this.canvas.pan(0,-50);
         this.canvas.update();
 
@@ -61,22 +60,21 @@ public class Controller {
     private void addRecentLoadedMap(String filename){
         this.loadedMaps.remove(filename);
         this.loadedMaps.add(filename);
-        if (loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size()-1);
+        if (this.loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size()-1);
         this.recentMapsSubmenu.getItems().clear();
 
         for (int i = this.loadedMaps.size()-1; i > -1; i--) {
             String map = this.loadedMaps.get(i).replace("\\","/");
-            //String[] nameSplit = map.replace("\\", "/").split("/");
             MenuItem entry = new MenuItem((this.loadedMaps.size()-1-i) + ". " + map);
             entry.setUserData(map);
             entry.setOnAction(event -> {
-                model.unloadOSM();
+                this.model.unloadOSM();
                 try {
-                    model.loadMapFile(entry.getUserData().toString());
+                    this.model.loadMapFile(entry.getUserData().toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                this.centerPos();
+                this.canvas.centerPos();
                 canvas.setDisable(false);
                 this.unloadFileButton.setDisable(false);
             });
@@ -84,22 +82,6 @@ public class Controller {
             this.recentMapsSubmenu.getItems().add(entry);
             this.recentMapsSubmenu.setDisable(false);
         }
-    }
-
-    private void goToPosAbsolute(final double x, final double y){
-        double dx = (x - this.canvas.originx) * canvas.zoom_current;
-        double dy = (y - this.canvas.originy) * canvas.zoom_current;
-        this.canvas.pan(-dx,-dy);
-    }
-
-    private void goToPosRelative(final double x, final double y){
-        this.canvas.pan(x*this.canvas.zoom_current,y*this.canvas.zoom_current);
-    }
-
-    private void centerPos(){
-        double dx = (this.model.maxlon + this.model.minlon)/2;
-        double dy = (this.model.maxlat + this.model.minlat)/2;
-        this.goToPosAbsolute(dx,dy);
     }
 
     /* ---------- Mouse Methods ---------- */
@@ -155,7 +137,7 @@ public class Controller {
             this.addRecentLoadedMap(file.getAbsolutePath());
             this.model.unloadOSM();
             this.model.loadMapFile(file.getAbsolutePath());
-            this.centerPos();
+            this.canvas.centerPos();
             this.canvas.pan(0,-50);
             this.canvas.setDisable(false);
             this.unloadFileButton.setDisable(false);
@@ -200,7 +182,7 @@ public class Controller {
 
         if(value.isPresent()){
             String[] dialogvalue = value.get().split(",");
-            if(dialogvalue.length == 2) this.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
         }
     }
 
@@ -217,13 +199,13 @@ public class Controller {
 
         if(value.isPresent()){
             String[] dialogvalue = value.get().split(",");
-            if(dialogvalue.length == 2) this.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+            if(dialogvalue.length == 2) this.canvas.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
         }
     }
 
     // when the menubar 'Tools' section button 'Center Screen Position' is clicked
     @FXML private void centerScreenPosition(final ActionEvent e){
-        this.centerPos();
+        this.canvas.centerPos();
         this.canvas.pan(0,-50);
     }
 
@@ -257,7 +239,7 @@ public class Controller {
     // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e){
         this.canvas.debugFreeMovement = !this.canvas.debugFreeMovement;
-        if(!this.canvas.debugFreeMovement) this.centerPos();
+        if(!this.canvas.debugFreeMovement) this.canvas.centerPos();
     }
 
     // when the menubar 'Tools' section button 'Disable Help Text' is clicked

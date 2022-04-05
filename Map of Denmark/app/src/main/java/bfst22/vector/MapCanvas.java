@@ -18,7 +18,7 @@ public class MapCanvas extends Canvas {
     public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
     public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true,
             debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false;
-    public long repaintTime, avgRT = 0, avgRTNum = 0;
+    private long repaintTime, avgRT = 0, avgRTNum = 0;
     // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
 
     // Runs upon startup (setting default pan, zoom for example).
@@ -297,5 +297,21 @@ public class MapCanvas extends Canvas {
     public void clearScreen(){
         this.gc.setFill(Color.WHITE);
         this.repaint();
+    }
+
+    public void goToPosAbsolute(final double x, final double y){
+        double dx = (x - this.originx) * this.zoom_current;
+        double dy = (y - this.originy) * this.zoom_current;
+        this.pan(-dx,-dy);
+    }
+
+    public void goToPosRelative(final double x, final double y){
+        this.pan(x*this.zoom_current, y*this.zoom_current);
+    }
+
+    public void centerPos(){
+        double dx = (this.model.maxlon + this.model.minlon)/2;
+        double dy = (this.model.maxlat + this.model.minlat)/2;
+        this.goToPosAbsolute(dx,dy);
     }
 }

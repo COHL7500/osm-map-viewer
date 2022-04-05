@@ -17,16 +17,20 @@ public class Model {
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
-    MapFeature yamlObj;
+    public MapFeature yamlObj;
     public KdTree kdtree;
     public List<Runnable> observers;
-    public boolean isOMSloaded = false;
+    public boolean isOMSloaded;
     public float minlat, minlon, maxlat, maxlon;
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
 	public VehicleType vehicleType;
     public Edge e;
+
+    public Model(){
+        this.isOMSloaded = false;
+    }
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {

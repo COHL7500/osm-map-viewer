@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.*;
 
 public class KdTree implements Serializable, SerialVersionIdentifiable {
-	private final intNode root = new intNode();
-	private final List<Node> lines = new ArrayList<>();
+	private final intNode root;
+	private final List<Node> lines;
 
-	public void add(Drawable element){
-		if(element instanceof PolyLine) this.add((PolyLine) element);
-		else this.add((MultiPolygon) element);
+	public KdTree(){
+		this.root = new intNode();
+		this.lines = new ArrayList<>();
 	}
 
 	public void add(PolyLine element){
@@ -24,47 +24,10 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		});
 	}
 
-	public void generate(){
+	// KD-Tree generic 'Breadth-first search' method
+	private void bfs(bfsCall lambda, Collection array){
 		Queue<intNode> intNodes = new LinkedList<>();
-		int depth = -1;
-		this.root.elements = this.lines;
-		intNodes.add(this.root);
-
-		while(!intNodes.isEmpty()){
-			int queueSize = intNodes.size();
-			depth++;
-
-			for(int i = 0; i < queueSize; i++){
-				intNode lnode = intNodes.remove();
-
-				if(lnode.elements.size() > 1000) {
-					for (Node k : lnode.elements)
-						k.setCompareAxis(depth%2);
-					Collections.sort(lnode.elements);
-
-					lnode.point = lnode.elements.get(lnode.elements.size()/2).coords;
-					lnode.min   = lnode.elements.get(0).coords[depth%2];
-					lnode.max   = lnode.elements.get(lnode.elements.size()-1).coords[depth%2];
-
-					intNodes.add(lnode.left = new intNode());
-					intNodes.add(lnode.right = new intNode());
-
-					for (Node node : lnode.elements) {
-						if (node.coords[(depth+1)%2] > lnode.point[(depth+1)%2]) lnode.right.elements.add(node);
-						else lnode.left.elements.add(node);
-					}
-
-					lnode.elements = null;
-				}
-			}
-		}
-	}
-
-	public Set<Drawable> rangeSearch(double[] min, double[] max){
-		Queue<intNode> intNodes = new LinkedList<>();
-		Set<Drawable> allElements = new HashSet<>();
 		boolean depth = true;
-
 		intNodes.add(this.root);
 
 		while(!intNodes.isEmpty()){
@@ -73,49 +36,72 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 
 			for(int i = 0; i < queueSize; i++){
 				intNode lnode = intNodes.remove();
-
-				if(lnode.left == null || lnode.right == null) {
-					for (Node node : lnode.elements)
-						allElements.add(node.obj);
-				} else {
-					if(lnode.min < max[depth?0:1]) intNodes.add(lnode.left);
-					if(lnode.max > min[depth?0:1]) intNodes.add(lnode.right);
-				}
+				lambda.call(intNodes,lnode,depth,array);
 			}
 		}
+	}
 
+	public void generate(){
+		this.root.elements = this.lines;
+		bfsCall kd = (q,n,d,a) -> {
+			if(n.elements.size() > 1000) {
+				for (Node k : n.elements) k.setCompareAxis(d?1:0);
+				Collections.sort(n.elements);
+
+				n.point = n.elements.get(n.elements.size()/2).coords;
+				n.min   = n.elements.get(0).coords[d?1:0];
+				n.max   = n.elements.get(n.elements.size()-1).coords[d?1:0];
+
+				q.add(n.left = new intNode());
+				q.add(n.right = new intNode());
+
+				for (Node node : n.elements) {
+					if (node.coords[d?0:1] > n.point[d?0:1]) n.right.elements.add(node);
+					else n.left.elements.add(node);
+				}
+
+				n.elements = null;
+			}
+		};
+		this.bfs(kd,null);
+	}
+
+	public Set<Drawable> rangeSearch(double[] min, double[] max){
+		Set<Drawable> allElements = new HashSet<>();
+		bfsCall rs = (q,n,d,a) -> {
+			if(n.left == null || n.right == null) {
+				for (Node node : n.elements)
+					allElements.add(node.obj);
+			} else {
+				if(n.min < max[d?0:1]) q.add(n.left);
+				if(n.max > min[d?0:1]) q.add(n.right);
+			}
+		};
+		this.bfs(rs,allElements);
 		return allElements;
 	}
 
 	public List<float[]> getSplit(){
-		Queue<intNode> intNodes = new LinkedList<>();
 		List<float[]> lines = new ArrayList<>();
-		boolean depth = true;
-
-		intNodes.add(this.root);
-
-		while(!intNodes.isEmpty()){
-			int queueSize = intNodes.size();
-			depth = !depth;
-
-			for(int i = 0; i < queueSize; i++){
-				intNode lnode = intNodes.remove();
-
-				if(lnode.left != null || lnode.right != null){
-					lines.add(depth ? new float[]{lnode.point[0],lnode.min} : new float[]{lnode.min,lnode.point[1]});
-					lines.add(depth ? new float[]{lnode.point[0],lnode.max} : new float[]{lnode.max,lnode.point[1]});
-					intNodes.add(lnode.left);
-					intNodes.add(lnode.right);
-				}
+		bfsCall gs = (q,n,d,a) -> {
+			if(n.left != null || n.right != null){
+				lines.add(d ? new float[]{n.point[0],n.min} : new float[]{n.min,n.point[1]});
+				lines.add(d ? new float[]{n.point[0],n.max} : new float[]{n.max,n.point[1]});
+				q.add(n.left);
+				q.add(n.right);
 			}
-		}
-
+		};
+		this.bfs(gs,lines);
 		return lines;
 	}
 
 	/*public List<Node> NNSearch(){
 
 	}*/
+
+	private interface bfsCall {
+		void call(Queue<intNode> queue, intNode node, boolean depth, Collection array);
+	}
 
 	private static class intNode {
 		public float[] point;
