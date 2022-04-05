@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d1767f66-6d49-40a9-aff3-0636efb21b9d" name="Changes" comment="Merge all Address and Search changes into one branch&#10;&#10;Just collecting all my previous work for clarity.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" beforeDir="false" afterPath="$PROJECT_DIR$/Map of Denmark/app/src/main/java/bfst22/vector/Address.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -130,6 +129,7 @@
       <workItem from="1647001408368" duration="10960000" />
       <workItem from="1648033552345" duration="13393000" />
       <workItem from="1648198933614" duration="7381000" />
+      <workItem from="1649169275744" duration="42000" />
     </task>
     <task id="LOCAL-00001" summary="update .gitignore">
       <created>1646834535049</created>

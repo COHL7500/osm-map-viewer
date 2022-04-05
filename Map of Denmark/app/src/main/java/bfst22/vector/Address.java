@@ -5,39 +5,41 @@ import java.util.regex.Pattern;
 public class Address implements Comparable<Address> {
     public final String street, house, floor, side, postcode, city;
     public final float lat, lon;
+    public final long id;
 
     private Address(
-            String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon) {
-            if (_street != null) {
-                street = _street.intern();
-            } else street = _street;
+            String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon, long _id) {
+        if (_street != null) {
+            street = _street.intern();
+        } else street = _street;
 
-            if (_house != null) {
-                house = _house.intern();
-            } else house = _house;
+        if (_house != null) {
+            house = _house.intern();
+        } else house = _house;
 
-            if (_floor != null) {
-                floor = _floor.intern();
-            } else floor = _floor;
+        if (_floor != null) {
+            floor = _floor.intern();
+        } else floor = _floor;
 
-            if (_side != null) {
-                side = _side.intern();
-            } else side = _side;
+        if (_side != null) {
+            side = _side.intern();
+        } else side = _side;
 
-            if (_postcode != null) {
-                postcode = _postcode.intern();
-            } else postcode = _postcode;
+        if (_postcode != null) {
+            postcode = _postcode.intern();
+        } else postcode = _postcode;
 
-            if (_city != null) {
-                city = _city.intern();
-            } else city = _city;
+        if (_city != null) {
+            city = _city.intern();
+        } else city = _city;
 
-            lon = _lon;
-            lat = _lat;
+        lon = _lon;
+        lat = _lat;
+        id = _id;
     }
 
     public String toString() {
-        return (street !=null ? street + " " : "") + (house !=null ? house + ", " : "") + (floor != null ? floor + " " : "") + (side != null ? side + " " : "") + (postcode != null ? postcode + " " : "") + city;
+        return (street !=null ? street + " " : "") + (house !=null ? house + ", " : "") + (floor != null ? floor + " " : "") + (side != null ? side + " " : "") + (postcode != null ? postcode + " " : "") + city + " " + lat +  " " + lon;
     }
 
     private final static String REGEX = "^ *(?<street>[1-9A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö. ]+?) +(?<house>[0-9]+[., ]+)((?<floor>[0-9]?[., ]+)?(?<side>[A-Za-zæøå0-9]+[., ]?))?( +)?(?<postcode>[0-9]{4})?( +)?(?<city>[A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö .]+)?$";
@@ -61,9 +63,12 @@ public class Address implements Comparable<Address> {
     public static class Builder {
         private String street, house, floor, side, postcode, city;
         private float lat, lon;
+        private long id;
+        private boolean isEmpty = true;
 
         public Builder street(String _street) {
             street = _street;
+            isEmpty = false;
             return this;
         }
 
@@ -101,9 +106,17 @@ public class Address implements Comparable<Address> {
             lon = _lon;
             return this;
         }
+        public Builder id(long _id) {
+            id = _id;
+            return this;
+        }
 
         public Address build() {
-            return new Address(street, house, floor, side, postcode, city, lat, lon);
+            return new Address(street, house, floor, side, postcode, city, lat, lon, id);
+        }
+
+        public boolean isEmpty() {
+            return isEmpty();
         }
     }
     @Override
