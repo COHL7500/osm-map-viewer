@@ -187,6 +187,9 @@ ways:
       apartments: {}
       bridge: {}
       parking: {}
+      dormitory: {}
+      university: {}
+      retail: {}
   office:
     draw:
       stroke: true
