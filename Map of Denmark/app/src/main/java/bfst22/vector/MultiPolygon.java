@@ -9,8 +9,7 @@ public class MultiPolygon implements Drawable {
     List<Drawable> parts = new ArrayList<>(); // List of what constitutes the relation.
 
     public MultiPolygon(final ArrayList<OSMWay> rel) {
-        for (OSMWay way : rel) this.parts.add(new PolyLine(way.nodes));
-    }
+        for (OSMWay way : rel) this.parts.add(new PolyLine(way.nodes));}
 
     // Traces the area that has to be drawn before drawing.
     @Override public void trace(final GraphicsContext gc) {

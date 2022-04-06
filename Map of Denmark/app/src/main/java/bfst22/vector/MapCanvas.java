@@ -28,9 +28,6 @@ public class MapCanvas extends Canvas {
 
         // Default zoom level: 700
         this.zoom(700 / (model.maxlon - model.minlon));
-
-        // Observer notifies the change in a particular state, being our repaint in this case.
-        this.model.addObserver(this::repaint);
     }
 
     // Draws all of the elements of our map.
@@ -50,7 +47,6 @@ public class MapCanvas extends Canvas {
                                                             new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
 
         //Set<valueFeature> featureList = new HashSet<>();
-
         // Loops through all the key features and sets the default styling for all its objects
         for(keyFeature element : model.yamlObj.ways.values()){
             this.setStylingDefault();
@@ -227,7 +223,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillText(String.format("%-19s%s", "ways:", this.model.waycount), max_x, min_y + 45 / zoom_current);
             this.gc.fillText(String.format("%-18s%s", "relations:", this.model.relcount), max_x, min_y + 60 / zoom_current);
             this.gc.fillText(String.format("%5s", this.model.currFileName), min_x, max_y);
-            this.gc.fillText(String.format("%-27s%d bytes", "file size:", this.model.filesize), min_x, max_y - 25 / zoom_current);
+            this.gc.fillText(String.format("%-27s%.1f megabytes", "file size:", ((float) this.model.filesize / 1000000)), min_x, max_y - 25 / zoom_current);
             this.gc.fillText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
             this.gc.fillText(String.format("%-23s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
             this.gc.fillText(String.format("%-20s%d ms", "avg repaint time:", this.avgRT/1000000), min_x, max_y - 70 / zoom_current);

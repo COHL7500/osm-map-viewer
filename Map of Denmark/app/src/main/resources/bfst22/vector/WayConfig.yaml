@@ -29,9 +29,7 @@ ways:
       coastline:
         draw:
           always_draw: true
-          fill: true
           stroke_color: "#b0a1ba"
-          fill_color: "white"
       wood:
         draw:
           fill: true

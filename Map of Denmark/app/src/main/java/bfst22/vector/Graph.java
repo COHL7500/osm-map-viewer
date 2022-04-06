@@ -3,9 +3,9 @@ package bfst22.vector;
 public class Graph {
     private final int V;
     private int E;
-    private Bag<Edge>[] adj; //Maybe should implement bag, unsure at the moment
+    private final Bag<Edge>[] adj; //Maybe should implement bag, unsure at the moment
 
-    private int[] indegree;
+    private final int[] indegree;
 
     public Graph(int V){
         if (V < 0) throw new IllegalArgumentException("error");

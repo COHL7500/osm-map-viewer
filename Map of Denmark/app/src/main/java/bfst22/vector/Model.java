@@ -19,7 +19,6 @@ public class Model {
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     public MapFeature yamlObj;
     public KdTree kdtree;
-    public List<Runnable> observers;
     public boolean isOMSloaded;
     public float minlat, minlon, maxlat, maxlon;
     public int nodecount, waycount, relcount;
@@ -33,7 +32,7 @@ public class Model {
     }
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
-    public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
+    public void loadMapFile(String filename) throws IOException, XMLStreamException, FactoryConfigurationError {
         this.currFileName = filename;
         if (filename.endsWith(".zip")) {
             var zip = new ZipInputStream(new FileInputStream(filename));
@@ -76,7 +75,6 @@ public class Model {
         * */
 
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
-        this.observers = new ArrayList<>();
         this.kdtree = new KdTree();
         this.isOMSloaded = true;
 
@@ -98,7 +96,7 @@ public class Model {
         // ID of the current relation.
         long relID = 0;
 
-        String suptype = null, subtype = null, name = null;
+        String valueType = null, keyType = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -145,8 +143,8 @@ public class Model {
                             if(k.equals("name")) name = v;
                             if(this.yamlObj.ways.containsKey(k))
                             {
-                                suptype = k;
-                                subtype = v;
+                                valueType = k;
+                                keyType = v;
 
                                 switch(k) {
                                     case "motorcar":
@@ -195,14 +193,10 @@ public class Model {
                             this.kdtree.add(way);
                             this.waycount++;
                             nodes.clear();
-                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
-                                //if(name != null)
-                                //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
+                            if(this.yamlObj.ways.containsKey(valueType) && this.yamlObj.ways.get(valueType).valuefeatures.containsKey(keyType)) {
+                                this.yamlObj.ways.get(valueType).valuefeatures.get(keyType).drawable.add(way);
                             }
-                            subtype = suptype = name = null;
+                            keyType = valueType = name = null;
                             break;
 
                         // is a collection of ways and has to be drawn separately with MultiPolygon.
@@ -211,14 +205,7 @@ public class Model {
                             this.kdtree.add(multipoly);
                             this.relcount++;
                             rel.clear();
-                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
-                                //if(name != null)
-                                //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
-                            }
-                            subtype = suptype = name = null;
+                            keyType = valueType = name = null;
                             break;
                     }
                     break;
@@ -232,13 +219,5 @@ public class Model {
     public void unloadOSM(){
         this.isOMSloaded = false;
         this.kdtree = new KdTree();
-    }
-
-    public void addObserver(Runnable observer) {
-        observers.add(observer);
-    }
-
-    public void notifyObservers() {
-        observers.forEach(Runnable::run);
     }
 }

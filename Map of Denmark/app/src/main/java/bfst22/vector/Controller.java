@@ -6,7 +6,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -25,13 +24,10 @@ public class Controller {
     private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
-	@FXML private Button menuActivation;
     @FXML private VBox vBox;
-    @FXML private Pane somePane;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
-    @FXML private ToggleGroup mapdisplay;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
@@ -175,7 +171,7 @@ public class Controller {
         dialog.setTitle("Change Absolute Coordinates");
         dialog.setContentText("Syntax: -12.345, 67.890");
         dialog.setResizable(false);
-        dialog.setHeaderText(null);
+        dialog.setHeaderText("");
         dialog.setGraphic(null);
 
         Optional<String> value = dialog.showAndWait();
@@ -192,7 +188,7 @@ public class Controller {
         dialog.setTitle("Change Relative Coordinates");
         dialog.setContentText("Syntax: -12.345, 67.890");
         dialog.setResizable(false);
-        dialog.setHeaderText(null);
+        dialog.setHeaderText("");
         dialog.setGraphic(null);
 
         Optional<String> value = dialog.showAndWait();
@@ -261,7 +257,7 @@ public class Controller {
     @FXML private void aboutButtonClicked(final ActionEvent e){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("About");
-        alert.setHeaderText(null);
+        alert.setHeaderText("");
         alert.setGraphic(null);
         alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022");
         alert.setResizable(false);

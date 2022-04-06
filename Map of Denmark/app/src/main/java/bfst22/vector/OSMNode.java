@@ -22,9 +22,7 @@ public class OSMNode implements Serializable, SerialVersionIdentifiable {
     public float getLon(){
         return lon;
     }
-    public long getId(){
-        return id;
-    }
+    public long getId() {return id;}
 
     public Point2D getPoint(){
         return new Point2D(this.lon,this.lat);
