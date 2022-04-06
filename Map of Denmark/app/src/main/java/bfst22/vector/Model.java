@@ -105,8 +105,12 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
+<<<<<<< HEAD
         String keyType = null, valueType = null, name = null;
 >>>>>>> main
+=======
+        String suptype = null, subtype = null, name = null;
+>>>>>>> parent of 7cfd49f (refactor code)
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -154,12 +158,17 @@ public class Model {
                             if(this.yamlObj.ways.containsKey(k))
                             {
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 valueType = k;
                                 keyType = v;
 =======
                                 keyType = k;
                                 valueType = v;
 >>>>>>> main
+=======
+                                suptype = k;
+                                subtype = v;
+>>>>>>> parent of 7cfd49f (refactor code)
 
                                 switch(k) {
                                     case "motorcar":
@@ -213,9 +222,14 @@ public class Model {
                                 this.yamlObj.ways.get(valueType).valuefeatures.get(keyType).drawable.add(way);
 =======
 
+<<<<<<< HEAD
                             if(this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
                                 this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
 >>>>>>> main
+=======
+                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
+>>>>>>> parent of 7cfd49f (refactor code)
                             }
                             keyType = valueType = name = null;
                             break;
@@ -230,7 +244,14 @@ public class Model {
                             keyType = valueType = name = null;
 =======
 
+<<<<<<< HEAD
 >>>>>>> main
+=======
+                            /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
+                            }*/
+
+>>>>>>> parent of 7cfd49f (refactor code)
                             break;
                     }
                     break;
