@@ -12,15 +12,16 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
     private Stage stage;
     private Point2D lastMouse;
 	private Model model;
-	private boolean leftPaneVisibility = false;
+	private final boolean[] paneVisibility = new boolean[]{false,true};
+    private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
 	@FXML private Button menuActivation;
@@ -29,22 +30,42 @@ public class Controller {
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
+    @FXML private ToggleGroup mapdisplay;
+
+    // Debug menu variables
+    @FXML private VBox vbox_debug;
+    @FXML private Label canvas_min;
+    @FXML private Label canvas_max;
+    @FXML private Label canvas_origin;
+    @FXML private Label canvas_mouse;
+    @FXML private Label canvas_zoom;
+    @FXML private Label canvas_bounds_min;
+    @FXML private Label canvas_bounds_max;
+    @FXML private Label canvas_nodes;
+    @FXML private Label canvas_ways;
+    @FXML private Label canvas_relations;
+    @FXML private Label canvas_filesize;
+    @FXML private Label canvas_load_time;
+    @FXML private Label canvas_repaint_time;
+    @FXML private Label canvas_avg_repaint_time;
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
-		this.someBorderPane.setLeft(null);
+        this.someBorderPane.setLeft(null);
         this.model = model;
         this.stage = primarystage;
-        this.canvas.init(model);
+        this.canvas.init(model,this);
         this.addRecentLoadedMap(this.model.currFileName);
-        this.centerPos();
-        this.centerPos();
+        this.canvas.centerPos();
+        this.canvas.centerPos();
+        this.canvas.pan(0,-50);
         this.canvas.update();
 
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.leftPaneVisibility ? 200 : 14));
+            this.canvas.setWidth(newValue.doubleValue() - (this.paneVisibility[0] ? 200 : 14));
+            this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : 0));
             this.canvas.update();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
@@ -54,41 +75,60 @@ public class Controller {
     }
 
     private void addRecentLoadedMap(String filename){
-        if(recentMapsSubmenu.getItems().size() > 4)
-            recentMapsSubmenu.getItems().remove(recentMapsSubmenu.getItems().size()-1);
-        String[] nameSplit = filename.replace("\\","/").split("/");
-        MenuItem entry = new MenuItem(recentMapsSubmenu.getItems().size() + ". " + nameSplit[nameSplit.length-1]);
-        entry.setUserData(filename);
-        entry.setOnAction(event -> {
-            model.unloadOSM();
-            try {
-                model.loadMapFile(entry.getUserData().toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            this.centerPos();
-            canvas.setDisable(false);
-            this.unloadFileButton.setDisable(false);
-        });
+        this.loadedMaps.remove(filename);
+        this.loadedMaps.add(filename);
+        if (this.loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size()-1);
+        this.recentMapsSubmenu.getItems().clear();
 
-        this.recentMapsSubmenu.getItems().add(entry);
-        this.recentMapsSubmenu.setDisable(false);
+        for (int i = this.loadedMaps.size()-1; i > -1; i--) {
+            String map = this.loadedMaps.get(i).replace("\\","/");
+            MenuItem entry = new MenuItem((this.loadedMaps.size()-1-i) + ". " + map);
+            entry.setUserData(map);
+            entry.setOnAction(event -> {
+                this.model.unloadOSM();
+                try {
+                    this.model.loadMapFile(entry.getUserData().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                this.canvas.centerPos();
+                canvas.setDisable(false);
+                this.unloadFileButton.setDisable(false);
+            });
+
+            this.recentMapsSubmenu.getItems().add(entry);
+            this.recentMapsSubmenu.setDisable(false);
+        }
     }
 
-    private void goToPosAbsolute(final double x, final double y){
-        double dx = (x - this.canvas.originx) * canvas.zoom_current;
-        double dy = (y - this.canvas.originy) * canvas.zoom_current;
-        this.canvas.pan(-dx,-dy);
+    public void updateDebugInfo(){
+        if(this.model.isOMSloaded && this.paneVisibility[1]){
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minx) + ", " + String.format("%.5f", this.canvas.miny)));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxx) + ", " + String.format("%.5f", this.canvas.maxy)));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originx) + ", " + String.format("%.5f", this.canvas.originy)));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousex) + ", " + String.format("%.5f", this.canvas.mousey)));
+            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
+            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)));
+            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)));
+            this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
+            this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
+            this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
+            this.canvas_filesize.setText(String.format("%-27s%d bytes", "file size:", this.model.filesize));
+            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
+            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
+            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+        }
     }
 
-    private void goToPosRelative(final double x, final double y){
-        this.canvas.pan(x,y);
-    }
+    private String inputWindow(String title, String contentText){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setContentText(contentText);
+        dialog.setResizable(false);
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
 
-    private void centerPos(){
-        double dx = (this.model.maxlon + this.model.minlon)/2;
-        double dy = (this.model.maxlat + this.model.minlat)/2;
-        this.goToPosAbsolute(dx,dy);
+        return dialog.showAndWait().orElse(null);
     }
 
     /* ---------- Mouse Methods ---------- */
@@ -110,11 +150,10 @@ public class Controller {
     @FXML private void onMousePressed(final MouseEvent e) {
         this.lastMouse = new Point2D(e.getX(), e.getY());
     }
-        
+
     @FXML private void onMenuButtonPress(ActionEvent e){
-        this.leftPaneVisibility = !this.leftPaneVisibility;
-        this.someBorderPane.setLeft(this.leftPaneVisibility ? vBox : null);
-        this.canvas.setWidth(this.someBorderPane.getWidth() - (this.leftPaneVisibility ? 200 : 0));
+        this.someBorderPane.setLeft((this.paneVisibility[0] = !this.paneVisibility[0]) ? vBox : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[0] ? 200 : -200));
         this.canvas.update();
     }
 
@@ -144,7 +183,8 @@ public class Controller {
             this.addRecentLoadedMap(file.getAbsolutePath());
             this.model.unloadOSM();
             this.model.loadMapFile(file.getAbsolutePath());
-            this.centerPos();
+            this.canvas.centerPos();
+            this.canvas.pan(0,-50);
             this.canvas.setDisable(false);
             this.unloadFileButton.setDisable(false);
         }
@@ -163,88 +203,113 @@ public class Controller {
         System.exit(0);
     }
 
-    // when the menubar 'Dev Tools' section button 'Change Absolute Coordinates' is clicked
+    // when the menubar 'Edit' section button 'Zoom In' is clicked
+    @FXML private void zoomInClicked(final ActionEvent e){
+        this.canvas.zoom(1.2);
+        this.canvas.pan(1,1);
+    }
+
+    // when the menubar 'Edit' section button 'Zoom Out' is clicked
+    @FXML private void zoomOutClicked(final ActionEvent e){
+        this.canvas.zoom(0.8);
+        this.canvas.pan(1,1);
+    }
+
+    // when the menubar 'Edit' section button 'Change Zoom Level' is clicked
+    @FXML private void changeZoomLevelClicked(final ActionEvent e){
+        String zlevel = this.inputWindow("Change Zoom Level","Syntax: 42000");
+        if(zlevel != null){
+            this.canvas.zoom(Integer.parseInt(zlevel)/this.canvas.zoom_current);
+            this.canvas.update();
+        }
+    }
+
+    // when the menubar 'Tools' section button 'Change Absolute Coordinates' is clicked
     @FXML private void changeAbsoluteCoordClicked(final ActionEvent e){
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Change Absolute Coordinates");
-        dialog.setContentText("Syntax: -12.345, 67.890");
-        dialog.setResizable(false);
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-
-        String value = dialog.showAndWait().get();
-
-        if(value.length() > 0){
-            String[] dialogvalue = value.split(",");
-            this.goToPosAbsolute(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        String abscoords = this.inputWindow("Change Absolute Coordinates","Syntax: -12.345, 67.890");
+        if(abscoords != null){
+            String[] dialogvalue = abscoords.split(",");
+            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1]));
         }
     }
 
-    // when the menubar 'Dev Tools' section button 'Change Relative Coordinates' is clicked
+    // when the menubar 'Tools' section button 'Change Relative Coordinates' is clicked
     @FXML private void changeRelativeCoordClicked(final ActionEvent e){
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Change Relative Coordinates");
-        dialog.setContentText("Syntax: -12.345, 67.890");
-        dialog.setResizable(false);
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-
-        String value = dialog.showAndWait().get();
-
-        if(value.length() > 0){
-            String[] dialogvalue = value.split(",");
-            this.goToPosRelative(Double.parseDouble(dialogvalue[0]),Double.parseDouble(dialogvalue[1]));
+        String relcoords = this.inputWindow("Change Relative Coordinates","Syntax: -12.345, 67.890");
+        if(relcoords != null){
+            String[] dialogvalue = relcoords.split(",");
+            if(dialogvalue.length == 2) this.canvas.goToPosRelative(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1]));
         }
     }
 
-    // when the menubar 'Dev Tools' section button 'Center Screen Position' is clicked
+    // when the menubar 'Tools' section button 'Center Screen Position' is clicked
     @FXML private void centerScreenPosition(final ActionEvent e){
-        this.centerPos();
+        this.canvas.centerPos();
+        this.canvas.pan(0,-50);
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Cursor Pointer' is clicked
+    // when the menubar 'Tools' section button 'Toggle Debug Sidebar' is clicked
+    @FXML private void debugSidebarClicked(final ActionEvent e){
+        this.someBorderPane.setRight((this.paneVisibility[1] = !this.paneVisibility[1]) ? vbox_debug : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : -250));
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Display Filled' is clicked
+    @FXML private void debugDisplayFilledClicked(final ActionEvent e){
+        this.canvas.debugDisplayWireframe = false;
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Display Wireframe' is clicked
+    @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
+        this.canvas.debugDisplayWireframe = true;
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
     @FXML private void debugCursorClicked(final ActionEvent e){
         this.canvas.debugCursor = !this.canvas.debugCursor;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Kd-Tree VisBox' is clicked
+    // when the menubar 'Tools' section button 'Enable Kd-Tree VisBox' is clicked
     @FXML private void debugVisBoxClicked(final ActionEvent e){
         this.canvas.debugVisBox = !this.canvas.debugVisBox;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Kd-Tree Splits' is clicked
+    // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
     @FXML private void debugSplitsClicked(final ActionEvent e){
         this.canvas.debugSplits = !this.canvas.debugSplits;
     }
 
-    // when the menubar 'Dev Tools' section button 'Enable Free Movement' is clicked
+    // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e){
         this.canvas.debugFreeMovement = !this.canvas.debugFreeMovement;
-        if(!this.canvas.debugFreeMovement) this.centerPos();
+        if(!this.canvas.debugFreeMovement) this.canvas.centerPos();
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Help Text' is clicked
+    // when the menubar 'Tools' section button 'Disable Help Text' is clicked
     @FXML private void debugHelpTextClicked(final ActionEvent e){
         this.canvas.debugDisableHelpText = !this.canvas.debugDisableHelpText;
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Debug Box' is clicked
+    // when the menubar 'Tools' section button 'Disable Debug Box' is clicked
     @FXML private void debugInfoTextClicked(final ActionEvent e){
         this.canvas.debugInfo = !this.canvas.debugInfo;
     }
 
-    // when the menubar 'Dev Tools' section button 'Disable Bounding Box' is clicked
+    // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
     @FXML private void debugBoundingBoxClicked(final ActionEvent e){
         this.canvas.debugBoundingBox = !this.canvas.debugBoundingBox;
     }
 
-    // when the menubar 'Help' section button 'About' is clicked
+    // when the menubar 'Help' section button 'About...' is clicked
     @FXML private void aboutButtonClicked(final ActionEvent e){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("About");
         alert.setHeaderText(null);
         alert.setGraphic(null);
-        alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022");
+        alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022 - Group #1");
         alert.setResizable(false);
         alert.show();
     }

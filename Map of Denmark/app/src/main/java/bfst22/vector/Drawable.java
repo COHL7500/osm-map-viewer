@@ -16,7 +16,7 @@ public interface Drawable {
     // fills an object.
     default void fill(GraphicsContext gc) {
         gc.beginPath();
-        trace(gc);
+        this.trace(gc);
         gc.fill();
         gc.closePath();
     }

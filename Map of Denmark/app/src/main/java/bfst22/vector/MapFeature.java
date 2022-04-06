@@ -37,4 +37,5 @@ class featureDraw implements Serializable, SerialVersionIdentifiable {
 	public double line_width;
 	public double dash_size;
 	public int zoom_level;
+	public boolean always_draw;
 }

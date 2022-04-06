@@ -54,6 +54,9 @@ cmake-build-*/
 # File-based project format
 *.iws
 
+# OSM-files (maps)
+*.osm
+
 # .obj files automatically generatd upon start
 *.obj
 
