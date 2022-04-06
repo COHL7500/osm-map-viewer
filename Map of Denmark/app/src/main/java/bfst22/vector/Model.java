@@ -85,7 +85,7 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
-        String keyType = null, valueType = null, name = null;
+        String suptype = null, subtype = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -118,8 +118,8 @@ public class Model {
                             if(k.equals("name")) name = v;
                             if(this.yamlObj.ways.containsKey(k))
                             {
-                                keyType = k;
-                                valueType = v;
+                                suptype = k;
+                                subtype = v;
 
                                 switch(k) {
                                     case "motorcar":
@@ -164,8 +164,8 @@ public class Model {
                             this.waycount++;
                             nodes.clear();
 
-                            if(this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
-                                this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
+                            if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
                             }
 
                             break;
@@ -174,6 +174,10 @@ public class Model {
                             this.kdtree.add(multipoly);
                             this.relcount++;
                             rel.clear();
+
+                            /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+                                this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
+                            }*/
 
                             break;
                     }

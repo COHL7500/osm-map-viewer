@@ -24,10 +24,13 @@ public class Controller {
     private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
+	@FXML private Button menuActivation;
     @FXML private VBox vBox;
+    @FXML private Pane somePane;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
+    @FXML private ToggleGroup mapdisplay;
 
     // Debug menu variables
     @FXML private VBox vbox_debug;
@@ -110,7 +113,7 @@ public class Controller {
             this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
             this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
             this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
-            this.canvas_filesize.setText(String.format("%-27s%.2f megabytes", "file size:", (float) this.model.filesize / 1000000));
+            this.canvas_filesize.setText(String.format("%-27s%d bytes", "file size:", this.model.filesize));
             this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
             this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
             this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));

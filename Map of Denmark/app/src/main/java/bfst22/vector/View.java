@@ -13,21 +13,21 @@ import javafx.stage.Stage;
 // Responsible for displaying model data.
 public class View {
     private final int width, height;
-    private final String style;
+    private final String fxml, style, map, title;
 
-    @FXML private BorderPane someBorderPane;
+	@FXML private BorderPane someBorderPane;
 	
     public View(Model model, Stage stage) throws Exception {
         this.width = 800;
         this.height = 600;
-        String fxml = "View.fxml";
+        this.fxml = "View.fxml";
         this.style = "style.css";
-        String map = "data/small.osm.zip";
-        String title = "Danmarkskort - Gruppe #1";
+        this.map = "data/small.osm.zip";
+        this.title = "Danmarkskort - Gruppe #1";
 
-        model.loadMapFile(map);
+        model.loadMapFile(this.map);
 
-        FXMLLoader loader = new FXMLLoader(View.class.getResource(fxml));
+        FXMLLoader loader = new FXMLLoader(View.class.getResource(this.fxml));
         Scene scene = loader.load();
 
         this.setDisplayBound(stage);
@@ -35,7 +35,7 @@ public class View {
         this.setPrimaryStageSize(stage);
 
         stage.setScene(scene);
-        stage.setTitle(title);
+        stage.setTitle(this.title);
         stage.show();
 
         ((Controller) loader.getController()).init(model,stage);
