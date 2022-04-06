@@ -12,51 +12,52 @@ import javafx.stage.Stage;
 
 // Responsible for displaying model data.
 public class View {
+    private final int width, height;
+    private final String fxml, style, map, title;
 
-    @FXML
-    private BorderPane someBorderPane;
+	@FXML private BorderPane someBorderPane;
+	
+    public View(Model model, Stage stage) throws Exception {
+        this.width = 800;
+        this.height = 600;
+        this.fxml = "View.fxml";
+        this.style = "style.css";
+        this.map = "data/small.osm.zip";
+        this.title = "Danmarkskort - Gruppe #1";
 
-    // Main method for displaying the program
-    public View(Model model, Stage primaryStage) throws IOException {
+        model.loadMapFile(this.map);
 
-        setDisplayBound(primaryStage);
-
-        var loader = new FXMLLoader(View.class.getResource("View.fxml"));
-
+        FXMLLoader loader = new FXMLLoader(View.class.getResource(this.fxml));
         Scene scene = loader.load();
-        scene.getStylesheets().clear();
 
-        getCSS(scene);
+        this.setDisplayBound(stage);
+        this.getCSS(scene);
+        this.setPrimaryStageSize(stage);
 
-        setPrimaryStageSize(primaryStage);
+        stage.setScene(scene);
+        stage.setTitle(this.title);
+        stage.show();
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-        Controller controller = loader.getController();
-        controller.init(model);
-        primaryStage.setTitle("Map Of Denmark");
+        ((Controller) loader.getController()).init(model,stage);
     }
 
     // Getting the CSS file and implement it on the scene
-    public void getCSS(Scene scene){
-        String css = View.class.getResource("style.css").toExternalForm();
+    private void getCSS(Scene scene){
+        String css = View.class.getResource(this.style).toExternalForm();
         scene.getStylesheets().add(css);
     }
 
     // Setting the stage size for the application
-    public void setPrimaryStageSize(Stage primaryStage){
-        double width = 800, height = 600;
-        primaryStage.setWidth(width);
-        primaryStage.setMinWidth(width / 2);
-        primaryStage.setHeight(height);
-        primaryStage.setMinHeight(height / 2);
+    private void setPrimaryStageSize(Stage primaryStage){
+        primaryStage.setWidth(this.width);
+        primaryStage.setMinWidth(this.width/2);
+        primaryStage.setHeight(this.height);
+        primaryStage.setMinHeight(this.height/2);
     }
 
     // Setting the window displaybound so the scene spawns within the screen
-    public void setDisplayBound(Stage primaryStage){
+    private void setDisplayBound(Stage primaryStage){
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-
         primaryStage.setX((primScreenBounds.getWidth() - primaryStage.getWidth()) / 2);
         primaryStage.setY((primScreenBounds.getHeight() - primaryStage.getHeight() / 2));
     }

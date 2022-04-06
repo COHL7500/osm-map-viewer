@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 // A HashMap exclusively designed for nodes.
-public class NodeMap extends ArrayList<OSMNode> {
+public class NodeMap extends ArrayList<PolyPoint> {
     boolean sorted;
 
     // adds a new node to the nodemap and corrects the sorted bool to false.
-    public boolean add(OSMNode node) {
+    public boolean add(PolyPoint node) {
         sorted = false;
         return super.add(node);
     }
 
     // gets the node from the map based on the given reference and sorts the map.
     // Uncertain as to why it sorts the map? Perhaps performance improvement?
-    public OSMNode get(final long ref) {
+    public PolyPoint get(final long ref) {
         if (!sorted) {
             sort(Comparator.comparing(node -> node.id));
             sorted = true;
