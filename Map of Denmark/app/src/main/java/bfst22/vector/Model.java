@@ -78,6 +78,7 @@ public class Model {
         this.kdtree = new KdTree();
         this.isOMSloaded = true;
 
+<<<<<<< HEAD
         // Reads the .osm file, being an XML file.
         var reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input));
 
@@ -97,6 +98,15 @@ public class Model {
         long relID = 0;
 
         String valueType = null, keyType = null, name = null;
+=======
+        XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
+        NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
+        Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
+        List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
+        List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
+        long relID = 0; // ID of the current relation.
+        String keyType = null, valueType = null, name = null;
+>>>>>>> main
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -143,8 +153,13 @@ public class Model {
                             if(k.equals("name")) name = v;
                             if(this.yamlObj.ways.containsKey(k))
                             {
+<<<<<<< HEAD
                                 valueType = k;
                                 keyType = v;
+=======
+                                keyType = k;
+                                valueType = v;
+>>>>>>> main
 
                                 switch(k) {
                                     case "motorcar":
@@ -193,8 +208,14 @@ public class Model {
                             this.kdtree.add(way);
                             this.waycount++;
                             nodes.clear();
+<<<<<<< HEAD
                             if(this.yamlObj.ways.containsKey(valueType) && this.yamlObj.ways.get(valueType).valuefeatures.containsKey(keyType)) {
                                 this.yamlObj.ways.get(valueType).valuefeatures.get(keyType).drawable.add(way);
+=======
+
+                            if(this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
+                                this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
+>>>>>>> main
                             }
                             keyType = valueType = name = null;
                             break;
@@ -205,7 +226,11 @@ public class Model {
                             this.kdtree.add(multipoly);
                             this.relcount++;
                             rel.clear();
+<<<<<<< HEAD
                             keyType = valueType = name = null;
+=======
+
+>>>>>>> main
                             break;
                     }
                     break;

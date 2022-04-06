@@ -28,6 +28,26 @@ public class Controller {
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
+<<<<<<< HEAD
+=======
+
+    // Debug menu variables
+    @FXML private VBox vbox_debug;
+    @FXML private Label canvas_min;
+    @FXML private Label canvas_max;
+    @FXML private Label canvas_origin;
+    @FXML private Label canvas_mouse;
+    @FXML private Label canvas_zoom;
+    @FXML private Label canvas_bounds_min;
+    @FXML private Label canvas_bounds_max;
+    @FXML private Label canvas_nodes;
+    @FXML private Label canvas_ways;
+    @FXML private Label canvas_relations;
+    @FXML private Label canvas_filesize;
+    @FXML private Label canvas_load_time;
+    @FXML private Label canvas_repaint_time;
+    @FXML private Label canvas_avg_repaint_time;
+>>>>>>> main
 
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public void init(final Model model, final Stage primarystage) {
@@ -80,6 +100,39 @@ public class Controller {
         }
     }
 
+<<<<<<< HEAD
+=======
+    public void updateDebugInfo(){
+        if(this.model.isOMSloaded && this.paneVisibility[1]){
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minx) + ", " + String.format("%.5f", this.canvas.miny)));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxx) + ", " + String.format("%.5f", this.canvas.maxy)));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originx) + ", " + String.format("%.5f", this.canvas.originy)));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousex) + ", " + String.format("%.5f", this.canvas.mousey)));
+            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
+            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)));
+            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)));
+            this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
+            this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
+            this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
+            this.canvas_filesize.setText(String.format("%-27s%.2f megabytes", "file size:", (float) this.model.filesize / 1000000));
+            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
+            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
+            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+        }
+    }
+
+    private String inputWindow(String title, String contentText){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setContentText(contentText);
+        dialog.setResizable(false);
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+
+        return dialog.showAndWait().orElse(null);
+    }
+
+>>>>>>> main
     /* ---------- Mouse Methods ---------- */
     // handles an event of scrolling and increases/decreases the zoom level of the map.
     @FXML private void onScroll(final ScrollEvent e) {
