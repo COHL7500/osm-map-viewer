@@ -9,10 +9,10 @@ public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiab
     public final float[] coords;
 
     // Constructs the line based on the given nodes for the particular polygon.
-    public PolyLine(final List<OSMNode> nodes) {
+    public PolyLine(final List<PolyPoint> nodes) {
         this.coords = new float[nodes.size() * 2];
         int i = 0;
-        for (OSMNode node : nodes) {
+        for (PolyPoint node : nodes) {
             coords[i++] = node.lat;
             coords[i++] = node.lon;
         }

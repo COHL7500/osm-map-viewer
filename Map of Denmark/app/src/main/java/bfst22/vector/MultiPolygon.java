@@ -9,8 +9,8 @@ import javafx.scene.canvas.GraphicsContext;
 public class MultiPolygon implements Drawable, Serializable, SerialVersionIdentifiable {
     List<Drawable> parts = new ArrayList<>(); // List of what constitutes the relation.
 
-    public MultiPolygon(final List<OSMWay> rel) {
-        for (OSMWay way : rel) this.parts.add(new PolyLine(way.nodes));
+    public MultiPolygon(final List<PolyLine> rel) {
+        this.parts.addAll(rel);
     }
 
     // Traces the area that has to be drawn before drawing.

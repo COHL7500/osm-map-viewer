@@ -30,9 +30,6 @@ public class MapCanvas extends Canvas {
 
         // Default zoom level: 700
         this.zoom(700 / (model.maxlon - model.minlon));
-
-        // Observer notifies the change in a particular state, being our repaint in this case.
-        this.model.addObserver(this::repaint);
     }
 
     // Draws all of the elements of our map.
@@ -50,8 +47,6 @@ public class MapCanvas extends Canvas {
         double padding = this.debugVisBox ? 100 : -25;
         Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
                                                             new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
-
-        //Set<valueFeature> featureList = new HashSet<>();
 
         // Loops through all the key features and sets the default styling for all its objects
         for(keyFeature element : model.yamlObj.ways.values()){
@@ -76,8 +71,6 @@ public class MapCanvas extends Canvas {
                             if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
                                     || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
                                 draw.draw(this.gc);
-                        /*if (element2.name != null && element2.nameCenter != null && element2.name.length() > 0)
-                            featureList.add(element2);*/
                         }
                     }
                 }
@@ -92,8 +85,6 @@ public class MapCanvas extends Canvas {
         this.strokeCursor();
         this.strokeBox(padding);
         this.controller.updateDebugInfo();
-
-        //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
 
     // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided

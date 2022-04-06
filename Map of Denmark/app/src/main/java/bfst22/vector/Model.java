@@ -39,6 +39,7 @@ public class Model {
         } else if (filename.endsWith(".osm")) {
             this.loadOSM(new FileInputStream(filename));
         } else if (filename.endsWith(".obj")) {
+            this.loadTime = System.nanoTime();
             try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
                 minlat = input.readFloat();
                 minlon = input.readFloat();
@@ -49,7 +50,9 @@ public class Model {
             }
 
             this.isOMSloaded = true;
+            this.loadTime = System.nanoTime() - this.loadTime;
             this.observers = new ArrayList<>();
+            this.filesize = Files.size(Paths.get(this.currFileName));
         }
 
         if (!filename.endsWith(".obj")) save(filename);
@@ -78,9 +81,9 @@ public class Model {
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
-        Map<Long, OSMWay> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
-        List<OSMNode> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
-        List<OSMWay> rel = new ArrayList<>(); // Saves all relations.
+        Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
+        List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
+        List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
 
@@ -99,7 +102,7 @@ public class Model {
                             long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                             float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                            id2node.add(new OSMNode(id, 0.56f * lon, -lat));
+                            id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
                             this.nodecount++;
                             break;
                         case "nd": // parses reference to a node (ID) and adds it to the node list.
@@ -147,7 +150,7 @@ public class Model {
                             break;
                         case "member": // parses a member (a reference to a way belonging to a collection of ways; relations)
                             ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                            OSMWay elm = id2way.get(ref);
+                            PolyLine elm = id2way.get(ref);
                             if (elm != null) rel.add(elm);
                             break;
                         }
@@ -156,32 +159,26 @@ public class Model {
                     switch (reader.getLocalName()) {
                         case "way": // "way" - All lines in the program; linking point A to B
                             PolyLine way = new PolyLine(nodes);
-                            id2way.put(relID, new OSMWay(nodes));
+                            id2way.put(relID, way);
                             this.kdtree.add(way);
                             this.waycount++;
                             nodes.clear();
+
                             if(this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = way.getCenter();
-                                //if(name != null)
-                                //    System.out.println(name + " " + way.getCenter()[0] + ", " + way.getCenter()[1]);
                             }
-                            subtype = suptype = name = null;
+
                             break;
                         case "relation": // is a collection of ways and has to be drawn separately with MultiPolygon.
                             MultiPolygon multipoly = new MultiPolygon(rel);
                             this.kdtree.add(multipoly);
                             this.relcount++;
                             rel.clear();
-                            if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
+
+                            /*if(suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                                 this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(multipoly);
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).name = name;
-                                //this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).nameCenter = multipoly.getCenter();
-                                //if(name != null)
-                                //    System.out.println(name + " " + multipoly.getCenter()[0] + ", " + multipoly.getCenter()[1]);
-                            }
-                            subtype = suptype = name = null;
+                            }*/
+
                             break;
                     }
                     break;
@@ -195,13 +192,5 @@ public class Model {
     public void unloadOSM(){
         this.isOMSloaded = false;
         this.kdtree = new KdTree();
-    }
-
-    public void addObserver(Runnable observer) {
-        observers.add(observer);
-    }
-
-    public void notifyObservers() {
-        observers.forEach(Runnable::run);
     }
 }
