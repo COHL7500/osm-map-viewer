@@ -7,6 +7,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 // defines the canvas of our map; panning, zooming, painting etc.
@@ -17,10 +21,10 @@ public class MapCanvas extends Canvas {
     public Controller controller;
     public GraphicsContext gc = super.getGraphicsContext2D();
     public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true,
-            debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false;
     public long repaintTime, avgRT = 0, avgRTNum = 0;
     // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
+
+    Map<String, Boolean> debugValMap = debugPropertiesInit();
 
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model, final Controller controller) {
@@ -31,6 +35,46 @@ public class MapCanvas extends Canvas {
         // Default zoom level: 700
         this.zoom(700 / (model.maxlon - model.minlon));
     }
+
+    public HashMap<String, Boolean> debugPropertiesInit() {
+
+        InputStream inputStream;
+        String propFileName = "debugconfig.properties";
+        Properties prop = new Properties();
+        HashMap<String, Boolean> tempMap = new HashMap<>();
+
+        try
+        {
+            inputStream = MapCanvas.class.getResourceAsStream(propFileName);
+
+            if(inputStream != null)
+            {
+                prop.load(inputStream);
+                inputStream.close();
+            }
+            else
+            {
+                throw new FileNotFoundException("Could not find " + propFileName + "!");
+
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("EXCEPTION: " + e.getMessage());
+        }
+
+        while(prop.propertyNames().asIterator().next() != null)
+        {
+            System.out.println(prop.propertyNames().asIterator().next());
+            String propName = ((String) prop.propertyNames().asIterator().next());
+            tempMap.put(propName, Boolean.parseBoolean(prop.getProperty(propName)));
+        }
+
+        return tempMap;
+    }
+
+    public void debugPropertiesSet(String propName) {debugValMap.replace(propName, !debugValMap.get(propName));}
+
 
     // Draws all of the elements of our map.
     private void repaint() {
@@ -44,7 +88,7 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = this.debugVisBox ? 100 : -25;
+        double padding = debugValMap.get("debugVisBox") ? 100 : -25;
         Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
                                                             new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
 
@@ -65,7 +109,7 @@ public class MapCanvas extends Canvas {
 
                             if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
                                     || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                if(!this.debugDisplayWireframe) draw.fill(this.gc);
+                                if(debugValMap.get("debugDisplayWireframe")) draw.fill(this.gc);
                                 draw.draw(this.gc);
                             }
                             if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
@@ -111,7 +155,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeBox(double padding){
-        if(this.debugVisBox && this.model.isOMSloaded){
+        if(debugValMap.get("debugVisBox") && this.model.isOMSloaded){
             padding /= zoom_current;
             double csize = 5 / zoom_current;
 
@@ -135,7 +179,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
             this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
 
-            if(this.debugDisableHelpText) {
+            if(debugValMap.get("debugDisableHelpText")) {
                 this.gc.fillText("relative origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
                 this.gc.fillText("top left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", miny + padding) + ")", minx + padding + csize, miny + padding - csize);
                 this.gc.fillText("top right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", miny + padding) + ")", maxx - padding + csize, miny + padding - csize);
@@ -146,18 +190,18 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeCursor(){
-        if(this.debugCursor && this.model.isOMSloaded){
+        if(debugValMap.get("debugCursor") && this.model.isOMSloaded){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.BLUE);
             this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
             this.gc.setFont(new Font("Arial",11/zoom_current));
-            if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+            if(debugValMap.get("debugDisableHelpText")) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
             this.gc.setFill(Color.BLACK);
         }
     }
 
     private void splitsTree(){
-        if(this.debugSplits && this.model.isOMSloaded){
+        if(debugValMap.get("debugSplits") && this.model.isOMSloaded){
             List<float[]> lines = this.model.kdtree.getSplit();
             this.gc.setLineWidth(2.5/zoom_current);
             this.gc.setStroke(Color.GREEN);
@@ -174,7 +218,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawBounds(){
-        if(this.debugBoundingBox && this.model.isOMSloaded){
+        if(debugValMap.get("debugBoundingBox") && this.model.isOMSloaded){
             this.gc.setLineWidth(1/zoom_current);
             this.gc.setLineDashes(0);
             this.gc.setStroke(Color.RED);
@@ -209,7 +253,7 @@ public class MapCanvas extends Canvas {
     public void pan(double dx, double dy) {
         this.setScale(dx,dy);
 
-        if(!this.debugFreeMovement && (this.originx < this.model.minlon || this.originx > this.model.maxlon
+        if(!debugValMap.get("debugFreeMovement") && (this.originx < this.model.minlon || this.originx > this.model.maxlon
                 || this.originy < this.model.minlat || this.originy > this.model.maxlat)){
             this.setScale(-dx,-dy);
         } else {

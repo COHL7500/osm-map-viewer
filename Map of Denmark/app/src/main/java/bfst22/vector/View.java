@@ -1,12 +1,13 @@
 package bfst22.vector;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.util.MissingResourceException;
+import java.util.Objects;
 
 // Responsible for displaying model data.
 public class View {
@@ -39,9 +40,9 @@ public class View {
     }
 
     // Getting the CSS file and implement it on the scene
-    private void getCSS(Scene scene) throws NullPointerException {
+    private void getCSS(Scene scene) throws MissingResourceException {
         try {
-            String css = View.class.getResource(this.style).toExternalForm();
+            String css = Objects.requireNonNull(View.class.getResource(this.style)).toExternalForm();
             scene.getStylesheets().add(css);
         }
         catch (NullPointerException npe) {

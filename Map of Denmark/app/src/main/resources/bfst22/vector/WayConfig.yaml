@@ -29,7 +29,6 @@ ways:
       coastline:
         draw:
           always_draw: true
-          fill: true
           stroke_color: "#b0a1ba"
           fill_color: "white"
       wood:
@@ -342,6 +341,14 @@ ways:
       shared_lane: {}
       share_busway: {}
       separate: {}
+  railway:
+      draw:
+          stroke: true
+          stroke_color: "#889194"
+          dash_size: 0.00005
+          zoom_level: 30000
+      valuefeatures:
+          subway: {}
   route:
     draw:
       stroke: true
