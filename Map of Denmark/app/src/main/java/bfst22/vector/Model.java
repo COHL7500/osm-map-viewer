@@ -107,6 +107,7 @@ public class Model {
                             //add lat and lon to Address object
                             builder = builder.lat(-lat);
                             builder = builder.lon(0.56f * lon);
+                            builder = builder.id(id);
                             break;
 
                         // parses reference to a node (ID) and adds it to the node list.
@@ -125,12 +126,17 @@ public class Model {
                         case "tag":
                             var k = reader.getAttributeValue(null, "k");
                             var v = reader.getAttributeValue(null, "v");
-                            if(k.equals("name")) name = v;
                             if(this.yamlObj.ways.containsKey(k)) {
                                 suptype = k;
                                 subtype = v;
                                 break;
                             }
+
+                            if (k.equals("name")) {
+                                name = v;
+                                break;
+                            }
+
                             //Build Address object and add to list.
                             if (k.contains("addr:")) {
                                 switch (k) {
@@ -147,7 +153,12 @@ public class Model {
                                             builder = builder.street(v);
                                             break;
                                     }
+
+                                    if (!builder.isEmpty()) {
                                     addresses.add(builder.build());
+                                    }
+                                    else builder.emptyBuilder();
+                                    break;
                                 }
                                 break;
 
@@ -197,6 +208,9 @@ public class Model {
             }
         }
         Collections.sort(addresses);
+        for (Address address : addresses) {
+            System.out.println(address.toString());
+        }
     }
 
     public void addObserver(Runnable observer) {

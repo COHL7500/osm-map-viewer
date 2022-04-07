@@ -9,6 +9,7 @@ public class Address implements Comparable<Address> {
 
     private Address(
             String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon, long _id) {
+
         if (_street != null) {
             street = _street.intern();
         } else street = _street;
@@ -64,7 +65,7 @@ public class Address implements Comparable<Address> {
         private String street, house, floor, side, postcode, city;
         private float lat, lon;
         private long id;
-        private boolean isEmpty = true;
+        public boolean isEmpty = true;
 
         public Builder street(String _street) {
             street = _street;
@@ -116,11 +117,16 @@ public class Address implements Comparable<Address> {
         }
 
         public boolean isEmpty() {
-            return isEmpty();
+            return isEmpty;
+        }
+
+        public void emptyBuilder() {
+            isEmpty = true;
         }
     }
     @Override
     public int compareTo(Address that) {
+
         if ((this.street == null) && (that.street == null)) return 0;
         if (this.street == null) return 1;
         if (that.street == null) return -1;
