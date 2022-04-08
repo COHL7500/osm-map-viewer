@@ -17,7 +17,7 @@ public class Model {
     public MapFeature yamlObj;
     public KdTree kdtree;
     public List<Runnable> observers;
-    public boolean isOMSloaded;
+    public boolean isOSMLoaded;
     public float minlat, minlon, maxlat, maxlon;
     public int nodecount, waycount, relcount;
     public String currFileName;
@@ -26,7 +26,7 @@ public class Model {
     public Edge e;
 
     public Model(){
-        this.isOMSloaded = false;
+        this.isOSMLoaded = false;
     }
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -49,7 +49,7 @@ public class Model {
                 yamlObj = (MapFeature) input.readObject();
             }
 
-            this.isOMSloaded = true;
+            this.isOSMLoaded = true;
             this.loadTime = System.nanoTime() - this.loadTime;
             this.observers = new ArrayList<>();
             this.filesize = Files.size(Paths.get(this.currFileName));
@@ -77,7 +77,7 @@ public class Model {
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.observers = new ArrayList<>();
         this.kdtree = new KdTree();
-        this.isOMSloaded = true;
+        this.isOSMLoaded = true;
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
@@ -190,7 +190,7 @@ public class Model {
     }
 
     public void unloadOSM(){
-        this.isOMSloaded = false;
+        this.isOSMLoaded = false;
         this.kdtree = new KdTree();
     }
 }

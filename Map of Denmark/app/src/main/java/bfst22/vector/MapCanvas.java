@@ -1,15 +1,16 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.stage.Screen;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -36,12 +37,12 @@ public class MapCanvas extends Canvas {
         this.zoom(700 / (model.maxlon - model.minlon));
     }
 
-    public HashMap<String, Boolean> debugPropertiesInit() {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Map<String, Boolean> debugPropertiesInit() {
 
         InputStream inputStream;
         String propFileName = "debugconfig.properties";
         Properties prop = new Properties();
-        HashMap<String, Boolean> tempMap = new HashMap<>();
 
         try
         {
@@ -63,17 +64,17 @@ public class MapCanvas extends Canvas {
             System.out.println("EXCEPTION: " + e.getMessage());
         }
 
-        while(prop.propertyNames().asIterator().next() != null)
-        {
-            System.out.println(prop.propertyNames().asIterator().next());
-            String propName = ((String) prop.propertyNames().asIterator().next());
-            tempMap.put(propName, Boolean.parseBoolean(prop.getProperty(propName)));
-        }
+        Map tempMap = prop;
+        Map<String, String> mapFinal = (Map<String, String>) tempMap;
+        Map<String, Boolean> mapReturn = new HashMap<>();
 
-        return tempMap;
+        for(String key : mapFinal.keySet())
+        {mapReturn.put(key, Boolean.parseBoolean(mapFinal.get(key)));}
+
+        return mapReturn;
     }
 
-    public void debugPropertiesSet(String propName) {debugValMap.replace(propName, !debugValMap.get(propName));}
+    public void debugPropertiesToggle(String propName) {debugValMap.replace(propName, !debugValMap.get(propName));}
 
 
     // Draws all of the elements of our map.
@@ -82,7 +83,11 @@ public class MapCanvas extends Canvas {
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
-        this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+        // this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+
+        // Background color
+        this.gc.setFill(Color.web("#b5d2de"));
+        this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
@@ -91,6 +96,7 @@ public class MapCanvas extends Canvas {
         double padding = debugValMap.get("debugVisBox") ? 100 : -25;
         Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
                                                             new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
+
 
         // Loops through all the key features and sets the default styling for all its objects
         for(keyFeature element : model.yamlObj.ways.values()){
@@ -103,13 +109,13 @@ public class MapCanvas extends Canvas {
                     // Checks if the styling requires them to be drawn with filling and/or strokes
                     // and then proceed to draw the value feature in the way it has been told to
                     for (Drawable draw : element2.drawable) {
-                        if(range.contains(draw) || element2.draw != null && element2.draw.always_draw && this.model.isOMSloaded){
+                        if(range.contains(draw) || element2.draw != null && element2.draw.always_draw && this.model.isOSMLoaded){
                             this.setStyling(element.draw);
                             this.setStyling(element2.draw);
 
                             if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
                                     || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                if(debugValMap.get("debugDisplayWireframe")) draw.fill(this.gc);
+                                if(!debugValMap.get("debugDisplayWireframe")) draw.fill(this.gc);
                                 draw.draw(this.gc);
                             }
                             if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
@@ -155,7 +161,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeBox(double padding){
-        if(debugValMap.get("debugVisBox") && this.model.isOMSloaded){
+        if(debugValMap.get("debugVisBox") && this.model.isOSMLoaded){
             padding /= zoom_current;
             double csize = 5 / zoom_current;
 
@@ -190,7 +196,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeCursor(){
-        if(debugValMap.get("debugCursor") && this.model.isOMSloaded){
+        if(debugValMap.get("debugCursor") && this.model.isOSMLoaded){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.BLUE);
             this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
@@ -201,7 +207,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void splitsTree(){
-        if(debugValMap.get("debugSplits") && this.model.isOMSloaded){
+        if(debugValMap.get("debugSplits") && this.model.isOSMLoaded){
             List<float[]> lines = this.model.kdtree.getSplit();
             this.gc.setLineWidth(2.5/zoom_current);
             this.gc.setStroke(Color.GREEN);
@@ -218,7 +224,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawBounds(){
-        if(debugValMap.get("debugBoundingBox") && this.model.isOMSloaded){
+        if(debugValMap.get("debugBoundingBox") && this.model.isOSMLoaded){
             this.gc.setLineWidth(1/zoom_current);
             this.gc.setLineDashes(0);
             this.gc.setStroke(Color.RED);

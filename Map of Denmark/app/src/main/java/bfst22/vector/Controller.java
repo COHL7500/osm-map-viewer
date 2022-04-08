@@ -6,7 +6,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -21,7 +20,7 @@ public class Controller {
     private Stage stage;
     private Point2D lastMouse;
 	private Model model;
-	private final boolean[] paneVisibility = new boolean[]{false,true};
+	private boolean isMenuActive = false;
     private final List<String> loadedMaps = new ArrayList<>();
 	
 	@FXML private MapCanvas canvas;
@@ -62,8 +61,8 @@ public class Controller {
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.paneVisibility[0] ? 200 : 14));
-            this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : 0));
+            this.canvas.setWidth(newValue.doubleValue() - (this.isMenuActive ? 200 : 14));
+            this.canvas.setWidth(this.canvas.getWidth() - (this.canvas.debugValMap.get("debugSideBar") ? 250 : 0));
             this.canvas.update();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
@@ -100,7 +99,7 @@ public class Controller {
     }
 
     public void updateDebugInfo(){
-        if(this.model.isOMSloaded && this.paneVisibility[1]){
+        if(this.model.isOSMLoaded && this.canvas.debugValMap.get("debugSideBar")){
             this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minx) + ", " + String.format("%.5f", this.canvas.miny)));
             this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxx) + ", " + String.format("%.5f", this.canvas.maxy)));
             this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originx) + ", " + String.format("%.5f", this.canvas.originy)));
@@ -150,8 +149,8 @@ public class Controller {
     }
 
     @FXML private void onMenuButtonPress(ActionEvent e){
-        this.someBorderPane.setLeft((this.paneVisibility[0] = !this.paneVisibility[0]) ? vBox : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[0] ? 200 : -200));
+        this.someBorderPane.setLeft((this.isMenuActive = !this.isMenuActive) ? vBox : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.isMenuActive ? 200 : -200));
         this.canvas.update();
     }
 
@@ -248,57 +247,53 @@ public class Controller {
 
     // when the menubar 'Tools' section button 'Toggle Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
-        this.someBorderPane.setRight((this.paneVisibility[1] = !this.paneVisibility[1]) ? vbox_debug : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.paneVisibility[1] ? 250 : -250));
+        this.canvas.debugPropertiesToggle("debugSideBar");
+        this.someBorderPane.setRight(this.canvas.debugValMap.get("debugSideBar") ? vbox_debug : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.canvas.debugValMap.get("debugSideBar") ? 250 : -250));
         this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
-        this.canvas.debugValMap.get("debugDisplayWireframe");
+        this.canvas.debugValMap.replace("debugDisplayWireframe", false);
         this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
-        this.canvas.debugValMap.get("debugDisplayWireframe");
+        this.canvas.debugValMap.replace("debugDisplayWireframe", true);
         this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
     @FXML private void debugCursorClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugCursor");
+        this.canvas.debugPropertiesToggle("debugCursor");
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree VisBox' is clicked
     @FXML private void debugVisBoxClicked(final ActionEvent e){
-        this.canvas.debugValMap.get("debugVisBox");
+        this.canvas.debugPropertiesToggle("debugVisBox");
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
     @FXML private void debugSplitsClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugSplits");
+        this.canvas.debugPropertiesToggle("debugSplits");
     }
 
     // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugFreeMovement");
+        this.canvas.debugPropertiesToggle("debugFreeMovement");
         if(!this.canvas.debugValMap.get("debugFreeMovement")) this.canvas.centerPos();
     }
 
     // when the menubar 'Tools' section button 'Disable Help Text' is clicked
     @FXML private void debugHelpTextClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugDisableText");
-    }
-
-    // when the menubar 'Tools' section button 'Disable Debug Box' is clicked
-    @FXML private void debugInfoTextClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugInfo");
+        this.canvas.debugPropertiesToggle("debugDisableHelpText");
     }
 
     // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
     @FXML private void debugBoundingBoxClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesSet("debugBoundingBox");
+        this.canvas.debugPropertiesToggle("debugBoundingBox");
     }
 
     // when the menubar 'Help' section button 'About...' is clicked

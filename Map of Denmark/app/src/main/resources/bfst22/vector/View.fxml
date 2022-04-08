@@ -126,11 +126,6 @@
                                 <KeyCodeCombination alt="DOWN" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </CheckMenuItem>
-                        <CheckMenuItem text="Disable Debug Box" onAction="#debugInfoTextClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
                         <CheckMenuItem text="Disable Bounding Box" onAction="#debugBoundingBoxClicked">
                             <accelerator>
                                 <KeyCodeCombination alt="DOWN" code="DIGIT7" control="UP" meta="UP" shift="UP" shortcut="UP" />
