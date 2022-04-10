@@ -1,12 +1,8 @@
 package bfst22.vector;
 
-import java.io.IOException;
-
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -14,8 +10,6 @@ import javafx.stage.Stage;
 public class View {
     private final int width, height;
     private final String fxml, style, map, title;
-
-	@FXML private BorderPane someBorderPane;
 	
     public View(Model model, Stage stage) throws Exception {
         this.width = 800;
@@ -25,7 +19,7 @@ public class View {
         this.map = "data/small.osm.zip";
         this.title = "Danmarkskort - Gruppe #1";
 
-        model.loadMapFile(this.map);
+        model.load(this.map);
 
         FXMLLoader loader = new FXMLLoader(View.class.getResource(this.fxml));
         Scene scene = loader.load();

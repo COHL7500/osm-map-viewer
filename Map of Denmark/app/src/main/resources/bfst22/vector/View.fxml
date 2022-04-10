@@ -16,10 +16,23 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.text.Text?>
-
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.CheckBoxTreeItem?>
+<?import javafx.scene.control.ScrollPane?>
 <Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene">
+    <fx:define>
+        <ToggleGroup fx:id="brushModeGroup"/>
+        <ToggleGroup fx:id="mapdisplay"/>
+        <ToggleGroup fx:id="zoomGroup"/>
+    </fx:define>
     <BorderPane fx:id="someBorderPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
         <top>
             <VBox>
@@ -65,10 +78,19 @@
                             </accelerator>
                         </MenuItem>
                     </Menu>
+                    <Menu text="View">
+                        <CheckMenuItem text="Paint Bar" onAction="#paintBarButtonClicked">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </CheckMenuItem>
+                        <CheckMenuItem text="Debug Sidebar" onAction="#debugSidebarClicked" selected="true">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </CheckMenuItem>
+                    </Menu>
                     <Menu text="Tools">
-                        <fx:define>
-                            <ToggleGroup fx:id="mapdisplay" />
-                        </fx:define>
                         <MenuItem text="Change Absolute Coordinates" onAction="#changeAbsoluteCoordClicked">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -84,11 +106,6 @@
                                 <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </MenuItem>
-                        <CheckMenuItem text="Toggle Debug Sidebar" onAction="#debugSidebarClicked" selected="true">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT4" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
                         <SeparatorMenuItem />
                         <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
                             <accelerator>
@@ -126,11 +143,6 @@
                                 <KeyCodeCombination alt="DOWN" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
                             </accelerator>
                         </CheckMenuItem>
-                        <CheckMenuItem text="Disable Debug Box" onAction="#debugInfoTextClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
                         <CheckMenuItem text="Disable Bounding Box" onAction="#debugBoundingBoxClicked">
                             <accelerator>
                                 <KeyCodeCombination alt="DOWN" code="DIGIT7" control="UP" meta="UP" shift="UP" shortcut="UP" />
@@ -145,49 +157,73 @@
                         </MenuItem>
                     </Menu>
                 </MenuBar>
-                <HBox>
-                    <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
-                        <HBox HBox.hgrow="ALWAYS" spacing="5">
-                            <Button fx:id="menuActivation" onAction="#onMenuButtonPress" text="Menu"/>
-                            <Button text="Button0"/>
-                        </HBox>
-                        <HBox HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
-                            <TextField prefWidth="250" promptText="Search..."/>
-                            <Button text="Search" prefWidth="75"/>
-                        </HBox>
-                    </ToolBar>
-                </HBox>
+                <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
+                    <HBox maxHeight="30" spacing="5" alignment="CENTER_LEFT">
+                        <Button onAction="#onMenuButtonPress" text="Menu"/>
+                        <ToggleButton fx:id="zoomBoxButton" text="Zoom Box" onAction="#onZoomBoxButtonPressed" toggleGroup="$zoomGroup"/>
+                        <ToggleButton fx:id="zoomMagnifyingGlass" text="Magnifying Glass" onAction="#onZoomMagnifyingGlassButtonPressed" toggleGroup="$zoomGroup"/>
+                    </HBox>
+                    <HBox maxHeight="30" fx:id="paintBox" id="paintBox" spacing="5" visible="false" alignment="CENTER_LEFT">
+                        <ToggleButton text="Clear" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="4"/>
+                        <ToggleButton text="Paint Brush" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="0"/>
+                        <ToggleButton text="Rectangle" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="2"/>
+                        <ToggleButton text="Circle" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="1"/>
+                        <ToggleButton text="Text" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="3"/>
+                        <ChoiceBox fx:id="fontBox" value="Arial" prefWidth="75"/>
+                        <Label text="Font size: " prefHeight="25"/>
+                        <Spinner fx:id="paintFontSize" min="1" max="150" initialValue="12" amountToStepBy="1" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintFontSizeButtonPressed"/>
+                        <Label text="Stroke:" prefHeight="25"/>
+                        <Spinner fx:id="paintStrokeSize" min="0.6" max="5" initialValue="1" amountToStepBy="0.2" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintStrokeSizeButtonPressed"/>
+                        <CheckBox text="Fill Polygons" prefHeight="25" onAction="#onPaintFillCheckboxPressed"/>
+                        <ColorPicker fx:id="paintColourPicker" onAction="#onPaintColorButtonPressed" prefWidth="100">
+                            <value>
+                                <Color red="0" green="0" blue="0"/>
+                            </value>
+                        </ColorPicker>
+                    </HBox>
+                    <HBox maxHeight="30" HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
+                        <TextField prefWidth="250" promptText="Search..."/>
+                        <Button text="Search" prefWidth="75"/>
+                    </HBox>
+                </ToolBar>
             </VBox>
         </top>
         <left>
             <VBox fx:id="vBox" id="vBox" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" />
         </left>
         <right>
-            <VBox fx:id="vbox_debug" id="vbox_debug" prefWidth="250.0" BorderPane.alignment="TOP_RIGHT" spacing="10">
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="Updating" styleClass="debugSectionHeader" />
-                    <Label fx:id="canvas_load_time" styleClass="debugText" />
-                    <Label fx:id="canvas_repaint_time" styleClass="debugText" />
-                    <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
+            <ScrollPane hbarPolicy="NEVER" prefWidth="250.0">
+                <VBox fx:id="vbox_debug" id="vbox_debug" prefWidth="240.0" BorderPane.alignment="TOP_RIGHT" spacing="10">
+                    <VBox styleClass="vbox_debug_section">
+                        <Label text="Updating" styleClass="debugSectionHeader" />
+                        <Label fx:id="canvas_load_time" styleClass="debugText" />
+                        <Label fx:id="canvas_repaint_time" styleClass="debugText" />
+                        <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
+                    </VBox>
+                    <VBox styleClass="vbox_debug_section">
+                        <Label text="Coordinates" styleClass="debugSectionHeader" />
+                        <Label fx:id="canvas_min" styleClass="debugText" />
+                        <Label fx:id="canvas_max" styleClass="debugText" />
+                        <Label fx:id="canvas_origin" styleClass="debugText" />
+                        <Label fx:id="canvas_mouse" styleClass="debugText" />
+                        <Label fx:id="canvas_zoom" styleClass="debugText" />
+                    </VBox>
+                    <VBox styleClass="vbox_debug_section">
+                        <Label text="File Data" styleClass="debugSectionHeader" />
+                        <Label fx:id="canvas_filesize" styleClass="debugText" />
+                        <Label fx:id="canvas_bounds_min" styleClass="debugText" />
+                        <Label fx:id="canvas_bounds_max" styleClass="debugText" />
+                        <Label fx:id="canvas_nodes" styleClass="debugText" />
+                        <Label fx:id="canvas_ways" styleClass="debugText" />
+                        <Label fx:id="canvas_relations" styleClass="debugText" />
+                    </VBox>
+                    <VBox styleClass="vbox_debug_section">
+                        <Label text="Toggle Features" styleClass="debugSectionHeader" />
+                        <TreeView fx:id="featuresTreeView"/>
+                    </VBox>
                 </VBox>
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="Coordinates" styleClass="debugSectionHeader" />
-                    <Label fx:id="canvas_min" styleClass="debugText" />
-                    <Label fx:id="canvas_max" styleClass="debugText" />
-                    <Label fx:id="canvas_origin" styleClass="debugText" />
-                    <Label fx:id="canvas_mouse" styleClass="debugText" />
-                    <Label fx:id="canvas_zoom" styleClass="debugText" />
-                </VBox>
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="File Data" styleClass="debugSectionHeader" />
-                    <Label fx:id="canvas_filesize" styleClass="debugText" />
-                    <Label fx:id="canvas_bounds_min" styleClass="debugText" />
-                    <Label fx:id="canvas_bounds_max" styleClass="debugText" />
-                    <Label fx:id="canvas_nodes" styleClass="debugText" />
-                    <Label fx:id="canvas_ways" styleClass="debugText" />
-                    <Label fx:id="canvas_relations" styleClass="debugText" />
-                </VBox>
-            </VBox>
+            </ScrollPane>
+
         </right>
         <center>
             <MapCanvas fx:id="canvas"
@@ -198,7 +234,8 @@
                        BorderPane.alignment="TOP_LEFT"
                        onMousePressed="#onMousePressed"
                        onMouseDragged="#onMouseDragged"
-                       onMouseMoved="#onMouseMoved" />
+                       onMouseMoved="#onMouseMoved"
+                       onMouseReleased="#onMouseReleased" />
         </center>
         <bottom>
             <ToolBar prefHeight="30.0" prefWidth="${scene.width}">

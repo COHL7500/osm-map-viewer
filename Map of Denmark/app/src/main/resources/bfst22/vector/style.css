@@ -18,6 +18,7 @@
 #vbox_debug .vbox_debug_section {
     -fx-border-color: black;
     -fx-border-width: 1;
+    -fx-background-color: white;
 }
 
 .debugSectionHeader {
@@ -36,4 +37,10 @@
 center {
     -fx-border-color: blue;
     -fx-border-width: 1;
+}
+
+#paintBox {
+    -fx-border-style: hidden hidden hidden solid;
+    -fx-border-color:grey;
+    -fx-padding:0 0 0 5;
 }
