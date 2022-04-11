@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
+
+import bfst22.vector.TernarySearchTree.TernarySearchTree;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -19,11 +21,16 @@ public class Model {
     public List<Runnable> observers;
     public boolean isOMSloaded;
     public float minlat, minlon, maxlat, maxlon;
+    public float tempLat, tempLon;
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
 	public VehicleType vehicleType;
     public Edge e;
+    public ArrayList<Address> addresses = new ArrayList<>();
+    public Address.Builder builder = new Address.Builder();
+    public TernarySearchTree searchTree = new TernarySearchTree();
+
 
     public Model(){
         this.isOMSloaded = false;
@@ -103,6 +110,8 @@ public class Model {
                             float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
+                            builder = builder.lat(-lat);
+                            builder = builder.lon(0.56f * lon);
                             this.nodecount++;
                             break;
                         case "nd": // parses reference to a node (ID) and adds it to the node list.
@@ -116,6 +125,22 @@ public class Model {
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
+                            if (k.contains("addr:")) {
+                                switch (k) {
+                                    case "addr:city":
+                                        builder = builder.city(v);
+                                        break;
+                                    case "addr:housenumber":
+                                        builder = builder.house(v);
+                                        break;
+                                    case "addr:postcode":
+                                        builder = builder.postcode(v);
+                                        break;
+                                    case "addr:street":
+                                        builder = builder.street(v);
+                                        break;
+                                }
+                            }
                             if(this.yamlObj.ways.containsKey(k))
                             {
                                 suptype = k;
@@ -180,13 +205,25 @@ public class Model {
                             }*/
 
                             break;
+
+                        case "node":
+                            if (!builder.isEmpty()) {
+                                addresses.add(builder.build());
+                            }
+                            break;
                     }
                     break;
             }
         }
-
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
+        Collections.sort(addresses);
+        for (Address address : addresses) {
+            //System.out.println(address.toString());
+            searchTree.insertAddress(address.toString(), addresses.indexOf(address));
+        }
+        //System.out.println(searchTree.search("admiralgade 1, 1066 københavn") ? "Found" : "Not found");
+        //System.out.println(searchTree.toString());
     }
 
     public void unloadOSM(){
