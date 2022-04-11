@@ -5,10 +5,9 @@ import java.util.regex.Pattern;
 public class Address implements Comparable<Address> {
     public final String street, house, floor, side, postcode, city;
     public final float lat, lon;
-    public final long id;
 
     private Address(
-            String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon, long _id) {
+            String _street, String _house, String _floor, String _side, String _postcode, String _city, float _lat, float _lon) {
 
         if (_street != null) {
             street = _street.intern();
@@ -36,7 +35,6 @@ public class Address implements Comparable<Address> {
 
         lon = _lon;
         lat = _lat;
-        id = _id;
     }
 
     public String toString() {
@@ -107,13 +105,9 @@ public class Address implements Comparable<Address> {
             lon = _lon;
             return this;
         }
-        public Builder id(long _id) {
-            id = _id;
-            return this;
-        }
 
         public Address build() {
-            return new Address(street, house, floor, side, postcode, city, lat, lon, id);
+            return new Address(street, house, floor, side, postcode, city, lat, lon);
         }
 
         public boolean isEmpty() {

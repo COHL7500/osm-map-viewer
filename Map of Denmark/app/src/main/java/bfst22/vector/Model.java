@@ -140,6 +140,7 @@ public class Model {
                                         builder = builder.street(v);
                                         break;
                                 }
+                                break;
                             }
                             if(this.yamlObj.ways.containsKey(k))
                             {
@@ -182,6 +183,13 @@ public class Model {
                         break;
                 case XMLStreamConstants.END_ELEMENT: // Reads the last element, such as "way", "relation" etc.
                     switch (reader.getLocalName()) {
+                        case "node":
+                            if (!builder.isEmpty()) {
+                                addresses.add(builder.build());
+                                builder.emptyBuilder();
+                            }
+                            break;
+
                         case "way": // "way" - All lines in the program; linking point A to B
                             PolyLine way = new PolyLine(nodes);
                             id2way.put(relID, way);
@@ -206,11 +214,6 @@ public class Model {
 
                             break;
 
-                        case "node":
-                            if (!builder.isEmpty()) {
-                                addresses.add(builder.build());
-                            }
-                            break;
                     }
                     break;
             }
@@ -219,7 +222,7 @@ public class Model {
         this.loadTime = System.nanoTime() - this.loadTime;
         Collections.sort(addresses);
         for (Address address : addresses) {
-            //System.out.println(address.toString());
+            System.out.println(address.toString());
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
         //System.out.println(searchTree.search("admiralgade 1, 1066 københavn") ? "Found" : "Not found");
