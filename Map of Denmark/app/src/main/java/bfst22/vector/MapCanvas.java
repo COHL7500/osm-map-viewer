@@ -37,8 +37,10 @@ public class MapCanvas extends Canvas {
         this.repaintTime = System.nanoTime();
         this.gc.setTransform(new Affine());
 
-        // Clears the screen for the next frame
-        this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+        // Colors the background blue (for water)
+        //this.gc.setFill(Color.web("#b5d2de"));
+        this.gc.setFill(Color.WHITESMOKE);
+        this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
