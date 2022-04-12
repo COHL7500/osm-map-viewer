@@ -1,7 +1,5 @@
 package bfst22.vector.TernarySearchTree;
 
-import bfst22.vector.TernarySearchTree.SearchNode;
-
 import java.util.ArrayList;
 
 public class TernarySearchTree {
@@ -55,62 +53,86 @@ public class TernarySearchTree {
     public void delete(String word) {
         delete(root, word.toCharArray(), 0);
     }
-    private void delete(SearchNode node, char[] word, int pointer) {
+
+    private void delete(SearchNode node, char[] word, int index) {
         if (node == null)
             return;
-        if (word[pointer] < node.character)
-            delete(node.left, word, pointer);
-        else if (word[pointer] > node.character)
-            delete(node.right, word, pointer);
+        if (word[index] < node.character)
+            delete(node.left, word, index);
+        else if (word[index] > node.character)
+            delete(node.right, word, index);
         else {
-            if (node.isEndOString && pointer == word.length - 1) {
+            if (node.isEndOString && index == word.length - 1) {
                 node.isEndOString = false;
             }
-            else if (pointer + 1 < word.length) {
-                delete(node.equal, word, pointer + 1);
+            else if (index + 1 < word.length) {
+                delete(node.equal, word, index + 1);
             }
         }
     }
 
-    public boolean search(String word) {
+    public SearchNode search(String word) {
         return search(root, word.toCharArray(), 0);
     }
 
-    private boolean search(SearchNode node, char[] word, int pointer) {
-        if (node == null)
-            return false;
-
-        if (word[pointer] < node.character)
-            return search(node.left, word, pointer);
-        else if (word[pointer] > node.character)
-            return search(node.right, word, pointer);
+    private SearchNode search(SearchNode node, char[] word, int index) {
+        if (node == null || word.length == 0)
+            return null;
+        if (word[index] < node.character)
+            return search(node.left, word, index);
+        else if (word[index] > node.character)
+            return search(node.right, word, index);
         else {
-            if (node.isEndOString && pointer == word.length - 1)
-                return true;
-            else if (pointer == word.length - 1)
-                return false;
+            if (node.isEndOString && index == word.length - 1)
+                return node;
+            else if (index == word.length - 1)
+                return null;
             else
-                return search(node.equal, word, pointer + 1);
+                return search(node.equal, word, index + 1);
         }
     }
+    
     public String toString() {
         al = new ArrayList<String>();
         traverse(root, "");
-        return "\nTernary Search Tree : "+ al;
+        return "\nSearch tree: "+ al;
     }
 
-    public void traverse(SearchNode r, String str) {
-        if (r != null) {
-            traverse(r.left, str);
+    private void traverse(SearchNode node, String string) {
+        if (node != null) {
+            traverse(node.left, string);
 
-            str = str + r.character;
-            if (r.isEndOString)
-                al.add(str);
+            string = string + node.character;
+            if (node.isEndOString)
+                al.add(string);
 
-            traverse(r.equal, str);
-            str = str.substring(0, str.length() - 1);
+            traverse(node.equal, string);
+            string = string.substring(0, string.length() - 1);
 
-            traverse(r.right, str);
+            traverse(node.right, string);
         }
+    }
+
+    public SearchNode autoComplete(String word) {
+        return autoComplete(root, word.toCharArray(),0);
+    }
+
+    private SearchNode autoComplete(SearchNode node, char[] word, int index) {
+        SearchNode result = null;
+        if (node == null || word.length <= index) return null;
+        if (word[index] == node.character) {
+            if (word[index] == word.length - 1) return node;
+            else {
+                result = (node.equal == null ? null : autoComplete(node.equal, word, index + 1));
+                if (result == null) result = node;
+            }
+        }
+            if (word[index] > node.character) {
+                result = (node.right == null ? null : autoComplete(node.right, word, index + 1));
+            }
+            else {
+                result = (node.left == null ? null : autoComplete(node.left, word, index + 1));
+            }
+        return result;
     }
 }

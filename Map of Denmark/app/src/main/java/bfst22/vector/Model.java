@@ -222,7 +222,6 @@ public class Model {
         this.loadTime = System.nanoTime() - this.loadTime;
         Collections.sort(addresses);
         for (Address address : addresses) {
-            System.out.println(address.toString());
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
         //System.out.println(searchTree.search("admiralgade 1, 1066 københavn") ? "Found" : "Not found");
@@ -232,5 +231,13 @@ public class Model {
     public void unloadOSM(){
         this.isOMSloaded = false;
         this.kdtree = new KdTree();
+    }
+
+    public ArrayList<Address> getAddresses() {
+        return addresses;
+    }
+
+    public TernarySearchTree getSearchTree() {
+        return searchTree;
     }
 }

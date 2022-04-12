@@ -6,13 +6,18 @@ public class SearchNode {
     public SearchNode left;
     public SearchNode equal;
     public SearchNode right;
-    int index;
-    public SearchNode(char _character, int _index) {
+    int id;
+
+    public SearchNode(char _character, int _id) {
         this.character = _character;
-        this.index = _index;
+        this.id = _id;
         this.isEndOString = false;
         this.left = null;
         this.equal = null;
         this.right = null;
+    }
+
+    public int getId() {
+        return id;
     }
 }
