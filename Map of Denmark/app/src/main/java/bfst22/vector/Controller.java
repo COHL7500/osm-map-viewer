@@ -32,7 +32,8 @@ public class Controller {
     private ContextMenu canvasCM;
 	
 	@FXML private MapCanvas canvas;
-    @FXML private VBox vBox,pinPointSidebar;
+    @FXML private VBox pinPointSidebar;
+    @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
     @FXML private BorderPane someBorderPane;
@@ -50,7 +51,7 @@ public class Controller {
     @FXML private ListView<HBox> pinPointList;
 
     // Debug menu variables
-    @FXML private VBox vbox_debug;
+    @FXML private ScrollPane vbox_debug_scrollpane;
     @FXML private Label canvas_min;
     @FXML private Label canvas_max;
     @FXML private Label canvas_origin;
@@ -81,6 +82,7 @@ public class Controller {
         this.canvasCM = new ContextMenu();
 
         this.someBorderPane.setLeft(null);
+        this.someBorderPane.setRight(null);
         this.canvas.init(model);
         this.canvas.pinpoints.init(pinPointList);
         this.addRecentLoadedMap(this.model.currFileName);
@@ -91,8 +93,8 @@ public class Controller {
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.someBorderPane.getLeft() != null ? 280 : 0));
-            this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 260 : 0));
+            this.canvas.setWidth(newValue.doubleValue() - (this.someBorderPane.getLeft() != null ? 265 : 0));
+            this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : 0));
             this.canvas.update();
             this.canvas.checkInBounds();
         });
@@ -112,7 +114,7 @@ public class Controller {
 
     private void generateContextMenu(){
         MenuItem addPoint = new MenuItem("Add Pin Point Here");
-        addPoint.setOnAction(item -> this.canvas.pinpoints.newWindow(this.canvas.mousePos));
+        addPoint.setOnAction(item -> this.canvas.pinpoints.newWindow(this.canvas));
         this.canvasCM.getItems().add(addPoint);
         this.canvas.setOnContextMenuRequested(e -> this.canvasCM.show(this.canvas, e.getScreenX(), e.getScreenY()));
     }
@@ -207,6 +209,7 @@ public class Controller {
         this.canvas.panTo(new Point2D(0,-50));
         this.canvas.setDisable(false);
         this.unloadFileButton.setDisable(false);
+        this.updateDebugInfo();
     }
 
     private void unloadMap(){
@@ -250,8 +253,8 @@ public class Controller {
      * ------------------------------------------------ Menubar Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
     @FXML private void onMenuButtonPress(ActionEvent e){
-        this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 215 : -215)); // Find a way to make this non-hardcoded
+        this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox_scrollpane : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
     }
 
@@ -302,7 +305,7 @@ public class Controller {
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
         this.canvasCM.hide();
-        if(e.getClickCount() == 2) this.canvas.pinpoints.doubleClick(this.canvas.mousePos,this.canvas.zoom_current);
+        if(e.getClickCount() == 2) this.canvas.pinpoints.doubleClick(this.canvas);
         this.canvas.pressed(e);
         this.updateDebugInfo();
     }
@@ -370,9 +373,10 @@ public class Controller {
 
     // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
-        this.someBorderPane.setRight(this.someBorderPane.getRight() == null ? vbox_debug : null);
+        this.someBorderPane.setRight(this.someBorderPane.getRight() == null ? vbox_debug_scrollpane : null);
         this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
+        this.updateDebugInfo();
     }
 
     // when the menubar 'Tools' section button 'Change Absolute Coordinates' is clicked

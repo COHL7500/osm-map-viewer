@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Painter {
@@ -68,18 +67,22 @@ public class Painter {
 
 	public void press(Point2D mousePos){
 		this.mousePos = mousePos;
-		if(this.drawMode == 0) this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
-		else if(this.drawMode == 1) this.elements.add(new PolyCircle(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
-		else if(this.drawMode == 2) this.elements.add(new PolyRect(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
-		else if(this.drawMode == 3) this.elements.add(new PolyText(mousePos,this.paintColor,this.selectedFont,this.fontSize));
+		switch(this.drawMode){
+			case 0 -> this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
+			case 1 -> this.elements.add(new PolyCircle(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
+			case 2 -> this.elements.add(new PolyRect(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
+			case 3 -> this.elements.add(new PolyText(mousePos,this.paintColor,this.selectedFont,this.fontSize));
+		}
 	}
 
 	public void drag(Point2D mousePos){
 		this.mousePos = mousePos;
-		if(this.drawMode == 0) this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
-		else if(this.drawMode == 1) ((PolyCircle) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
-		else if(this.drawMode == 2) ((PolyRect) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
-		else if(this.drawMode == 4) this.deleteWithin();
+		switch (this.drawMode){
+			case 0 -> this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
+			case 1 -> ((PolyCircle) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
+			case 2 -> ((PolyRect) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
+			case 4 -> this.deleteWithin();
+		}
 	}
 
 	public void release(){
@@ -159,7 +162,7 @@ public class Painter {
 		}
 
 		@Override public void draw(GraphicsContext gc){
-			gc.setFont(new Font(this.font,this.size*10e-4));
+			gc.setFont(new Font(this.font,this.size*10e-5));
 			gc.setFill(this.colour);
 			gc.fillText(super.getText(),super.getX(),super.getY());
 		}

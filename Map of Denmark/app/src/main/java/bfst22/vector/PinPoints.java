@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -23,23 +24,25 @@ public class PinPoints {
 		this.pinPointList = pinPointList;
 	}
 
-	public void newWindow(final Point2D mousePos){
-		this.displayWindow("Add Pin Point",null,mousePos);
+	public void newWindow(final MapCanvas canvas){
+		this.displayWindow("Add Pin Point",null,canvas);
 	}
 
-	private void displayWindow(final String header, final Pin point, final Point2D mousePos){
+	private void displayWindow(final String header, final Pin point, final MapCanvas canvas){
 		Dialog<ButtonType> dialog = new Dialog<>();
 
+		Label labelTitle = new Label("Title:");
+		Label labelDesc = new Label("Description:");
 		TextField title = new TextField(point != null ? point.title : "");
 		TextArea desc = new TextArea(point != null ? point.description : "");
 		ButtonType button1 = new ButtonType("OK", ButtonBar.ButtonData.YES);
 		ButtonType button2 = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 		ButtonType button3 = new ButtonType("Delete", ButtonBar.ButtonData.NO);
-		title.setPromptText("Title");
-		desc.setPromptText("Description");
+		VBox vboxDialog = new VBox(labelTitle,title,labelDesc,desc);
+		vboxDialog.setSpacing(5);
 
-		dialog.getDialogPane().setContent(new VBox(title,desc));
-		dialog.getDialogPane().setPrefSize(135,300);
+		dialog.getDialogPane().setContent(vboxDialog);
+		dialog.getDialogPane().setPrefSize(100,250);
 		dialog.getDialogPane().getButtonTypes().addAll(button1,button2,button3);
 		dialog.getDialogPane().lookupButton(button3).setDisable(point == null);
 		dialog.setTitle(header);
@@ -49,15 +52,20 @@ public class PinPoints {
 				case YES -> { // OK
 					if(point == null){
 						HBox pinEntry = new HBox();
-						pinEntry.getChildren().add(new Label(title.getText()));
-						pinEntry.getChildren().add(new Pane());
-						pinEntry.getChildren().add(new Button("Edit"));
+						Label labelEntry = new Label(title.getText().length() > 20 ? title.getText().substring(0,20) + "..." : title.getText());
+						Pane paneEntry = new Pane();
+						Button buttonEntry1 = new Button("Goto");
+						Button buttonEntry2 = new Button("Edit");
+						pinEntry.getChildren().addAll(labelEntry,paneEntry,buttonEntry1,buttonEntry2);
+						pinEntry.setSpacing(5);
+						pinEntry.setAlignment(Pos.CENTER_LEFT);
+						HBox.setHgrow(paneEntry, Priority.ALWAYS);
 
-						Pin newPoint = new Pin(pinEntry, (float) mousePos.getX(), (float) mousePos.getY(), 15, true, title.getText(), desc.getText());
+						Pin newPoint = new Pin(pinEntry, (float) canvas.mousePos.getX(), (float) canvas.mousePos.getY(), 15, true, title.getText(), desc.getText());
 						this.pins.add(newPoint);
 
-						HBox.setHgrow(pinEntry.getChildren().get(1), Priority.ALWAYS);
-						pinEntry.getChildren().get(2).setOnMousePressed(f -> this.displayWindow("Edit Pin Point", newPoint, mousePos));
+						buttonEntry1.setOnMousePressed(f -> canvas.goToPosAbsolute(new Point2D(newPoint.lat,newPoint.lon)));
+						buttonEntry2.setOnMousePressed(g -> this.displayWindow("Edit Pin Point", newPoint, canvas));
 						this.pinPointList.getItems().add(pinEntry);
 
 					} else {
@@ -72,10 +80,10 @@ public class PinPoints {
 		});
 	}
 
-	public void doubleClick(Point2D mousePos, double zoom){
+	public void doubleClick(MapCanvas canvas){
 		for(Pin point : this.pins){
-			if(point.inRadius(mousePos,zoom)){
-				this.displayWindow("Edit Pin Point",point,mousePos);
+			if(point.inRadius(canvas.mousePos,canvas.zoom_current)){
+				this.displayWindow("Edit Pin Point",point,canvas);
 				return;
 			}
 		}

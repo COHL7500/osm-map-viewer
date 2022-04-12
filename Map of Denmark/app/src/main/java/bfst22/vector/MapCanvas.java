@@ -3,6 +3,7 @@ package bfst22.vector;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -34,6 +35,9 @@ public class MapCanvas extends Canvas {
         this.model = model;
         this.reset();
         this.zoom(42000);
+        this.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
+            if(this.zoomMagnifyingGlass) event.consume();
+        });
     }
 
     public void reset(){
@@ -91,30 +95,33 @@ public class MapCanvas extends Canvas {
             Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.minPos.getY() + this.z(padding), this.minPos.getX() + this.z(padding)},
                     new double[]{this.maxPos.getY() - this.z(padding), this.maxPos.getX() - this.z(padding)});
 
-            // Loops through all the key features and sets the default styling for all its objects
-            for (keyFeature element : model.yamlObj.ways.values()) {
-                if (element.draw == null || element.draw.display) {
-                    this.setStylingDefault();
+            // Only display if set to do so, else display nothing at all
+            if(this.model.yamlObj.draw.display) {
+                // Loops through all the key features and sets the default styling for all its objects
+                for (keyFeature element : this.model.yamlObj.ways.values()) {
+                    if (element.draw.display) {
+                        this.setStylingDefault();
 
-                    // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
-                    for (valueFeature element2 : element.valuefeatures.values()) {
-                        if (element2.draw == null || element2.draw.display) {
-                            // Loops through all drawable elements that shall be drawn to the screen
-                            // Checks if the styling requires them to be drawn with filling and/or strokes
-                            // and then proceed to draw the value feature in the way it has been told to
-                            for (Drawable draw : element2.drawable) {
-                                if (range.contains(draw) || element2.draw != null && element2.draw.always_draw) {
-                                    this.setStyling(element.draw);
-                                    this.setStyling(element2.draw);
+                        // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
+                        for (valueFeature element2 : element.valuefeatures.values()) {
+                            if (element2.draw.display) {
+                                // Loops through all drawable elements that shall be drawn to the screen
+                                // Checks if the styling requires them to be drawn with filling and/or strokes
+                                // and then proceed to draw the value feature in the way it has been told to
+                                for (Drawable draw : element2.drawable) {
+                                    if (range.contains(draw) || element2.draw.always_draw) {
+                                        this.setStyling(element.draw);
+                                        this.setStyling(element2.draw);
 
-                                    if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                                            || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                        if (!this.debugDisplayWireframe) draw.fill(this.gc);
-                                        draw.draw(this.gc);
+                                        if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
+                                            if (!this.debugDisplayWireframe) draw.fill(this.gc);
+                                            draw.draw(this.gc);
+                                        }
+                                        if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
+                                                || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
+                                            draw.draw(this.gc);
                                     }
-                                    if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
-                                            || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
-                                        draw.draw(this.gc);
                                 }
                             }
                         }

@@ -24,10 +24,10 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.control.ScrollPane?>
-
 <?import javafx.scene.control.ListView?>
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="someBorderPane" id="someBorderPane"
-            stylesheets="@style.css" minWidth="400" prefWidth="800" minHeight="300" prefHeight="600">
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="someBorderPane"
+            id="someBorderPane" stylesheets="@style.css" minWidth="400" prefWidth="800" minHeight="300" prefHeight="600">
     <fx:define>
         <ToggleGroup fx:id="brushModeGroup"/>
         <ToggleGroup fx:id="mapdisplay"/>
@@ -83,7 +83,7 @@
                             <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
-                    <CheckMenuItem text="Debug Sidebar" onAction="#debugSidebarClicked" selected="true">
+                    <CheckMenuItem text="Debug Sidebar" onAction="#debugSidebarClicked">
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
@@ -188,11 +188,15 @@
         </VBox>
     </top>
     <left>
-        <ScrollPane hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="215" maxWidth="215" BorderPane.alignment="TOP_LEFT">
-            <VBox fx:id="vBox" id="vBox" spacing="10" maxWidth="200">
+        <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_LEFT">
+            <VBox id="vBox" spacing="10" prefWidth="250">
                 <VBox fx:id="pinPointSidebar" styleClass="vbox_debug_section">
                     <Label text="Pin Points" styleClass="debugSectionHeader" />
-                    <ListView fx:id="pinPointList"/>
+                    <ListView fx:id="pinPointList" prefHeight="200">
+                        <placeholder>
+                            <Label text="No pins yet added..." />
+                        </placeholder>
+                    </ListView>
                 </VBox>
                 <VBox styleClass="vbox_debug_section">
                     <Label text="Toggle Features" styleClass="debugSectionHeader" />
@@ -202,8 +206,8 @@
         </ScrollPane>
     </left>
     <right>
-        <ScrollPane hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" maxWidth="265" BorderPane.alignment="TOP_RIGHT">
-            <VBox fx:id="vbox_debug" id="vbox_debug" spacing="10" maxWidth="250">
+        <ScrollPane fx:id="vbox_debug_scrollpane" id="vbox_debug_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_RIGHT">
+            <VBox id="vbox_debug" spacing="10" prefWidth="250" prefHeight="500">
                 <VBox styleClass="vbox_debug_section">
                     <Label text="Updating" styleClass="debugSectionHeader" />
                     <Label fx:id="canvas_load_time" styleClass="debugText" />
