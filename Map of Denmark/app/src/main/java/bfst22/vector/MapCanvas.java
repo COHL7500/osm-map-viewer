@@ -23,6 +23,8 @@ public class MapCanvas extends Canvas {
     public long repaintTime, avgRT, avgRTNum;
     public Painter painter;
     public ZoomBox zoombox;
+    public PinPoints pinpoints;
+    public boolean drags;
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
@@ -42,10 +44,12 @@ public class MapCanvas extends Canvas {
         this.rtMousePos = new Point2D(0,0);
         this.painter = new Painter();
         this.zoombox = new ZoomBox();
+        this.pinpoints = new PinPoints();
         this.repaintTime = this.avgRT = this.avgRTNum = 0;
         this.trans = new Affine();
         this.gc = super.getGraphicsContext2D();
         this.zoom_current = 1;
+        this.drags = false;
     }
 
     // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
@@ -60,6 +64,10 @@ public class MapCanvas extends Canvas {
             else if(e.getButton() == MouseButton.SECONDARY) this.zoomTo(0.5);
             this.goToPosAbsolute(this.mousePos);
         }
+    }
+
+    private void doDrag(boolean state){
+        this.drags = this.pinpoints.drag(this.mousePos,this.zoom_current,state);
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *
@@ -119,6 +127,7 @@ public class MapCanvas extends Canvas {
             this.painter.stroke(this.gc, this.mousePos, this.zoom_current);
             this.setStylingDefault();
 
+            this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
             this.drawBounds();
             this.strokeCursor();
@@ -154,6 +163,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void dragged(final MouseEvent e, final Point2D p){
+        this.doDrag(true);
         this.panTo(p);
         this.setMousePos(p);
         this.zoombox.drag(this.gc,this.mousePos,this.zoom_current);
@@ -167,6 +177,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void released(final MouseEvent e){
+        this.doDrag(false);
         this.zoombox.release(this,this.mousePos);
         this.painter.release();
     }
@@ -270,7 +281,7 @@ public class MapCanvas extends Canvas {
         double dy = pos.getY() - this.rtMousePos.getY();
         Point2D diff = new Point2D(dx,dy);
 
-        if(!this.zoombox.isZooming() && !this.painter.isDrawing()) this.pan(diff);
+        if(!this.zoombox.isZooming() && !this.painter.isDrawing() && !this.drags) this.pan(diff);
         if(!this.isInBounds() && !this.debugFreeMovement) this.pan(diff.multiply(-1));
     }
 

@@ -2,27 +2,26 @@
     -fx-background-color: rgb(255, 0, 212);
 }
 
-#vBox {
-    -fx-border-style: hidden solid hidden hidden;
-    -fx-border-width: 1;
-    -fx-border-color: black;
-}
-
-#vbox_debug {
+#vbox_debug, #vBox {
     -fx-padding: 5 10 10 10;
     -fx-border-style: hidden hidden hidden solid;
     -fx-border-width: 1;
     -fx-border-color: black;
 }
 
-#vbox_debug .vbox_debug_section {
+#vBox {
+    -fx-border-style: hidden solid hidden hidden;
+}
+
+.vbox_debug_section {
     -fx-border-color: black;
     -fx-border-width: 1;
     -fx-background-color: white;
 }
 
 .debugSectionHeader {
-    -fx-pref-width: 228;
+    -fx-min-width: 200;
+    -fx-pref-width: 250;
     -fx-background-color: black;
     -fx-text-fill: white;
     -fx-padding: 5;

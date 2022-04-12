@@ -3,16 +3,15 @@ package bfst22.vector;
 import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
@@ -30,9 +29,10 @@ public class Controller {
     private Stage stage;
 	private Model model;
     private List<String> loadedMaps;
+    private ContextMenu canvasCM;
 	
 	@FXML private MapCanvas canvas;
-    @FXML private VBox vBox;
+    @FXML private VBox vBox,pinPointSidebar;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
     @FXML private BorderPane someBorderPane;
@@ -44,8 +44,10 @@ public class Controller {
     @FXML private Spinner<Integer> paintFontSize;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
+    @FXML private ToggleButton pinpointButton;
     @FXML private ChoiceBox<String> fontBox;
     @FXML private TreeView<String> featuresTreeView;
+    @FXML private ListView<HBox> pinPointList;
 
     // Debug menu variables
     @FXML private VBox vbox_debug;
@@ -68,27 +70,34 @@ public class Controller {
      * ------------------------------------------------ General Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
     // Runs upon start of program: Initializes our MapCanvas based on model.
-    public void init(final Model model, final Stage primarystage) {
-        this.someBorderPane.setLeft(null);
+    public Controller(final Model model, final Stage primarystage) {
+        primarystage.setScene(new Scene(this.smartFXMLLoader("View.fxml")));
+        primarystage.setWidth(this.someBorderPane.getPrefWidth());
+        primarystage.setHeight(this.someBorderPane.getPrefHeight());
+
         this.model = model;
         this.stage = primarystage;
         this.loadedMaps = new ArrayList<>();
+        this.canvasCM = new ContextMenu();
 
+        this.someBorderPane.setLeft(null);
         this.canvas.init(model);
+        this.canvas.pinpoints.init(pinPointList);
         this.addRecentLoadedMap(this.model.currFileName);
         this.canvas.centerMap();
         this.generateTreeView();
+        this.generateContextMenu();
 
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.someBorderPane.getLeft() != null ? 200 : 14));
-            this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 250 : 0));
+            this.canvas.setWidth(newValue.doubleValue() - (this.someBorderPane.getLeft() != null ? 280 : 0));
+            this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 260 : 0));
             this.canvas.update();
             this.canvas.checkInBounds();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setHeight(newValue.doubleValue() - 130);
+            this.canvas.setHeight(newValue.doubleValue()-80);
             this.canvas.update();
             this.canvas.checkInBounds();
         });
@@ -98,9 +107,25 @@ public class Controller {
             this.canvas.update();
         });
         this.fontBox.getItems().addAll(Font.getFamilies());
-        this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            this.canvas.painter.setFont(newValue);
-        });
+        this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
+    }
+
+    private void generateContextMenu(){
+        MenuItem addPoint = new MenuItem("Add Pin Point Here");
+        addPoint.setOnAction(item -> this.canvas.pinpoints.newWindow(this.canvas.mousePos));
+        this.canvasCM.getItems().add(addPoint);
+        this.canvas.setOnContextMenuRequested(e -> this.canvasCM.show(this.canvas, e.getScreenX(), e.getScreenY()));
+    }
+
+    private Parent smartFXMLLoader(String filename) {
+        try {
+            FXMLLoader loader = new FXMLLoader(this.getClass().getResource(filename));
+            loader.setController(this);
+            return loader.load();
+        } catch(IOException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     private void updateDebugInfo(){
@@ -226,7 +251,7 @@ public class Controller {
      * ----------------------------------------------------------------------------------------------------------------- */
     @FXML private void onMenuButtonPress(ActionEvent e){
         this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 200 : -200)); // Find a way to make this non-hardcoded
+        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 215 : -215)); // Find a way to make this non-hardcoded
         this.canvas.update();
     }
 
@@ -276,6 +301,8 @@ public class Controller {
 
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
+        this.canvasCM.hide();
+        if(e.getClickCount() == 2) this.canvas.pinpoints.doubleClick(this.canvas.mousePos,this.canvas.zoom_current);
         this.canvas.pressed(e);
         this.updateDebugInfo();
     }
@@ -344,7 +371,7 @@ public class Controller {
     // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
         this.someBorderPane.setRight(this.someBorderPane.getRight() == null ? vbox_debug : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 250 : -250)); // Find a way to make this non-hardcoded
+        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
     }
 

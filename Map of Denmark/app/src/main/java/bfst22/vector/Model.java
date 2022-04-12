@@ -33,10 +33,10 @@ public class Model {
                 ZipInputStream zip = new ZipInputStream(new FileInputStream(filename));
                 zip.getNextEntry();
                 this.loadOSM(zip);
-                //this.saveObj(filename);
+                this.saveObj(filename);
             } case "osm" -> {
                 this.loadOSM(new FileInputStream(filename));
-                //this.saveObj(filename);
+                this.saveObj(filename);
             } case "obj" -> {
                 this.loadTime = System.nanoTime();
                 try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
