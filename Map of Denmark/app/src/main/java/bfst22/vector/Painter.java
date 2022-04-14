@@ -1,10 +1,13 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,7 +74,7 @@ public class Painter {
 			case 0 -> this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
 			case 1 -> this.elements.add(new PolyCircle(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
 			case 2 -> this.elements.add(new PolyRect(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
-			case 3 -> this.elements.add(new PolyText(mousePos,this.paintColor,this.selectedFont,this.fontSize));
+			case 3 -> this.elements.add(new PolyText(mousePos,this.paintColor,this.selectedFont,this.fontSize,this.strokeSize,this.fill));
 		}
 	}
 
@@ -86,7 +89,7 @@ public class Painter {
 	}
 
 	public void release(){
-		if(this.drawMode == 0) this.elements.add(new PolyPaint(this.paintColor,tempElements,this.strokeSize));
+		if(this.drawMode == 0) this.elements.add(new PolyPaint(this.paintColor,tempElements,this.strokeSize,this.fill));
 		this.tempElements.clear();
 	}
 
@@ -97,13 +100,14 @@ public class Painter {
 		if(!this.tempElements.isEmpty()){
 			gc.setLineWidth(this.strokeSize);
 			gc.setStroke(this.paintColor);
+			gc.setFill(this.paintColor);
 
 			gc.beginPath();
 			gc.moveTo(this.tempElements.get(0).lat,this.tempElements.get(0).lon);
 
 			for(PolyPoint paint : this.tempElements) gc.lineTo(paint.lat,paint.lon);
 
-			gc.stroke();
+			if(this.fill) gc.fill(); else gc.stroke();
 			gc.closePath();
 		}
 
@@ -111,11 +115,7 @@ public class Painter {
 			gc.setStroke(Color.RED);
 			gc.setLineDashes(5/zoom_current);
 			gc.setLineWidth(2/zoom_current);
-			gc.setFill(Color.BLACK);
-			gc.setGlobalAlpha(0.5);
-			gc.fillOval(mousePos.getX()-(50/zoom_current),mousePos.getY()-(50/zoom_current),100/zoom_current,100/zoom_current);
 			gc.strokeOval(mousePos.getX()-(50/zoom_current),mousePos.getY()-(50/zoom_current),100/zoom_current,100/zoom_current);
-			gc.setGlobalAlpha(1);
 			gc.setLineDashes(0);
 		}
 
@@ -124,13 +124,10 @@ public class Painter {
 
 	private void deleteWithin(){
 		this.elements.removeIf(obj -> {
-			System.out.println(obj.getPos());
-			System.out.println(mousePos);
-			System.out.println(50/zoom_current);
 			double r = 50/zoom_current;
 			double x = mousePos.getX()-obj.getPos().getX();
 			double y = mousePos.getY()-obj.getPos().getY();
-			double d = Math.sqrt(Math.pow(x,2)+Math.pow(y,2))/zoom_current;
+			double d = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
 			return d <= r;
 		});
 	}
@@ -142,13 +139,17 @@ public class Painter {
 
 	private static class PolyText extends Text implements PaintObj {
 		private final Color colour;
+		private final double strokeSize;
+		private final boolean filled;
 		private final String font;
 		private final int size;
 
-		public PolyText(Point2D pos, Color colour, String font, int size){
+		public PolyText(Point2D pos, Color colour, String font, int size, double strokeSize, boolean filled){
 			this.setX(pos.getX());
 			this.setY(pos.getY());
 			this.colour = colour;
+			this.strokeSize = strokeSize;
+			this.filled = filled;
 			this.font = font;
 			this.size = size;
 		}
@@ -158,35 +159,44 @@ public class Painter {
 		}
 
 		public Point2D getPos(){
-			return new Point2D(this.getX(),this.getY());
+			return new Point2D(super.getX(),super.getY());
 		}
 
 		@Override public void draw(GraphicsContext gc){
 			gc.setFont(new Font(this.font,this.size*10e-5));
+			gc.setLineWidth(this.strokeSize);
+			gc.setStroke(this.colour);
 			gc.setFill(this.colour);
-			gc.fillText(super.getText(),super.getX(),super.getY());
+			gc.setTextAlign(TextAlignment.CENTER);
+			gc.setTextBaseline(VPos.CENTER);
+			if(this.filled) gc.fillText(super.getText(), super.getX(), super.getY());
+			else gc.strokeText(super.getText(), super.getX(), super.getY());
+			gc.setTextAlign(TextAlignment.LEFT);
+			gc.setTextBaseline(VPos.BASELINE);
 		}
 	}
 
 	private static class PolyPaint extends PolyLine implements PaintObj {
 		private final Color colour;
 		private final double strokeSize;
+		private final boolean filled;
 		private final Point2D pos;
 
-		public PolyPaint(final Color colour, final List<PolyPoint> nodes, double strokeSize){
+		public PolyPaint(final Color colour, final List<PolyPoint> nodes, double strokeSize, boolean filled){
 			super(nodes);
 			this.colour = colour;
 			this.strokeSize = strokeSize;
+			this.filled = filled;
 			this.pos = this.calcPos();
 		}
 
 		private Point2D calcPos(){
 			double midtx = 0, midty = 0;
-			for(int i = 0; i < super.coords.length; i+=2){
-				midtx += super.coords[i];
-				midty += super.coords[i+1];
+			for(int i = 0; i < super.coords.length; i+=3){
+				midtx += super.coords[i+1];
+				midty += super.coords[i+2];
 			}
-			return new Point2D(midtx/super.coords.length,midty/super.coords.length);
+			return new Point2D(midtx/(super.coords.length/3),midty/(super.coords.length/3));
 		}
 
 		public Point2D getPos(){
@@ -196,18 +206,21 @@ public class Painter {
 		@Override public void draw(GraphicsContext gc){
 			gc.setLineWidth(this.strokeSize);
 			gc.setStroke(this.colour);
-			super.draw(gc);
+			gc.setFill(this.colour);
+			if(this.filled) super.fill(gc);
+			else super.draw(gc);
 		}
 	}
 
 	private abstract static class PolyBox implements PaintObj {
-		private Point2D pos, size;
+		private Point2D pos, curr, size;
 		private final Color colour;
 		private final boolean filled;
 		private final double strokeSize;
 
 		public PolyBox(Point2D pos, Point2D size, Color colour, double strokeSize, boolean filled){
 			this.pos = pos;
+			this.curr = new Point2D(0,0);
 			this.size = size;
 			this.filled = filled;
 			this.colour = colour;
@@ -215,12 +228,12 @@ public class Painter {
 		}
 
 		public Point2D getPos(){
-			return this.pos;
+			return new Point2D(this.curr.getX()+this.size.getX()/2, this.curr.getY()+this.size.getY()/2);
 		}
 
 		public void setEnd(Point2D pos){
-			this.size = new Point2D(pos.getX()-this.pos.getX(), pos.getY()-this.pos.getY());
-			this.pos = new Point2D(this.pos.getX() + ((this.size.getX() < 0) ? this.size.getX() : 0), this.pos.getY() + ((this.size.getY() < 0) ? this.size.getY() : 0));
+			this.curr = new Point2D(Math.min(this.pos.getX(),pos.getX()), Math.min(this.pos.getY(),pos.getY()));
+			this.size = new Point2D(Math.abs(this.pos.getX()-pos.getX()), Math.abs(this.pos.getY()-pos.getY()));
 		}
 	}
 
@@ -233,8 +246,8 @@ public class Painter {
 			gc.setLineWidth(super.strokeSize);
 			gc.setStroke(super.colour);
 			gc.setFill(super.colour);
-			if(super.filled) gc.fillOval(super.pos.getX(),super.pos.getY(), Math.abs(super.size.getX()),Math.abs(super.size.getY()));
-			else gc.strokeOval(super.pos.getX(),super.pos.getY(), Math.abs(super.size.getX()),Math.abs(super.size.getY()));
+			if(super.filled) gc.fillOval(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
+			else gc.strokeOval(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
 		}
 	}
 
@@ -247,8 +260,8 @@ public class Painter {
 			gc.setLineWidth(super.strokeSize);
 			gc.setStroke(super.colour);
 			gc.setFill(super.colour);
-			if(super.filled) gc.fillRect(super.pos.getX(),super.pos.getY(), Math.abs(super.size.getX()),Math.abs(super.size.getY()));
-			else gc.strokeRect(super.pos.getX(),super.pos.getY(), Math.abs(super.size.getX()),Math.abs(super.size.getY()));
+			if(super.filled) gc.fillRect(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
+			else gc.strokeRect(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
 		}
 	}
 }

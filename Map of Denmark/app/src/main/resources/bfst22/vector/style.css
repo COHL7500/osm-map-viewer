@@ -43,8 +43,21 @@ center {
     -fx-border-width: 1;
 }
 
-#paintBox {
-    -fx-border-style: hidden hidden hidden solid;
-    -fx-border-color:grey;
-    -fx-padding:0 0 0 5;
+.list-cell {
+    -fx-padding: 0px;
+}
+
+#fontBox > .list-view {
+    -fx-max-width: 150;
+}
+
+#fontBox > .item-view .item-cell {
+    -fx-max-width:150;
+    -fx-padding:3 0 3 7;
+}
+
+.separator *.line {
+    -fx-border-style: hidden solid hidden hidden;
+    -fx-border-width: 1px;
+    -fx-border-color: gray;
 }

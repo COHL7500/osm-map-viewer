@@ -21,8 +21,12 @@ public abstract class MoveableObj extends PolyPoint {
 		return this.inRadius;
 	}
 
-	public void toggleMovableState(){
-		this.moveable = !this.moveable;
+	public boolean isMovable(){
+		return this.moveable;
+	}
+
+	public void setMovableState(boolean state){
+		this.moveable = state;
 	}
 
 	public void move(final Point2D newPos, final double zoom, final boolean state){

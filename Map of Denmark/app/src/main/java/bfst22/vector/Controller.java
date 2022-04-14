@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -36,6 +37,7 @@ public class Controller {
     @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
+    @FXML private ToolBar paintBar;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
@@ -46,7 +48,7 @@ public class Controller {
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
-    @FXML private ChoiceBox<String> fontBox;
+    @FXML private ComboBox<String> fontBox;
     @FXML private TreeView<String> featuresTreeView;
     @FXML private ListView<HBox> pinPointList;
 
@@ -72,7 +74,7 @@ public class Controller {
      * ----------------------------------------------------------------------------------------------------------------- */
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public Controller(final Model model, final Stage primarystage) {
-        primarystage.setScene(new Scene(this.smartFXMLLoader("View.fxml")));
+        primarystage.setScene(new Scene(Controller.smartFXMLLoader(this,"View.fxml")));
         primarystage.setWidth(this.someBorderPane.getPrefWidth());
         primarystage.setHeight(this.someBorderPane.getPrefHeight());
 
@@ -103,7 +105,7 @@ public class Controller {
             this.canvas.update();
             this.canvas.checkInBounds();
         });
-        this.paintBox.managedProperty().bind(this.paintBox.visibleProperty());
+        this.paintBar.managedProperty().bind(this.paintBar.visibleProperty());
         this.someBorderPane.setOnKeyPressed(e -> {
             this.canvas.painter.keyPress(e.getText());
             this.canvas.update();
@@ -114,15 +116,16 @@ public class Controller {
 
     private void generateContextMenu(){
         MenuItem addPoint = new MenuItem("Add Pin Point Here");
+        addPoint.setGraphic(new FontIcon("fas-map-pin:12"));
         addPoint.setOnAction(item -> this.canvas.pinpoints.newWindow(this.canvas));
         this.canvasCM.getItems().add(addPoint);
         this.canvas.setOnContextMenuRequested(e -> this.canvasCM.show(this.canvas, e.getScreenX(), e.getScreenY()));
     }
 
-    private Parent smartFXMLLoader(String filename) {
+    public static Parent smartFXMLLoader(Object con, String filename) {
         try {
-            FXMLLoader loader = new FXMLLoader(this.getClass().getResource(filename));
-            loader.setController(this);
+            FXMLLoader loader = new FXMLLoader(con.getClass().getResource(filename));
+            loader.setController(con);
             return loader.load();
         } catch(IOException e){
             System.out.println(e.getMessage());
@@ -363,12 +366,14 @@ public class Controller {
     // when the menubar 'Edit' section button 'Change Zoom Level' is clicked
     @FXML private void changeZoomLevelClicked(final ActionEvent e){
         String zlevel = this.inputWindow("Change Zoom Level","Syntax: 42000");
-        if(zlevel != null) this.canvas.zoomTo(Integer.parseInt(zlevel)/this.canvas.zoom_current);
+        if(zlevel != null && !zlevel.isEmpty()) this.canvas.zoomTo(Integer.parseInt(zlevel)/this.canvas.zoom_current);
     }
 
     // when the menubar 'View' section button 'Paint Bar' is clicked
     @FXML private void paintBarButtonClicked(final ActionEvent e){
-        this.paintBox.setVisible(!this.paintBox.isVisible());
+        this.paintBar.setVisible(!this.paintBar.isVisible());
+        this.canvas.setHeight(this.canvas.getHeight() - (this.paintBar.isVisible() ? 30 : -30));
+        this.canvas.update();
     }
 
     // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked

@@ -4,6 +4,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 public class Pin extends MoveableObj {
 	public HBox listEntry;
@@ -23,8 +25,19 @@ public class Pin extends MoveableObj {
 
 	@Override public void draw(final GraphicsContext gc, final double zoom, final Point2D mousePos){
 		gc.setFill(Color.BLACK);
-		if(super.inRadius(mousePos,zoom)) gc.setFill(Color.YELLOW);
-		gc.fillRect(super.lat-15/zoom,super.lon-15/zoom,30/zoom,30/zoom);
-		//gc.fillArc(super.lat-10/zoom,super.lon-10/zoom,20/zoom,10/zoom,0,90, ArcType.OPEN);
+		gc.setTextAlign(TextAlignment.CENTER);
+		gc.fillText(this.title.length() > 20 ? this.title.substring(0,20) + "..." : this.title, super.lat, super.lon-40/zoom);
+		if(this.inRadius(mousePos,zoom)) gc.setFill(Color.YELLOW);
+		gc.setTextAlign(TextAlignment.LEFT);
+		gc.setFont(new Font("Font Awesome 5 Free Solid",40/zoom));
+		gc.fillText(String.valueOf('\uF041'),super.lat-15/zoom,super.lon);
+		gc.setFont(new Font("Arial",11/zoom));
+	}
+
+	@Override public boolean inRadius(final Point2D mousePos, final double zoom){
+		boolean inside = super.inRadius(mousePos,zoom);
+		if(inside) listEntry.setStyle("-fx-background-color:yellow;");
+		else listEntry.setStyle("-fx-background-color:transparent;");
+		return inside;
 	}
 }

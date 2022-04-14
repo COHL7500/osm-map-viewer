@@ -1,23 +1,27 @@
 package bfst22.vector;
 
+import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PinPoints {
-	private List<Pin> pins;
+public class PinPoints extends Dialog<ButtonType> {
+	private final List<Pin> pins;
 	private ListView<HBox> pinPointList;
+
+	@FXML private TextField PinTitle;
+	@FXML private TextArea PinDescription;
+	@FXML private CheckBox PinCheckbox;
+	@FXML private ButtonType PinOKButton, PinCancelButton, PinDeleteButton;
 
 	public PinPoints(){
 		this.pins = new ArrayList<>();
+		super.setDialogPane((DialogPane) Controller.smartFXMLLoader(this,"PinDialog.fxml"));
+		this.PinTitle.textProperty().addListener(observable -> super.getDialogPane().lookupButton(this.PinOKButton).setDisable(this.PinTitle.getText().length() <= 0));
 	}
 
 	public void init(final ListView<HBox> pinPointList){
@@ -25,52 +29,46 @@ public class PinPoints {
 	}
 
 	public void newWindow(final MapCanvas canvas){
-		this.displayWindow("Add Pin Point",null,canvas);
+		this.displayWindow("Add Pin Point", null, canvas);
 	}
 
 	private void displayWindow(final String header, final Pin point, final MapCanvas canvas){
-		Dialog<ButtonType> dialog = new Dialog<>();
+		super.setTitle(header);
+		this.PinTitle.clear();
+		this.PinDescription.clear();
+		this.PinCheckbox.setSelected(false);
 
-		Label labelTitle = new Label("Title:");
-		Label labelDesc = new Label("Description:");
-		TextField title = new TextField(point != null ? point.title : "");
-		TextArea desc = new TextArea(point != null ? point.description : "");
-		ButtonType button1 = new ButtonType("OK", ButtonBar.ButtonData.YES);
-		ButtonType button2 = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		ButtonType button3 = new ButtonType("Delete", ButtonBar.ButtonData.NO);
-		VBox vboxDialog = new VBox(labelTitle,title,labelDesc,desc);
-		vboxDialog.setSpacing(5);
+		if(point != null) {
+			this.PinTitle.setText(point.title);
+			this.PinDescription.setText(point.description);
+			this.PinCheckbox.setSelected(!point.isMovable());
+		}
 
-		dialog.getDialogPane().setContent(vboxDialog);
-		dialog.getDialogPane().setPrefSize(100,250);
-		dialog.getDialogPane().getButtonTypes().addAll(button1,button2,button3);
-		dialog.getDialogPane().lookupButton(button3).setDisable(point == null);
-		dialog.setTitle(header);
-
-		dialog.showAndWait().ifPresent(response -> {
+		super.getDialogPane().lookupButton(this.PinOKButton).setDisable(this.PinTitle.getText().isEmpty());
+		super.getDialogPane().lookupButton(this.PinDeleteButton).setDisable(point == null);
+		super.showAndWait().ifPresent(response -> {
 			switch (response.getButtonData()){
-				case YES -> { // OK
+				case YES -> { // CREATE, UPDATE
 					if(point == null){
-						HBox pinEntry = new HBox();
-						Label labelEntry = new Label(title.getText().length() > 20 ? title.getText().substring(0,20) + "..." : title.getText());
-						Pane paneEntry = new Pane();
-						Button buttonEntry1 = new Button("Goto");
-						Button buttonEntry2 = new Button("Edit");
-						pinEntry.getChildren().addAll(labelEntry,paneEntry,buttonEntry1,buttonEntry2);
-						pinEntry.setSpacing(5);
-						pinEntry.setAlignment(Pos.CENTER_LEFT);
-						HBox.setHgrow(paneEntry, Priority.ALWAYS);
+						HBox PinEntry 	 = (HBox) Controller.smartFXMLLoader(this,"PinListEntry.fxml");
+						String labelText = this.PinTitle.getText().length() > 20 ? this.PinTitle.getText().substring(0,20) + "..." : this.PinTitle.getText();
+						Pin newPoint 	 = new Pin(PinEntry, (float) canvas.mousePos.getX(), (float) canvas.mousePos.getY(), 30, !this.PinCheckbox.isSelected(), this.PinTitle.getText(), this.PinDescription.getText());
 
-						Pin newPoint = new Pin(pinEntry, (float) canvas.mousePos.getX(), (float) canvas.mousePos.getY(), 15, true, title.getText(), desc.getText());
+						Label PinLabel 		 = ((Label) PinEntry.lookup("#PinLabel"));
+						Button PinButtonGoto = ((Button) PinEntry.lookup("#PinButtonGoto"));
+						Button PinButtonEdit = ((Button) PinEntry.lookup("#PinButtonEdit"));
+
+						PinLabel.setText(labelText);
+						PinButtonGoto.setOnMousePressed(f -> canvas.goToPosAbsolute(new Point2D(newPoint.lat,newPoint.lon)));
+						PinButtonEdit.setOnMousePressed(g -> this.displayWindow("Edit Pin Point", newPoint, canvas));
+
+						this.pinPointList.getItems().add(PinEntry);
 						this.pins.add(newPoint);
-
-						buttonEntry1.setOnMousePressed(f -> canvas.goToPosAbsolute(new Point2D(newPoint.lat,newPoint.lon)));
-						buttonEntry2.setOnMousePressed(g -> this.displayWindow("Edit Pin Point", newPoint, canvas));
-						this.pinPointList.getItems().add(pinEntry);
-
 					} else {
-						((Label) point.listEntry.getChildren().get(0)).setText(title.getText());
-						this.pins.get(this.pins.indexOf(point)).setContent(title.getText(),desc.getText());
+						((Label) point.listEntry.lookup("#PinLabel")).setText(this.PinTitle.getText().length() > 20 ? this.PinTitle.getText().substring(0,20) + "..." : this.PinTitle.getText());
+						Pin curr = this.pins.get(this.pins.indexOf(point));
+						curr.setContent(this.PinTitle.getText(),this.PinDescription.getText());
+						curr.setMovableState(!this.PinCheckbox.isSelected());
 					}
 				} case NO -> { // DELETE
 					this.pinPointList.getItems().remove(point.listEntry);
@@ -82,24 +80,22 @@ public class PinPoints {
 
 	public void doubleClick(MapCanvas canvas){
 		for(Pin point : this.pins){
-			if(point.inRadius(canvas.mousePos,canvas.zoom_current)){
-				this.displayWindow("Edit Pin Point",point,canvas);
+			if(point.inRadius(canvas.mousePos, canvas.zoom_current)){
+				this.displayWindow("Edit Pin Point", point, canvas);
 				return;
 			}
 		}
 	}
 
 	public boolean drag(Point2D mousePos, double zoom, boolean state){
-		for(MoveableObj obj : this.pins){
-			if(obj.inRadius(mousePos,zoom)){
-				obj.move(mousePos,zoom,state);
-				return true;
-			}
-		}
-		return false;
+		return this.pins.stream().anyMatch(obj -> {
+			boolean in = obj.inRadius(mousePos,zoom);
+			if(in) obj.move(mousePos,zoom,state);
+			return in;
+		});
 	}
 
 	public void draw(GraphicsContext gc, double zoom, Point2D mousePos){
-		for(Pin point : this.pins) point.draw(gc,zoom,mousePos);
+		this.pins.forEach(point -> point.draw(gc,zoom,mousePos));
 	}
 }
