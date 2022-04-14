@@ -3,36 +3,82 @@ package bfst22.vector;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
 import java.util.*;
 
 // defines the canvas of our map; panning, zooming, painting etc.
 // Whenever we add new interaction with the map, we use this class.
 public class MapCanvas extends Canvas {
-    public Model model;
-    public Affine trans = new Affine();
-    public GraphicsContext gc = super.getGraphicsContext2D();
-    public double zoom_current = 1, minx = 0, miny = 0, maxx = 0, maxy = 0, originx = 0, originy = 0, mousex = 0, mousey = 0;
-    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugInfo = true,
-            debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false;
-    private long repaintTime, avgRT = 0, avgRTNum = 0;
-    // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
+    private Model model;
+    private Affine trans;
+    private GraphicsContext gc;
+    public Point2D minPos, maxPos, originPos, mousePos, rtMousePos;
+    public double zoom_current;
+    public final int minZoom = 1, maxZoom = 500000;
+    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false, zoomMagnifyingGlass = false;
+    public long repaintTime, avgRT, avgRTNum;
+    public Painter painter;
+    public ZoomBox zoombox;
+    public PinPoints pinpoints;
+    public boolean drags;
 
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ------------------------------------------------ General Methods ------------------------------------------------ *
+     * ----------------------------------------------------------------------------------------------------------------- */
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
-        this.pan(-model.minlon, -model.minlat);
-
-        // Default zoom level: 700
-        this.zoom(700 / (model.maxlon - model.minlon));
+        this.reset();
+        this.zoom(42000);
+        this.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
+            if(this.zoomMagnifyingGlass) event.consume();
+        });
     }
 
+    public void reset(){
+        this.minPos = new Point2D(0,0);
+        this.maxPos = new Point2D(0,0);
+        this.originPos = new Point2D(0,0);
+        this.mousePos = new Point2D(0,0);
+        this.rtMousePos = new Point2D(0,0);
+        this.painter = new Painter();
+        this.zoombox = new ZoomBox();
+        this.pinpoints = new PinPoints();
+        this.repaintTime = this.avgRT = this.avgRTNum = 0;
+        this.trans = new Affine();
+        this.gc = super.getGraphicsContext2D();
+        this.zoom_current = 1;
+        this.drags = false;
+    }
+
+    // https://stackoverflow.com/questions/12636613/how-to-calculate-moving-average-without-keeping-the-count-and-data-total
+    private void calcRollingAvg(){
+        this.avgRTNum = this.avgRTNum < 100 ? this.avgRTNum+1 : 1;
+        this.avgRT = (this.avgRT * (this.avgRTNum-1) + this.repaintTime) / this.avgRTNum;
+    }
+
+    private void magnifyingGlass(MouseEvent e){
+        if(this.zoomMagnifyingGlass){
+            if(e.getButton() == MouseButton.PRIMARY) this.zoomTo(2);
+            else if(e.getButton() == MouseButton.SECONDARY) this.zoomTo(0.5);
+            this.goToPosAbsolute(this.mousePos);
+        }
+    }
+
+    private void doDrag(boolean state){
+        this.drags = this.pinpoints.drag(this.mousePos,this.zoom_current,state);
+    }
+
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ----------------------------------------------- Painting Methods ------------------------------------------------ *
+     * ----------------------------------------------------------------------------------------------------------------- */
     // Draws all of the elements of our map.
     private void repaint() {
-        this.repaintTime = System.nanoTime();
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
@@ -42,52 +88,58 @@ public class MapCanvas extends Canvas {
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
         this.gc.setTransform(trans);
 
-        double padding = this.debugVisBox ? 100 : -25;
-        Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.miny+padding/zoom_current, this.minx+padding/zoom_current},
-                                                            new double[]{this.maxy-padding/zoom_current, this.maxx-padding/zoom_current});
+        if(this.model.isLoaded()) {
+            this.repaintTime = System.nanoTime();
 
-        //Set<valueFeature> featureList = new HashSet<>();
-        // Loops through all the key features and sets the default styling for all its objects
-        for(keyFeature element : model.yamlObj.ways.values()){
-            this.setStylingDefault();
+            double padding = this.debugVisBox ? 100 : -25;
+            Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.minPos.getY() + this.z(padding), this.minPos.getX() + this.z(padding)},
+                    new double[]{this.maxPos.getY() - this.z(padding), this.maxPos.getX() - this.z(padding)});
 
-            // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
-            for (valueFeature element2 : element.valuefeatures.values()) {
-                if(element2.display) {
-                    // Loops through all drawable elements that shall be drawn to the screen
-                    // Checks if the styling requires them to be drawn with filling and/or strokes
-                    // and then proceed to draw the value feature in the way it has been told to
-                    for (Drawable draw : element2.drawable) {
-                        if(range.contains(draw) || element2.draw != null && element2.draw.always_draw && this.model.isOMSloaded){
-                            this.setStyling(element.draw);
-                            this.setStyling(element2.draw);
+            // Only display if set to do so, else display nothing at all
+            if(this.model.yamlObj.draw.display) {
+                // Loops through all the key features and sets the default styling for all its objects
+                for (keyFeature element : this.model.yamlObj.ways.values()) {
+                    if (element.draw.display) {
+                        this.setStylingDefault();
 
-                            if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                                    || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                if(!this.debugDisplayWireframe) draw.fill(this.gc);
-                                draw.draw(this.gc);
+                        // Loops through all value features and sets first eventual key feature styling and then eventual any value styles set
+                        for (valueFeature element2 : element.valuefeatures.values()) {
+                            if (element2.draw.display) {
+                                // Loops through all drawable elements that shall be drawn to the screen
+                                // Checks if the styling requires them to be drawn with filling and/or strokes
+                                // and then proceed to draw the value feature in the way it has been told to
+                                for (Drawable draw : element2.drawable) {
+                                    if (range.contains(draw) || element2.draw.always_draw) {
+                                        this.setStyling(element.draw);
+                                        this.setStyling(element2.draw);
+
+                                        if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
+                                            if (!this.debugDisplayWireframe) draw.fill(this.gc);
+                                            draw.draw(this.gc);
+                                        }
+                                        if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
+                                                || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
+                                            draw.draw(this.gc);
+                                    }
+                                }
                             }
-                            if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
-                                    || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
-                                draw.draw(this.gc);
-                        /*if (element2.name != null && element2.nameCenter != null && element2.name.length() > 0)
-                            featureList.add(element2);*/
                         }
                     }
                 }
             }
+
+            this.repaintTime = System.nanoTime() - this.repaintTime;
+            this.calcRollingAvg();
+            this.painter.stroke(this.gc, this.mousePos, this.zoom_current);
+            this.setStylingDefault();
+
+            this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
+            this.splitsTree();
+            this.drawBounds();
+            this.strokeCursor();
+            this.strokeBox(padding);
         }
-
-        this.repaintTime = System.nanoTime() - this.repaintTime;
-        this.calcRollingAvg();
-
-        this.splitsTree();
-        this.drawBounds();
-        this.strokeCursor();
-        this.strokeBox(padding);
-        this.debugInfo();
-
-        //featureList.forEach(element2 -> this.drawText(element2.name, element2.nameCenter));
     }
 
     // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided
@@ -102,67 +154,95 @@ public class MapCanvas extends Canvas {
 
     // Sets the default styling options for graphicscontext in case no values for keyfeature/valuefeature are provided
     private void setStylingDefault(){
+        this.gc.setFont(new Font("Arial",this.z(11)));
         this.gc.setFill(Color.BLACK);
         this.gc.setLineWidth(0.00001);
         this.gc.setStroke(Color.BLACK);
         this.gc.setLineDashes(1);
+        this.gc.setGlobalAlpha(1);
     }
 
-    private void calcRollingAvg(){
-        this.avgRTNum = this.avgRTNum < 100 ? this.avgRTNum+1 : 1;
-        this.avgRT = (this.avgRT * (this.avgRTNum-1) + this.repaintTime) / this.avgRTNum;
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ------------------------------------------------- Event Methods ------------------------------------------------- *
+     * ----------------------------------------------------------------------------------------------------------------- */
+    public void scrolled(final double dy){
+        this.zoomTo(Math.pow(1.003, dy));
     }
 
+    public void dragged(final MouseEvent e, final Point2D p){
+        this.doDrag(true);
+        this.panTo(p);
+        this.setMousePos(p);
+        this.zoombox.drag(this.gc,this.mousePos,this.zoom_current);
+        this.painter.drag(this.mousePos);
+    }
+
+    public void pressed(final MouseEvent e){
+        this.magnifyingGlass(e);
+        this.zoombox.press(this.mousePos);
+        this.painter.press(this.mousePos);
+    }
+
+    public void released(final MouseEvent e){
+        this.doDrag(false);
+        this.zoombox.release(this,this.mousePos);
+        this.painter.release();
+    }
+
+    public void moved(Point2D p){
+        this.setMousePos(p);
+    }
+
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * -------------------------------------------- Canvas Drawing Methods --------------------------------------------- *
+     * ----------------------------------------------------------------------------------------------------------------- */
     private void strokeBox(double padding){
-        if(this.debugVisBox && this.model.isOMSloaded){
-            padding /= zoom_current;
-            double csize = 5 / zoom_current;
+        if(this.debugVisBox && this.model.isLoaded()){
+            padding = this.z(padding);
+            double csize = this.z(5);
 
-            this.gc.setLineWidth(1/zoom_current);
+            this.gc.setLineWidth(this.z(1));
             this.gc.setStroke(Color.BLUE);
-            this.gc.setLineDashes(3/zoom_current);
-            this.gc.setFont(new Font("Arial",11/zoom_current));
+            this.gc.setLineDashes(this.z(3));
             this.gc.beginPath();
-            this.gc.moveTo(this.minx+padding,this.miny+padding);
-            this.gc.lineTo(this.minx+padding,this.miny+padding);
-            this.gc.lineTo(this.minx+padding,this.maxy-padding);
-            this.gc.lineTo(this.maxx-padding,this.maxy-padding);
-            this.gc.lineTo(this.maxx-padding,this.miny+padding);
-            this.gc.lineTo(this.minx+padding,this.miny+padding);
+            this.gc.moveTo(this.minPos.getX()+padding,this.minPos.getY()+padding);
+            this.gc.lineTo(this.minPos.getX()+padding,this.maxPos.getY()-padding);
+            this.gc.lineTo(this.maxPos.getX()-padding,this.maxPos.getY()-padding);
+            this.gc.lineTo(this.maxPos.getX()-padding,this.minPos.getY()+padding);
+            this.gc.lineTo(this.minPos.getX()+padding,this.minPos.getY()+padding);
             this.gc.stroke();
             this.gc.closePath();
             this.gc.setFill(Color.BLACK);
-            this.gc.fillOval(originx,originy,csize,csize);
-            this.gc.fillOval(minx+padding-csize,miny+padding-csize,csize,csize);
-            this.gc.fillOval(maxx-padding,miny+padding-csize,csize,csize);
-            this.gc.fillOval(maxx-padding,maxy-padding,csize,csize);
-            this.gc.fillOval(minx+padding-csize,maxy-padding,csize,csize);
+            this.gc.fillOval(this.originPos.getX(),this.originPos.getY(),csize,csize);
+            this.gc.fillOval(this.minPos.getX()+padding-csize,this.minPos.getY()+padding-csize,csize,csize);
+            this.gc.fillOval(this.maxPos.getX()-padding,this.minPos.getY()+padding-csize,csize,csize);
+            this.gc.fillOval(this.maxPos.getX()-padding,this.maxPos.getY()-padding,csize,csize);
+            this.gc.fillOval(this.minPos.getX()+padding-csize,this.maxPos.getY()-padding,csize,csize);
 
             if(this.debugDisableHelpText) {
-                this.gc.fillText("relative origin (" + String.format("%.5f", originx) + "," + String.format("%.5f", originy) + ")", originx + csize, originy - csize);
-                this.gc.fillText("top left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", miny + padding) + ")", minx + padding + csize, miny + padding - csize);
-                this.gc.fillText("top right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", miny + padding) + ")", maxx - padding + csize, miny + padding - csize);
-                this.gc.fillText("bottom right (" + String.format("%.5f", maxx - padding) + "," + String.format("%.5f", maxy - padding) + ")", maxx - padding + csize, maxy - padding - csize);
-                this.gc.fillText("bottom left (" + String.format("%.5f", minx + padding) + "," + String.format("%.5f", maxy - padding) + ")", minx + padding + csize, maxy - padding - csize);
+                this.gc.fillText("relative origin (" + String.format("%.5f", this.originPos.getX()) + "," + String.format("%.5f", this.originPos.getY()) + ")", this.originPos.getX() + csize, this.originPos.getY() - csize);
+                this.gc.fillText("top left (" + String.format("%.5f", this.minPos.getX() + padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.minPos.getX() + padding + csize, this.minPos.getY() + padding - csize);
+                this.gc.fillText("top right (" + String.format("%.5f", this.maxPos.getX() - padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.maxPos.getX() - padding + csize, this.minPos.getY() + padding - csize);
+                this.gc.fillText("bottom right (" + String.format("%.5f", this.maxPos.getX() - padding) + "," + String.format("%.5f", this.maxPos.getY() - padding) + ")", this.maxPos.getX() - padding + csize, this.maxPos.getY() - padding - csize);
+                this.gc.fillText("bottom left (" + String.format("%.5f", this.minPos.getX() + padding) + "," + String.format("%.5f", this.maxPos.getY() - padding) + ")", this.minPos.getX() + padding + csize, this.maxPos.getY() - padding - csize);
             }
         }
     }
 
     private void strokeCursor(){
-        if(this.debugCursor && this.model.isOMSloaded){
+        if(this.debugCursor && this.model.isLoaded()){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.BLUE);
-            this.gc.fillOval(mousex,mousey,5/zoom_current,5/zoom_current);
-            this.gc.setFont(new Font("Arial",11/zoom_current));
-            if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", mousex) + "," + String.format("%.5f", mousey) + ")",mousex+5/zoom_current,mousey-5/zoom_current);
+            this.gc.fillOval(this.mousePos.getX(),this.mousePos.getY(),this.z(5),this.z(5));
+            if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos.getX()) + "," + String.format("%.5f", this.mousePos.getY()) + ")",this.mousePos.getX()+this.z(5),this.mousePos.getY()-this.z(5));
             this.gc.setFill(Color.BLACK);
         }
     }
 
     private void splitsTree(){
-        if(this.debugSplits && this.model.isOMSloaded){
+        if(this.debugSplits && this.model.isLoaded()){
             List<float[]> lines = this.model.kdtree.getSplit();
-            this.gc.setLineWidth(2.5/zoom_current);
+            this.gc.setLineWidth(this.z(2.5));
             this.gc.setStroke(Color.GREEN);
             this.gc.setLineDashes(0);
 
@@ -177,117 +257,104 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawBounds(){
-        if(this.debugBoundingBox && this.model.isOMSloaded){
-            this.gc.setLineWidth(1/zoom_current);
+        if(this.debugBoundingBox && this.model.isLoaded()){
+            this.gc.setLineWidth(this.z(1));
             this.gc.setLineDashes(0);
             this.gc.setStroke(Color.RED);
             this.gc.beginPath();
-            this.gc.moveTo(this.model.minlon,this.model.minlat);
-            this.gc.lineTo(this.model.maxlon,this.model.minlat);
-            this.gc.lineTo(this.model.maxlon,this.model.maxlat);
-            this.gc.lineTo(this.model.minlon,this.model.maxlat);
-            this.gc.lineTo(this.model.minlon,this.model.minlat);
+            this.gc.moveTo(this.model.minBoundsPos.getY(),this.model.minBoundsPos.getX());
+            this.gc.lineTo(this.model.maxBoundsPos.getY(), this.model.minBoundsPos.getX());
+            this.gc.lineTo(this.model.maxBoundsPos.getY(),this.model.maxBoundsPos.getX());
+            this.gc.lineTo(this.model.minBoundsPos.getY(),this.model.maxBoundsPos.getX());
+            this.gc.lineTo(this.model.minBoundsPos.getY(),this.model.minBoundsPos.getX());
             this.gc.stroke();
             this.gc.closePath();
             this.gc.setFill(Color.RED);
 
-            double bbx = (this.model.maxlon+this.model.minlon)/2, bby = (this.model.maxlat+this.model.minlat)/2;
-            double csize = 5/zoom_current;
-
-            this.gc.fillOval(bbx,bby, csize, csize);
-            this.gc.fillText("boundary origin (" + String.format("%.5f", bbx) + "," + String.format("%.5f", bby) + ")", bbx + csize, bby - csize);
+            double csize = this.z(5);
+            this.gc.fillOval(this.model.originBoundsPos.getX(),this.model.originBoundsPos.getY(), csize, csize);
+            this.gc.fillText("boundary origin (" + String.format("%.5f", this.model.originBoundsPos.getX())
+                    + "," + String.format("%.5f", this.model.originBoundsPos.getY()) + ")", this.model.originBoundsPos.getX() + csize, this.model.originBoundsPos.getY() - csize);
         }
     }
 
-    private void debugInfo(){
-        if(this.debugInfo && this.model.isOMSloaded) {
-            this.gc.setFill(Color.BLACK);
-            this.gc.setGlobalAlpha(0.5);
-            this.gc.fillRect(minx,miny,160 / zoom_current,85 / zoom_current);
-            this.gc.fillRect(maxx-165 / zoom_current,miny,165 / zoom_current,85 / zoom_current);
-            this.gc.fillRect(minx,maxy,this.model.currFileName.length() * 5.25 / zoom_current,20 / zoom_current);
-            this.gc.fillRect(minx,maxy-70 / zoom_current,175 / zoom_current,65 / zoom_current);
-            this.gc.setGlobalAlpha(1);
-            this.gc.setFill(Color.WHITE);
-            this.gc.setFont(new Font("Arial", 10 / zoom_current));
-
-            double min_x = minx + 5 / zoom_current, max_x = maxx - 155 / zoom_current, min_y = miny + 15 / zoom_current, max_y = maxy + 13 / zoom_current;
-            this.gc.fillText(String.format("%-11s%s", "min:", String.format("%.5f", minx) + ", " + String.format("%.5f", miny)), min_x, min_y);
-            this.gc.fillText(String.format("%-10s%s", "max:", String.format("%.5f", maxx) + ", " + String.format("%.5f", maxy)), min_x, min_y + 15 / zoom_current);
-            this.gc.fillText(String.format("%-11s%s", "origin:", String.format("%.5f", originx) + ", " + String.format("%.5f", originy)), min_x, min_y + 30 / zoom_current);
-            this.gc.fillText(String.format("%-8s%s", "mouse:", String.format("%.5f", mousex) + ", " + String.format("%.5f", mousey)), min_x, min_y + 45 / zoom_current);
-            this.gc.fillText(String.format("%-9s%s", "zoom:", String.format("%.5f", zoom_current)), min_x, min_y + 60 / zoom_current);
-            this.gc.fillText(String.format("%-14s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)), max_x, min_y);
-            this.gc.fillText(String.format("%-13s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)), max_x, min_y + 15 / zoom_current);
-            this.gc.fillText(String.format("%-18s%s", "nodes:", this.model.nodecount), max_x, min_y + 30 / zoom_current);
-            this.gc.fillText(String.format("%-19s%s", "ways:", this.model.waycount), max_x, min_y + 45 / zoom_current);
-            this.gc.fillText(String.format("%-18s%s", "relations:", this.model.relcount), max_x, min_y + 60 / zoom_current);
-            this.gc.fillText(String.format("%5s", this.model.currFileName), min_x, max_y);
-            this.gc.fillText(String.format("%-27s%.1f megabytes", "file size:", ((float) this.model.filesize / 1000000)), min_x, max_y - 25 / zoom_current);
-            this.gc.fillText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000), min_x, max_y - 40 / zoom_current);
-            this.gc.fillText(String.format("%-23s%d ms", "repaint time:", this.repaintTime/1000000), min_x, max_y - 55 / zoom_current);
-            this.gc.fillText(String.format("%-20s%d ms", "avg repaint time:", this.avgRT/1000000), min_x, max_y - 70 / zoom_current);
-        }
-    }
-
-    // Draws any kind of provided text to the screen
-    private void drawText(final String text, final double[] coords){
-        this.gc.setLineWidth(0.00001);
-        this.gc.setFill(Color.BLACK);
-        this.gc.setFont(new Font("Arial", 0.0001));
-        this.gc.fillText(text,coords[0],coords[1]);
-    }
-
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ------------------------------------------- Canvas Interaction Methods ------------------------------------------ *
+     * ----------------------------------------------------------------------------------------------------------------- */
     // Allows the user to navigate around the map by panning.
     // this is used in onMouseDragged from Controller.
-    public void pan(double dx, double dy) {
-        this.setScale(dx,dy);
+    public void panTo(Point2D pos){
+        double dx = pos.getX() - this.rtMousePos.getX();
+        double dy = pos.getY() - this.rtMousePos.getY();
+        Point2D diff = new Point2D(dx,dy);
 
-        if(!this.debugFreeMovement && (this.originx < this.model.minlon || this.originx > this.model.maxlon
-                || this.originy < this.model.minlat || this.originy > this.model.maxlat)){
-            this.setScale(-dx,-dy);
-        } else {
-            this.trans.prependTranslation(dx,dy);
-        }
+        if(!this.zoombox.isZooming() && !this.painter.isDrawing() && !this.drags) this.pan(diff);
+        if(!this.isInBounds() && !this.debugFreeMovement) this.pan(diff.multiply(-1));
+    }
 
+    private void pan(Point2D pos) {
+        this.setScale(new Point2D(pos.getX(), pos.getY()));
+        this.trans.prependTranslation(pos.getX(),pos.getY());
         this.repaint();
+    }
+
+    public void zoomTo(final double factor){
+        if((this.zoom_current * factor) > this.minZoom && (this.zoom_current * factor) < this.maxZoom) this.zoom(factor);
     }
 
     // Allows the user to zoom in on the map.
     // this is used in onScroll from Controller.
-    public void zoom(final double factor){
+    private void zoom(final double factor){
+        Point2D cen = new Point2D(this.originPos.getX(),this.originPos.getY());
         this.zoom_current *= factor;
         this.trans.prependScale(factor, factor);
-        this.repaint();
+        this.setScale(new Point2D(0,0));
+        this.goToPosAbsolute(cen);
     }
 
-    public void setScale(final double dx, final double dy){
-        this.minx -= dx / zoom_current;
-        this.miny -= dy / zoom_current;
-        this.maxx = this.minx+super.getWidth() / zoom_current;
-        this.maxy = (this.miny+super.getHeight() / zoom_current) - 25/zoom_current;
-        this.originx = minx+(maxx-minx) / 2;
-        this.originy = miny+(maxy-miny) / 2;
+    private void setScale(final Point2D pos){
+        double minx = this.minPos.getX() - this.z(pos.getX());
+        double miny = this.minPos.getY() - this.z(pos.getY());
+        this.minPos = new Point2D(minx,miny);
+
+        double maxx = minx + this.z(super.getWidth());
+        double maxy = (miny + this.z(super.getHeight())) - this.z(25);
+        this.maxPos = new Point2D(maxx,maxy);
+
+        double originx = minx+(maxx-minx) / 2;
+        double originy = miny+(maxy-miny) / 2;
+        this.originPos = new Point2D(originx,originy);
     }
 
     public void setMousePos(final Point2D point){
-        this.mousex = point.getX() / zoom_current + this.minx;
-        this.mousey = point.getY() / zoom_current + this.miny;
+        double dx = this.z(point.getX()) + this.minPos.getX();
+        double dy = this.z(point.getY()) + this.minPos.getY();
+        this.mousePos = new Point2D(dx,dy);
+        this.rtMousePos = point;
         this.repaint();
     }
 
     public void update(){
-        this.setScale(0,0);
+        this.setScale(new Point2D(0,0));
         this.repaint();
     }
 
-    // Uncertain what the utility of this method is.
-    public Point2D mouseToModel(final Point2D point) {
-        try {
-            return this.trans.inverseTransform(point);
-        } catch (NonInvertibleTransformException e) {
-            throw new RuntimeException(e);
-        }
+    public void checkInBounds(){
+        if(!this.isInBounds() && !this.debugFreeMovement) this.placeInBounds();
+    }
+
+    private boolean isInBounds(){
+        return (this.originPos.getX() >= this.model.minBoundsPos.getY() && this.originPos.getX() <= this.model.maxBoundsPos.getY()
+                && this.originPos.getY() >= this.model.minBoundsPos.getX() && this.originPos.getY() <= this.model.maxBoundsPos.getX());
+    }
+
+    // https://math.stackexchange.com/questions/127613/closest-point-on-circle-edge-from-point-outside-inside-the-circle
+    private void placeInBounds(){
+        double r = (this.model.maxBoundsPos.getY()-this.model.originBoundsPos.getX());
+        double d = Math.sqrt(Math.pow(this.originPos.getX()-this.model.originBoundsPos.getX(),2)+Math.pow(this.originPos.getY()-this.model.originBoundsPos.getY(),2));
+        double x = this.model.originBoundsPos.getX() + r * (this.originPos.getX()-this.model.originBoundsPos.getX())/d;
+        double y = this.model.originBoundsPos.getY() + r * (this.originPos.getY()-this.model.originBoundsPos.getY())/d;
+        this.goToPosAbsolute(new Point2D(x,y));
     }
 
     public void clearScreen(){
@@ -295,19 +362,40 @@ public class MapCanvas extends Canvas {
         this.repaint();
     }
 
-    public void goToPosAbsolute(final double x, final double y){
-        double dx = (x - this.originx) * this.zoom_current;
-        double dy = (y - this.originy) * this.zoom_current;
-        this.pan(-dx,-dy);
+    public void goToPosAbsolute(final Point2D pos){
+        double dx = this.rz(pos.getX() - this.originPos.getX());
+        double dy = this.rz(pos.getY() - this.originPos.getY());
+        this.pan(new Point2D(-dx,-dy));
     }
 
-    public void goToPosRelative(final double x, final double y){
-        this.pan(x*this.zoom_current, y*this.zoom_current);
+    public void goToPosRelative(final Point2D pos){
+        this.pan(pos.multiply(this.zoom_current));
     }
 
     public void centerPos(){
-        double dx = (this.model.maxlon + this.model.minlon)/2;
-        double dy = (this.model.maxlat + this.model.minlat)/2;
-        this.goToPosAbsolute(dx,dy);
+        double dx = (this.model.maxBoundsPos.getY() + this.model.minBoundsPos.getY())/2;
+        double dy = (this.model.maxBoundsPos.getX() + this.model.minBoundsPos.getX())/2;
+        this.goToPosAbsolute(new Point2D(dx,dy));
+    }
+
+    public void centerMap(){
+        this.centerPos();
+        this.pan(new Point2D(0,-50));
+        this.update();
+    }
+
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ------------------------------------------------- Misc Methods -------------------------------------------------- *
+     * ----------------------------------------------------------------------------------------------------------------- */
+    public GraphicsContext getGC(){
+        return this.gc;
+    }
+
+    public double z(double num){
+        return (num / this.zoom_current);
+    }
+
+    public double rz(double num){
+        return (num * this.zoom_current);
     }
 }

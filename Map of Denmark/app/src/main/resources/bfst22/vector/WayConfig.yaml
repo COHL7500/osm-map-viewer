@@ -28,8 +28,10 @@ ways:
           fill_color: "#b5d2de"
       coastline:
         draw:
-          always_draw: true
+          fill: true
+          display: false
           stroke_color: "#b0a1ba"
+          fill_color: "black"
       wood:
         draw:
           fill: true
@@ -62,11 +64,11 @@ ways:
       allotments: {}
       continent: {}
       archipelago: {}
-      island: {}
-      islet:
+      island:
         draw:
           fill: true
-          fill_color: "#b5b2ac"
+          fill_color: "pink"
+      islet: {}
       square: {}
       locality: {}
       sea: {}
@@ -124,6 +126,7 @@ ways:
       winter_sports: {}
   leisure:
     draw:
+      display: false
       fill: false
       fill_color: "darkgreen"
       zoom_level: 20000
@@ -174,6 +177,7 @@ ways:
       water_park: {}
   building:
     draw:
+      display: false
       stroke: true
       line_width: 0.000001
       fill: true
@@ -190,6 +194,7 @@ ways:
       retail: {}
   office:
     draw:
+      display: false
       stroke: true
       fill: true
       fill_color: "teal"
@@ -243,6 +248,7 @@ ways:
       water_utility: {}
   man_made:
     draw:
+      display: false
       stroke: true
       fill: true
       fill_color: "grey"
@@ -267,7 +273,6 @@ ways:
           stroke_color: "#c5c7cc"
           fill: true
           fill_color: "#dcdce7"
-
       track: {}
       bus_guideway: {}
       escape: {}
@@ -296,6 +301,7 @@ ways:
       construction: {}
   highway:
     draw:
+      display: false
       stroke: true
       stroke_color: "#ffffff"
       line_width: 0.00005
@@ -329,6 +335,7 @@ ways:
       unclassified: {}
   cycleway:
     draw:
+      display: false
       stroke: true
       stroke_color: "purple"
       fill: true
@@ -342,6 +349,7 @@ ways:
       separate: {}
   route:
     draw:
+      display: false
       stroke: true
       stroke_color: "#889194"
       dash_size: 0.00005

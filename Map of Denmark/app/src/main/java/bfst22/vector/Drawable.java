@@ -8,7 +8,7 @@ public interface Drawable {
     // draws the current element.
     default void draw(GraphicsContext gc) {
         gc.beginPath();
-        trace(gc);
+        this.trace(gc);
         gc.stroke();
         gc.closePath(); // Just as a safety measure; uncertain if it does anything different.
     }

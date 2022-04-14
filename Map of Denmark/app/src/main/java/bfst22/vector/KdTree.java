@@ -12,15 +12,16 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		this.lines = new ArrayList<>();
 	}
 
-	public void add(PolyLine element){
-		for(int i = 0; i < element.coords.length; i+=2)
-			this.lines.add(new Node(element.coords[i],element.coords[i+1],element));
+	public void add(PolyLine element) throws RuntimeException {
+		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
+		for(int i = 0; i < element.coords.length; i+=3)
+			this.lines.add(new Node(element.coords[i+1],element.coords[i+2],element));
 	}
 
 	public void add(MultiPolygon element){
 		element.parts.forEach(polyline -> {
-			for(int i = 0; i < ((PolyLine) polyline).coords.length; i+=2)
-				this.lines.add(new Node(((PolyLine) polyline).coords[i], ((PolyLine) polyline).coords[i+1], element));
+			for(int i = 0; i < ((PolyLine) polyline).coords.length; i+=3)
+				this.lines.add(new Node(((PolyLine) polyline).coords[i+1], ((PolyLine) polyline).coords[i+2], element));
 		});
 	}
 
