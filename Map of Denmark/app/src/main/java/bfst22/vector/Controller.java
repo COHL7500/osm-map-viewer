@@ -412,13 +412,11 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
         this.canvas.debugValMap.replace("debugDisplayWireframe", false);
-        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
         this.canvas.debugValMap.replace("debugDisplayWireframe", true);
-        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked

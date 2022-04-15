@@ -26,7 +26,7 @@ public class MapCanvas extends Canvas {
     public Point2D minPos, maxPos, originPos, mousePos, rtMousePos;
     public double zoom_current;
     public final int minZoom = 1, maxZoom = 500000;
-    //public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false, zoomMagnifyingGlass = false;
+    public boolean zoomMagnifyingGlass = false;
     public long repaintTime, avgRT, avgRTNum;
     public Painter painter;
     public ZoomBox zoombox;
@@ -81,11 +81,7 @@ public class MapCanvas extends Canvas {
         this.drags = this.pinpoints.drag(this.mousePos,this.zoom_current,state);
     }
 
-    /* ----------------------------------------------------------------------------------------------------------------- *
-     * ----------------------------------------------- Painting Methods ------------------------------------------------ *
-     * ----------------------------------------------------------------------------------------------------------------- */
     public Map<String, Boolean> debugPropertiesInit() {
-
         InputStream inputStream;
         String propFileName = "debugconfig.properties";
         Properties prop = new Properties();
@@ -121,9 +117,13 @@ public class MapCanvas extends Canvas {
     }
 
     public void debugPropertiesToggle(String propName) {
-		debugValMap.replace(propName, !debugValMap.get(propName));
-	}
+        this.debugValMap.replace(propName, !this.debugValMap.get(propName));
+        this.update();
+    }
 
+    /* ----------------------------------------------------------------------------------------------------------------- *
+     * ----------------------------------------------- Painting Methods ------------------------------------------------ *
+     * ----------------------------------------------------------------------------------------------------------------- */
     // Draws all of the elements of our map.
     private void repaint() {
         this.gc.setTransform(new Affine());
@@ -391,7 +391,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void checkInBounds(){
-        if(!this.isInBounds() && !this.debugFreeMovement) this.placeInBounds();
+        if(!this.isInBounds() && !debugValMap.get("debugFreeMovement")) this.placeInBounds();
     }
 
     private boolean isInBounds(){
