@@ -378,6 +378,7 @@ public class Controller {
 
     // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
+		this.canvas.debugPropertiesToggle("debugSideBar");
         this.someBorderPane.setRight(this.someBorderPane.getRight() == null ? vbox_debug_scrollpane : null);
         this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
@@ -410,45 +411,45 @@ public class Controller {
 
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
-        this.canvas.debugDisplayWireframe = false;
+        this.canvas.debugValMap.replace("debugDisplayWireframe", false);
         this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
-        this.canvas.debugDisplayWireframe = true;
+        this.canvas.debugValMap.replace("debugDisplayWireframe", true);
         this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
-    @FXML private void debugCursorClicked(final ActionEvent e){
-        this.canvas.debugCursor = !this.canvas.debugCursor;
+    @FXML private void debugCursorClicked(final ActionEvent e) throws IOException {
+        this.canvas.debugPropertiesToggle("debugCursor");
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree VisBox' is clicked
     @FXML private void debugVisBoxClicked(final ActionEvent e){
-        this.canvas.debugVisBox = !this.canvas.debugVisBox;
+        this.canvas.debugPropertiesToggle("debugVisBox");
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
-    @FXML private void debugSplitsClicked(final ActionEvent e){
-        this.canvas.debugSplits = !this.canvas.debugSplits;
+    @FXML private void debugSplitsClicked(final ActionEvent e) throws IOException {
+        this.canvas.debugPropertiesToggle("debugSplits");
     }
 
     // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e){
-        this.canvas.debugFreeMovement = !this.canvas.debugFreeMovement;
+		this.canvas.debugPropertiesToggle("debugFreeMovement");
         this.canvas.checkInBounds();
     }
 
     // when the menubar 'Tools' section button 'Disable Help Text' is clicked
     @FXML private void debugHelpTextClicked(final ActionEvent e){
-        this.canvas.debugDisableHelpText = !this.canvas.debugDisableHelpText;
+		this.canvas.debugPropertiesToggle("debugDisableHelpText");
     }
 
     // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
-    @FXML private void debugBoundingBoxClicked(final ActionEvent e){
-        this.canvas.debugBoundingBox = !this.canvas.debugBoundingBox;
+    @FXML private void debugBoundingBoxClicked(final ActionEvent e) throws IOException {
+        this.canvas.debugPropertiesToggle("debugBoundingBox");
     }
 
     // when the menubar 'Help' section button 'About...' is clicked

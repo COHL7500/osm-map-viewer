@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.ContextMenuEvent;
@@ -9,6 +10,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.stage.Screen;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 
 // defines the canvas of our map; panning, zooming, painting etc.
@@ -20,12 +26,13 @@ public class MapCanvas extends Canvas {
     public Point2D minPos, maxPos, originPos, mousePos, rtMousePos;
     public double zoom_current;
     public final int minZoom = 1, maxZoom = 500000;
-    public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false, zoomMagnifyingGlass = false;
+    //public boolean debugCursor = true, debugVisBox = true, debugSplits = false, debugDisableHelpText = true, debugBoundingBox = true, debugFreeMovement = false, debugDisplayWireframe = false, zoomMagnifyingGlass = false;
     public long repaintTime, avgRT, avgRTNum;
     public Painter painter;
     public ZoomBox zoombox;
     public PinPoints pinpoints;
     public boolean drags;
+	Map<String, Boolean> debugValMap = debugPropertiesInit();
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
@@ -77,12 +84,56 @@ public class MapCanvas extends Canvas {
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ----------------------------------------------- Painting Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
+    public Map<String, Boolean> debugPropertiesInit() {
+
+        InputStream inputStream;
+        String propFileName = "debugconfig.properties";
+        Properties prop = new Properties();
+
+        try
+        {
+            inputStream = MapCanvas.class.getResourceAsStream(propFileName);
+
+            if(inputStream != null)
+            {
+                prop.load(inputStream);
+                inputStream.close();
+            }
+            else
+            {
+                throw new FileNotFoundException("Could not find " + propFileName + "!");
+
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("EXCEPTION: " + e.getMessage());
+        }
+
+        Map tempMap = prop;
+        Map<String, String> mapFinal = (Map<String, String>) tempMap;
+        Map<String, Boolean> mapReturn = new HashMap<>();
+
+        for(String key : mapFinal.keySet())
+        {mapReturn.put(key, Boolean.parseBoolean(mapFinal.get(key)));}
+
+        return mapReturn;
+    }
+
+    public void debugPropertiesToggle(String propName) {
+		debugValMap.replace(propName, !debugValMap.get(propName));
+	}
+
     // Draws all of the elements of our map.
     private void repaint() {
         this.gc.setTransform(new Affine());
 
         // Clears the screen for the next frame
-        this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+        // this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
+
+        // Background color
+        this.gc.setFill(Color.web("#b5d2de"));
+        this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
@@ -91,7 +142,7 @@ public class MapCanvas extends Canvas {
         if(this.model.isLoaded()) {
             this.repaintTime = System.nanoTime();
 
-            double padding = this.debugVisBox ? 100 : -25;
+            double padding = debugValMap.get("debugVisBox") ? 100 : -25;
             Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.minPos.getY() + this.z(padding), this.minPos.getX() + this.z(padding)},
                     new double[]{this.maxPos.getY() - this.z(padding), this.maxPos.getX() - this.z(padding)});
 
@@ -115,7 +166,7 @@ public class MapCanvas extends Canvas {
 
                                         if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
                                                 || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                            if (!this.debugDisplayWireframe) draw.fill(this.gc);
+                                            if (!debugValMap.get("debugDisplayWireframe")) draw.fill(this.gc);
                                             draw.draw(this.gc);
                                         }
                                         if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
@@ -197,7 +248,7 @@ public class MapCanvas extends Canvas {
      * -------------------------------------------- Canvas Drawing Methods --------------------------------------------- *
      * ----------------------------------------------------------------------------------------------------------------- */
     private void strokeBox(double padding){
-        if(this.debugVisBox && this.model.isLoaded()){
+        if(debugValMap.get("debugVisBox") && this.model.isLoaded()){
             padding = this.z(padding);
             double csize = this.z(5);
 
@@ -219,7 +270,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(this.maxPos.getX()-padding,this.maxPos.getY()-padding,csize,csize);
             this.gc.fillOval(this.minPos.getX()+padding-csize,this.maxPos.getY()-padding,csize,csize);
 
-            if(this.debugDisableHelpText) {
+            if(debugValMap.get("debugDisableHelpText")) {
                 this.gc.fillText("relative origin (" + String.format("%.5f", this.originPos.getX()) + "," + String.format("%.5f", this.originPos.getY()) + ")", this.originPos.getX() + csize, this.originPos.getY() - csize);
                 this.gc.fillText("top left (" + String.format("%.5f", this.minPos.getX() + padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.minPos.getX() + padding + csize, this.minPos.getY() + padding - csize);
                 this.gc.fillText("top right (" + String.format("%.5f", this.maxPos.getX() - padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.maxPos.getX() - padding + csize, this.minPos.getY() + padding - csize);
@@ -230,17 +281,17 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeCursor(){
-        if(this.debugCursor && this.model.isLoaded()){
+        if(debugValMap.get("debugCursor") && this.model.isLoaded()){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.BLUE);
             this.gc.fillOval(this.mousePos.getX(),this.mousePos.getY(),this.z(5),this.z(5));
-            if(this.debugDisableHelpText) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos.getX()) + "," + String.format("%.5f", this.mousePos.getY()) + ")",this.mousePos.getX()+this.z(5),this.mousePos.getY()-this.z(5));
+            if(debugValMap.get("debugDisableHelpText")) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos.getX()) + "," + String.format("%.5f", this.mousePos.getY()) + ")",this.mousePos.getX()+this.z(5),this.mousePos.getY()-this.z(5));
             this.gc.setFill(Color.BLACK);
         }
     }
 
     private void splitsTree(){
-        if(this.debugSplits && this.model.isLoaded()){
+        if(debugValMap.get("debugSplits") && this.model.isLoaded()){
             List<float[]> lines = this.model.kdtree.getSplit();
             this.gc.setLineWidth(this.z(2.5));
             this.gc.setStroke(Color.GREEN);
@@ -257,7 +308,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawBounds(){
-        if(this.debugBoundingBox && this.model.isLoaded()){
+        if(debugValMap.get("debugBoundingBox") && this.model.isLoaded()){
             this.gc.setLineWidth(this.z(1));
             this.gc.setLineDashes(0);
             this.gc.setStroke(Color.RED);
@@ -289,7 +340,7 @@ public class MapCanvas extends Canvas {
         Point2D diff = new Point2D(dx,dy);
 
         if(!this.zoombox.isZooming() && !this.painter.isDrawing() && !this.drags) this.pan(diff);
-        if(!this.isInBounds() && !this.debugFreeMovement) this.pan(diff.multiply(-1));
+        if(!this.isInBounds() && !debugValMap.get("debugFreeMovement")) this.pan(diff.multiply(-1));
     }
 
     private void pan(Point2D pos) {
