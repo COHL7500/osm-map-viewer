@@ -110,6 +110,7 @@ public class Model {
                             float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                             float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                             id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
+                            //adds lat and lon to address builder
                             builder = builder.lat(-lat);
                             builder = builder.lon(0.56f * lon);
                             this.nodecount++;
@@ -125,6 +126,7 @@ public class Model {
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;
+                            // parses address tags and adds to address builder
                             if (k.contains("addr:")) {
                                 switch (k) {
                                     case "addr:city":
@@ -183,6 +185,7 @@ public class Model {
                         break;
                 case XMLStreamConstants.END_ELEMENT: // Reads the last element, such as "way", "relation" etc.
                     switch (reader.getLocalName()) {
+                        //adds finished address object to arraylist
                         case "node":
                             if (!builder.isEmpty()) {
                                 addresses.add(builder.build());
@@ -220,12 +223,11 @@ public class Model {
         }
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
+        //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
-        //System.out.println(searchTree.search("admiralgade 1, 1066 københavn") ? "Found" : "Not found");
-        //System.out.println(searchTree.toString());
     }
 
     public void unloadOSM(){
