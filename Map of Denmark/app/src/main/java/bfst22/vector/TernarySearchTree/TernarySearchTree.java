@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public class TernarySearchTree {
 
     private SearchNode root;
-    private ArrayList al;
+    private ArrayList entireTree;
+    private ArrayList suggestions;
 
     public TernarySearchTree() {
         root = null;
@@ -91,11 +92,11 @@ public class TernarySearchTree {
                 return search(node.equal, word, index + 1);
         }
     }
-    
+
     public String toString() {
-        al = new ArrayList<String>();
+        entireTree = new ArrayList<String>();
         traverse(root, "");
-        return "\nSearch tree: "+ al;
+        return "\nSearch Tree: "+ entireTree;
     }
 
     private void traverse(SearchNode node, String string) {
@@ -104,7 +105,7 @@ public class TernarySearchTree {
 
             string = string + node.character;
             if (node.isEndOString)
-                al.add(string);
+                entireTree.add(string);
 
             traverse(node.equal, string);
             string = string.substring(0, string.length() - 1);
@@ -135,4 +136,14 @@ public class TernarySearchTree {
             }
         return result;
     }
+
+    public ArrayList<SearchNode> getSuggestions() {
+        ArrayList<SearchNode> suggestions = new ArrayList<>();
+        suggestions("", suggestions);
+        return suggestions;
+    }
+
+    public void suggestions(String currentPath, ArrayList<SearchNode> suggestions) {
+    }
+
 }
