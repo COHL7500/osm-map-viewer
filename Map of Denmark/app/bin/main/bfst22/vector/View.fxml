@@ -13,165 +13,299 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.Scene?>
 <?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.text.Text?>
-
 <?import javafx.scene.control.Label?>
-<Scene xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="bfst22.vector.Controller" fx:id="scene">
-    <BorderPane fx:id="someBorderPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-        <top>
-            <VBox>
-                <MenuBar BorderPane.alignment="TOP_LEFT" prefHeight="20">
-                    <Menu text="File">
-                        <MenuItem text="Load Default map" onAction="#onDefaultLoadClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <MenuItem text="Import Custom map" onAction="#onBrowseOSMClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="I" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <Menu text="Recent Loaded Maps" fx:id="recentMapsSubmenu" disable="true" />
-                        <MenuItem text="Unload map" fx:id="unloadFileButton" onAction="#unloadFileButtonClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <SeparatorMenuItem />
-                        <MenuItem text="Exit" onAction="#exitButtonClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DELETE" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ListView?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<!-- https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomeregular
+https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomeregular -->
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="someBorderPane"
+            id="someBorderPane" stylesheets="@style.css" minWidth="400" prefWidth="800" minHeight="300" prefHeight="600">
+    <fx:define>
+        <ToggleGroup fx:id="brushModeGroup"/>
+        <ToggleGroup fx:id="mapdisplay"/>
+        <ToggleGroup fx:id="zoomGroup"/>
+    </fx:define>
+    <top>
+        <VBox maxHeight="50" maxWidth="${someBorderPane.width}">
+            <MenuBar BorderPane.alignment="TOP_LEFT" prefHeight="20">
+                <Menu text="File">
+                    <MenuItem text="Load Default map" onAction="#onDefaultLoadClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-dolly" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem text="Import Custom map" onAction="#onBrowseOSMClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-file-import" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="I" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <Menu text="Recent Loaded Maps" fx:id="recentMapsSubmenu" disable="true">
+                        <graphic>
+                            <FontIcon iconLiteral="far-folder-open" iconSize="12"/>
+                        </graphic>
                     </Menu>
-                    <Menu text="Edit">
-                        <MenuItem text="Zoom In" onAction="#zoomInClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <MenuItem text="Zoom Out" onAction="#zoomOutClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="PERIOD" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <MenuItem text="Change Zoom Level" onAction="#changeZoomLevelClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                    </Menu>
-                    <Menu text="Tools">
-                        <fx:define>
-                            <ToggleGroup fx:id="mapdisplay" />
-                        </fx:define>
-                        <MenuItem text="Change Absolute Coordinates" onAction="#changeAbsoluteCoordClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <MenuItem text="Change Relative Coordinates" onAction="#changeRelativeCoordClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <MenuItem text="Center Screen Position" onAction="#centerScreenPosition">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                        <CheckMenuItem text="Toggle Debug Sidebar" onAction="#debugSidebarClicked" selected="true">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT4" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <SeparatorMenuItem />
-                        <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
-                            </accelerator>
-                        </RadioMenuItem>
-                        <RadioMenuItem text="Display Wireframe" onAction="#debugDisplayWireframeClicked" toggleGroup="$mapdisplay">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
-                            </accelerator>
-                        </RadioMenuItem>
-                        <SeparatorMenuItem />
-                        <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Enable Kd-Tree VisBox" onAction="#debugVisBoxClicked" selected="true">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Enable Kd-Tree Splits" onAction="#debugSplitsClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Enable Free Movement" onAction="#debugFreeMovementClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Disable Debug Box" onAction="#debugInfoTextClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                        <CheckMenuItem text="Disable Bounding Box" onAction="#debugBoundingBoxClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="DOWN" code="DIGIT7" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </CheckMenuItem>
-                    </Menu>
-                    <Menu text="Help">
-                        <MenuItem text="About..." onAction="#aboutButtonClicked">
-                            <accelerator>
-                                <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                            </accelerator>
-                        </MenuItem>
-                    </Menu>
-                </MenuBar>
-                <HBox>
-                    <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
-                        <HBox HBox.hgrow="ALWAYS" spacing="5">
-                            <Button fx:id="menuActivation" onAction="#onMenuButtonPress" text="Menu"/>
-                            <Button text="Button0"/>
-                        </HBox>
-                        <HBox HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
-                            <TextField prefWidth="250" promptText="Search..."/>
-                            <Button text="Search" prefWidth="75"/>
-                        </HBox>
-                    </ToolBar>
+                    <MenuItem text="Unload map" fx:id="unloadFileButton" onAction="#unloadFileButtonClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="far-times-circle" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <SeparatorMenuItem />
+                    <MenuItem text="Exit" onAction="#exitButtonClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-door-open" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DELETE" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                </Menu>
+                <Menu text="Edit">
+                    <MenuItem text="Zoom In" onAction="#zoomInClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-plus" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem text="Zoom Out" onAction="#zoomOutClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-minus" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="PERIOD" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem text="Change Zoom Level" onAction="#changeZoomLevelClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-i-cursor" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                </Menu>
+                <Menu text="View">
+                    <CheckMenuItem text="Paint Bar" onAction="#paintBarButtonClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Debug Sidebar" onAction="#debugSidebarClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                </Menu>
+                <Menu text="Tools">
+                    <MenuItem text="Change Absolute Coordinates" onAction="#changeAbsoluteCoordClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem text="Change Relative Coordinates" onAction="#changeRelativeCoordClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <MenuItem text="Center Screen Position" onAction="#centerScreenPosition">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                    <SeparatorMenuItem />
+                    <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </RadioMenuItem>
+                    <RadioMenuItem text="Display Wireframe" onAction="#debugDisplayWireframeClicked" toggleGroup="$mapdisplay">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </RadioMenuItem>
+                    <SeparatorMenuItem />
+                    <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Enable Kd-Tree VisBox" onAction="#debugVisBoxClicked" selected="true">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Enable Kd-Tree Splits" onAction="#debugSplitsClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Enable Free Movement" onAction="#debugFreeMovementClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Disable Bounding Box" onAction="#debugBoundingBoxClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT7" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                </Menu>
+                <Menu text="Help">
+                    <MenuItem text="About..." onAction="#aboutButtonClicked">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-info-circle" iconSize="12"/>
+                        </graphic>
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </MenuItem>
+                </Menu>
+            </MenuBar>
+            <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
+                <HBox maxHeight="30" spacing="5" alignment="CENTER_LEFT">
+                    <Button onAction="#onMenuButtonPress" text="Menu"/>
+                    <ToggleButton fx:id="zoomBoxButton" text="Box Zoom" onAction="#onZoomBoxButtonPressed" toggleGroup="$zoomGroup">
+                        <graphic>
+                            <FontIcon iconLiteral="far-plus-square" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton fx:id="zoomMagnifyingGlass" text="Magnify Zoom" onAction="#onZoomMagnifyingGlassButtonPressed" toggleGroup="$zoomGroup">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-search-plus" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
                 </HBox>
-            </VBox>
-        </top>
-        <left>
-            <VBox fx:id="vBox" id="vBox" prefWidth="200.0" BorderPane.alignment="TOP_LEFT" />
-        </left>
-        <right>
-            <VBox fx:id="vbox_debug" id="vbox_debug" prefWidth="250.0" BorderPane.alignment="TOP_RIGHT" spacing="10">
+                <HBox maxHeight="30" HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
+                    <TextField fx:id="searchField" onAction="#onSearchTextEntered" prefWidth="250" promptText="Search..."/>
+                    <Button fx:id="searchButton" text="Search" onAction="#onSearchButtonPress" prefWidth="75">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-search" iconSize="12"/>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </ToolBar>
+            <ToolBar fx:id="paintBar" prefHeight="30.0" visible="false">
+                <HBox maxHeight="30" fx:id="paintBox" id="paintBox" spacing="5" alignment="CENTER_LEFT">
+                    <ToggleButton text="Eraser" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="4">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-times" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton text="Brush" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="0">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-paint-brush" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton text="Rectangle" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="2">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-square-full" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ToggleButton text="Circle" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="1">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-circle" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <Separator prefHeight="25" orientation="VERTICAL"/>
+                    <ToggleButton text="Text" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="3">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-font" iconSize="12"/>
+                        </graphic>
+                    </ToggleButton>
+                    <ComboBox fx:id="fontBox" id="fontBox" value="Arial" prefWidth="150" maxHeight="25">
+                        <padding>
+                            <Insets top="3" bottom="3" left="7"/>
+                        </padding>
+                    </ComboBox>
+                    <Label text="Font size: " prefHeight="25"/>
+                    <Spinner fx:id="paintFontSize" min="1" max="150" initialValue="30" amountToStepBy="1" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintFontSizeButtonPressed"/>
+                    <Separator prefHeight="25" orientation="VERTICAL"/>
+                    <Label text="Stroke:" prefHeight="25"/>
+                    <Spinner fx:id="paintStrokeSize" min="0.2" max="15" initialValue="1" amountToStepBy="0.2" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintStrokeSizeButtonPressed"/>
+                    <CheckBox text="Fill Polygons" prefHeight="25" onAction="#onPaintFillCheckboxPressed"/>
+                    <ColorPicker fx:id="paintColourPicker" onAction="#onPaintColorButtonPressed" prefWidth="100">
+                        <value>
+                            <Color red="0" green="0" blue="0"/>
+                        </value>
+                    </ColorPicker>
+                </HBox>
+            </ToolBar>
+        </VBox>
+    </top>
+    <left>
+        <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_LEFT">
+            <VBox id="vBox" spacing="10" prefWidth="250">
+                <VBox fx:id="pinPointSidebar" styleClass="vbox_debug_section">
+                    <Label text="Pin Points" styleClass="debugSectionHeader">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-map-pin:12:WHITE"/>
+                        </graphic>
+                    </Label>
+                    <ListView fx:id="pinPointList" prefHeight="200">
+                        <placeholder>
+                            <Label text="No pins yet added..." />
+                        </placeholder>
+                    </ListView>
+                </VBox>
                 <VBox styleClass="vbox_debug_section">
-                    <Label text="Updating" styleClass="debugSectionHeader" />
+                    <Label text="Toggle Features" styleClass="debugSectionHeader">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-toggle-off:12:WHITE"/>
+                        </graphic>
+                    </Label>
+                    <TreeView fx:id="featuresTreeView" prefHeight="400"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </left>
+    <right>
+        <ScrollPane fx:id="vbox_debug_scrollpane" id="vbox_debug_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_RIGHT">
+            <VBox id="vbox_debug" spacing="10" prefWidth="250" prefHeight="500">
+                <VBox styleClass="vbox_debug_section">
+                    <Label text="Updating" styleClass="debugSectionHeader">
+                        <graphic>
+                            <FontIcon iconLiteral="far-hourglass:12:WHITE"/>
+                        </graphic>
+                    </Label>
                     <Label fx:id="canvas_load_time" styleClass="debugText" />
                     <Label fx:id="canvas_repaint_time" styleClass="debugText" />
                     <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
                 </VBox>
                 <VBox styleClass="vbox_debug_section">
-                    <Label text="Coordinates" styleClass="debugSectionHeader" />
+                    <Label text="Coordinates" styleClass="debugSectionHeader">
+                        <graphic>
+                            <FontIcon iconLiteral="far-chart-bar:12:WHITE"/>
+                        </graphic>
+                    </Label>
                     <Label fx:id="canvas_min" styleClass="debugText" />
                     <Label fx:id="canvas_max" styleClass="debugText" />
                     <Label fx:id="canvas_origin" styleClass="debugText" />
@@ -179,7 +313,11 @@
                     <Label fx:id="canvas_zoom" styleClass="debugText" />
                 </VBox>
                 <VBox styleClass="vbox_debug_section">
-                    <Label text="File Data" styleClass="debugSectionHeader" />
+                    <Label text="File Data" styleClass="debugSectionHeader">
+                        <graphic>
+                            <FontIcon iconLiteral="far-file-alt:12:WHITE"/>
+                        </graphic>
+                    </Label>
                     <Label fx:id="canvas_filesize" styleClass="debugText" />
                     <Label fx:id="canvas_bounds_min" styleClass="debugText" />
                     <Label fx:id="canvas_bounds_max" styleClass="debugText" />
@@ -188,24 +326,24 @@
                     <Label fx:id="canvas_relations" styleClass="debugText" />
                 </VBox>
             </VBox>
-        </right>
-        <center>
-            <MapCanvas fx:id="canvas"
-                       id="canvas"
-                       width="536"
-                       height="470"
-                       onScroll="#onScroll"
-                       BorderPane.alignment="TOP_LEFT"
-                       onMousePressed="#onMousePressed"
-                       onMouseDragged="#onMouseDragged"
-                       onMouseMoved="#onMouseMoved" />
-        </center>
-        <bottom>
-            <ToolBar prefHeight="30.0" prefWidth="${scene.width}">
-                <Button mnemonicParsing="false" text="Button1"/>
-                <Button mnemonicParsing="false" text="Button2"/>
-                <Button mnemonicParsing="false" text="Button3"/>
-            </ToolBar>
-        </bottom>
-    </BorderPane>
-</Scene>
+        </ScrollPane>
+    </right>
+    <center>
+        <MapCanvas fx:id="canvas"
+                   width="800"
+                   height="520"
+                   BorderPane.alignment="TOP_LEFT"
+                   onScroll="#onScroll"
+                   onMousePressed="#onMousePressed"
+                   onMouseDragged="#onMouseDragged"
+                   onMouseMoved="#onMouseMoved"
+                   onMouseReleased="#onMouseReleased"/>
+    </center>
+    <bottom>
+        <ToolBar prefHeight="30.0" maxWidth="${someBorderPane.width}">
+            <Button text="Button1"/>
+            <Button text="Button2"/>
+            <Button text="Button3"/>
+        </ToolBar>
+    </bottom>
+</BorderPane>

@@ -31,6 +31,7 @@ public class Controller {
 	private Model model;
     private List<String> loadedMaps;
     private ContextMenu canvasCM;
+    private Search search;
 	
 	@FXML private MapCanvas canvas;
     @FXML private VBox pinPointSidebar;
@@ -45,6 +46,8 @@ public class Controller {
     @FXML private ColorPicker paintColourPicker;
     @FXML private Spinner<Double> paintStrokeSize;
     @FXML private Spinner<Integer> paintFontSize;
+    @FXML private Button searchButton;
+    @FXML private TextField searchField;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
@@ -267,6 +270,14 @@ public class Controller {
 
     @FXML private void onZoomMagnifyingGlassButtonPressed(ActionEvent e){
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
+    }
+
+    @FXML private void onSearchButtonPress(ActionEvent e){
+        search.addressSearch(searchField.getText());
+    }
+
+    @FXML private void onSearchTextEntered(KeyEvent e){
+
     }
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
