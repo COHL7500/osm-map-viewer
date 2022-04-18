@@ -14,7 +14,7 @@ public class Search {
         return model.addresses.get(model.getSearchTree().search(searchString).getId());
     }
 
-    public Address autoComplete(String searchString) {
-        return model.addresses.get(model.getSearchTree().autoComplete(searchString).getId());
+    public String autoComplete(String searchString) {
+        return model.getSearchTree().autoComplete(searchString);
     }
 }

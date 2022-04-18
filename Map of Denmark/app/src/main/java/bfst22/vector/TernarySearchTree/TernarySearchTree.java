@@ -116,18 +116,18 @@ public class TernarySearchTree {
         }
     }
 
-    public SearchNode autoComplete(String word) {
+    public String autoComplete(String word) {
         return autoComplete(root, word.toCharArray(),0);
     }
 
-    private SearchNode autoComplete(SearchNode node, char[] word, int index) {
-        SearchNode result = null;
+    private String autoComplete(SearchNode node, char[] word, int index) {
+        String result = null;
         if (node == null || word.length <= index) return null;
         if (word[index] == node.character) {
-            if (word[index] == word.length - 1) return node;
+            if (word[index] == word.length - 1) return word.toString();
             else {
                 result = (node.equal == null ? null : autoComplete(node.equal, word, index + 1));
-                if (result == null) result = node;
+                if (result == null) result = word.toString();
             }
         }
             if (word[index] > node.character) {

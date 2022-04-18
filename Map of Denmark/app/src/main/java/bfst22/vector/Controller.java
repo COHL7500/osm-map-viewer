@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
@@ -275,17 +276,15 @@ public class Controller {
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
     }
 
-    @FXML private void onSearchButtonPress(ActionEvent e){
-        try {
-            System.out.println(search.addressSearch(searchField.getText()).toString());
-        }
-        catch (NullPointerException n) {
-            System.out.println("No result");
-        }
+    @FXML private void onSearchButtonPressed(ActionEvent e){
+        search();
     }
 
-   @FXML private void onSearchTextEntered(KeyEvent e){
-       System.out.println(search.autoComplete(searchField.getText()));
+    @FXML private void onKeyPressed(KeyEvent k){
+        if (k.getCode().equals(KeyCode.ENTER)) {
+            search();
+        }
+        else autoComplete();
     }
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
@@ -478,5 +477,23 @@ public class Controller {
         alert.setContentText("Map of Denmark\nIT-Copenhagen First-Year-Project\n2022 - Group #1");
         alert.setResizable(false);
         alert.show();
+    }
+
+    // Helper method for search
+    public void search() {
+        try {
+            System.out.println(search.addressSearch(searchField.getText()).toString());
+        } catch (NullPointerException n) {
+            System.out.println("No result");
+        }
+        searchField.setText("");
+    }
+
+    public void autoComplete() {
+        String suggestion = search.autoComplete(searchField.getText());
+        if (suggestion == null) {
+            return;
+        }
+        else searchField.setText(suggestion);
     }
 }

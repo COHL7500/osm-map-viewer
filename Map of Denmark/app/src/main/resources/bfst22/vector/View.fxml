@@ -205,8 +205,8 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </ToggleButton>
                 </HBox>
                 <HBox maxHeight="30" HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
-                    <TextField fx:id="searchField" onAction="#onSearchTextEntered" prefWidth="250" promptText="Search..."/>
-                    <Button fx:id="searchButton" text="Search" onAction="#onSearchButtonPress" prefWidth="75">
+                    <TextField fx:id="searchField" onKeyPressed="#onKeyPressed" prefWidth="250" promptText="Search..."/>
+                    <Button fx:id="searchButton" text="Search" onAction="#onSearchButtonPressed" prefWidth="75">
                         <graphic>
                             <FontIcon iconLiteral="fas-search" iconSize="12"/>
                         </graphic>
