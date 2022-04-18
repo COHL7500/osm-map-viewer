@@ -11,11 +11,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 // Handles the logic of our data and storing it appropriately.
 public class Model {
-    float minlat, minlon, maxlat, maxlon;
-    int way;
-    VehicleType vehicleType;
-    Edge e;
-    Graph g;
 
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
@@ -28,7 +23,10 @@ public class Model {
     public String currFileName;
     public long loadTime, filesize;
 	public VehicleType vehicleType;
+    public Graph g;
     public Edge e;
+    int way;
+
 
     public Model(){
         this.isOMSloaded = false;
@@ -116,9 +114,11 @@ public class Model {
                             break;
                         case "way":// Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            g.incrementE();
+                            this.waycount++;
+                            g.setNodecount(nodecount);
                             break;
                         case "tag": // Parses the key and value of tags, changing the waytype to the corresponding type.
+                            g.setWaycount(waycount);
                             String k = reader.getAttributeValue(null, "k");
                             String v = reader.getAttributeValue(null, "v");
                             if(k.equals("name")) name = v;

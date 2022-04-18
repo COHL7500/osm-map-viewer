@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 public class SPTest {
     public static void main(String[] args) {
+        /*
         Scanner s = new Scanner(System.in);
         int v = s.nextInt();
         int e = s.nextInt();
@@ -21,6 +22,7 @@ public class SPTest {
         }
         DijkstraSP sp = new DijkstraSP(g,0);
         System.out.println(sp.pathTo(v-1));
+         */
 
 
     }
