@@ -1,5 +1,7 @@
 package bfst22.vector.TernarySearchTree;
 
+import bfst22.vector.Search;
+
 import java.util.ArrayList;
 
 public class TernarySearchTree {

@@ -31,6 +31,7 @@ public class Controller {
 	private Model model;
     private List<String> loadedMaps;
     private ContextMenu canvasCM;
+
     private Search search;
 	
 	@FXML private MapCanvas canvas;
@@ -85,6 +86,8 @@ public class Controller {
         this.stage = primarystage;
         this.loadedMaps = new ArrayList<>();
         this.canvasCM = new ContextMenu();
+
+        this.search = new Search(model);
 
         this.someBorderPane.setLeft(null);
         this.someBorderPane.setRight(null);
@@ -273,11 +276,16 @@ public class Controller {
     }
 
     @FXML private void onSearchButtonPress(ActionEvent e){
-        search.addressSearch(searchField.getText());
+        try {
+            System.out.println(search.addressSearch(searchField.getText()).toString());
+        }
+        catch (NullPointerException n) {
+            System.out.println("No result");
+        }
     }
 
-    @FXML private void onSearchTextEntered(KeyEvent e){
-
+   @FXML private void onSearchTextEntered(KeyEvent e){
+       System.out.println(search.autoComplete(searchField.getText()));
     }
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){

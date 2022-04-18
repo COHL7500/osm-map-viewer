@@ -13,4 +13,8 @@ public class Search {
     public Address addressSearch(String searchString) {
         return model.addresses.get(model.getSearchTree().search(searchString).getId());
     }
+
+    public Address autoComplete(String searchString) {
+        return model.addresses.get(model.getSearchTree().autoComplete(searchString).getId());
+    }
 }
