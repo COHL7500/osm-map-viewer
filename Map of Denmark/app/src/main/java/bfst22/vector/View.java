@@ -45,11 +45,10 @@ public class View {
 
     // Setting the stage size for the application
     public void setPrimaryStageSize(Stage primaryStage){
-        double width = 800, height = 600;
-        primaryStage.setWidth(width);
-        primaryStage.setMinWidth(width / 2);
-        primaryStage.setHeight(height);
-        primaryStage.setMinHeight(height / 2);
+        primaryStage.setWidth(800);
+        primaryStage.setMinWidth(650);
+        primaryStage.setHeight(600);
+        primaryStage.setMinHeight(550);
     }
 
     // Setting the window displaybound so the scene spawns within the screen
