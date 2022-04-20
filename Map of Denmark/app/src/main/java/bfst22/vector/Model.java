@@ -111,10 +111,11 @@ public class Model {
                         case "nd": // parses reference to a node (ID) and adds it to the node list.
                             long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                             nodes.add(id2node.get(ref));
+                            this.waycount++;
                             break;
                         case "way":// Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                             relID = Long.parseLong(reader.getAttributeValue(null, "id"));
-                            this.waycount++;
+                            waycount --;
                             g.setNodecount(nodecount);
                             break;
                         case "tag": // Parses the key and value of tags, changing the waytype to the corresponding type.
@@ -190,7 +191,6 @@ public class Model {
                     break;
             }
         }
-
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
     }

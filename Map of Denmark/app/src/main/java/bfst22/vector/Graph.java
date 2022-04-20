@@ -5,54 +5,59 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    private int vertex;
-    private int edge;
-    Map<PolyPoint, List<Edge>> adj = new HashMap<>();
+    private int V;
+    private int E;
+    float speedlimit = 0;
+    Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
     Map<PolyPoint, Integer> indexes = new HashMap<>();
-    int i = -1;
+    LinkedList<Edge> list = new LinkedList<>();
+    int index = -1;
+
+    //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public Graph(List<PolyPoint> nodes){
-        for(int i = 0; i < nodes.size() ; i++){
+        for(int i = 0; i < nodes.size(); i++){
             PolyPoint node = nodes.get(i);
-            LinkedList<Edge> list = new LinkedList<>();
-            adj.put(node,list);
-            indexes.put(node, i++);
+            adjList.put(node,list);
+            indexes.put(node,++index);
         }
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
-        adj.get(from).add(new Edge(from, to, weight));
+        LinkedList<Edge> list = new LinkedList<>();
+        list.add(new Edge(from, to, setWeight(from,to, speedlimit)));
+
     }
 
-    public void addVertex(PolyPoint node){
-        adj.put(node, new LinkedList<>());
+
+    /*
+    public void addEdge(PolyPoint from, PolyPoint to, float weight){
+
     }
 
-
+    */
     public void setNodecount(int nodecount){
-        if(vertex == 0) vertex = nodecount;
+        if(V == 0) V = nodecount;
     }
 
     public int getVertex(){
-        return vertex;
+        return V;
     }
 
     public int getEdge(){
-        return edge;
+        return E;
     }
 
     public void setWaycount(int waycount){
-        if(edge == 0) edge = waycount;
+        if(E == 0) E = waycount;
     }
 
-    public float setWeight(PolyPoint from, PolyPoint to, int speedlimit){
+    public float setWeight(PolyPoint from, PolyPoint to, float speedlimit){
         Distance d = new Distance();
         return d.haversineFormula(from,to)/speedlimit;
     }
 
     /*
-    private final int vertex;
-    private int edge;
     //private Bag<PolyPoint>[] adj;
     private int[] indegree;
     PolyLine way;
@@ -63,8 +68,8 @@ public class Graph {
 
     public Graph(int V){
         if (V < 0) throw new IllegalArgumentException("error");
-        this.vertex = V;
-        this.edge = 0; //The graph will start with 0 edges
+        this.V = V;
+        this.E = 0; //The graph will start with 0 edges
         adj = new Bag[V];
             for (int i = 0; i < V; i++){
                 adj[i] = new Bag<Edge>();
@@ -152,5 +157,6 @@ public class Graph {
     public void setSpeedLimit(int limit){
         speedLimit = limit;
     }
+
     */
 }

@@ -1,8 +1,5 @@
 package bfst22.vector;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class DijkstraSP {
     Map<PolyPoint, Double> distanceMap;
@@ -13,19 +10,69 @@ public class DijkstraSP {
     private Edge[] edgeTo;
     private IndexMinPQ<Double> pq;
 
-    public DijkstraSP(Graph G, PolyPoint s, PolyPoint t){
+    List<PolyPoint> nodes;
+    Graph G = new Graph(nodes);
+
+
+    public DijkstraSP(Graph G, PolyPoint start, PolyPoint target) {
         distanceMap = new HashMap<>();
         edgeMap = new HashMap<>();
-        for(int i = 0; i < G.getVertex(); i++){
-            distanceMap.put(,Double.POSITIVE_INFINITY);
-            edgeMap.put(,0.0);
+        edgeTo = new Edge[G.getVertex()];
+
+        for (int i = 0; i < G.getVertex(); i++) {
+            distanceMap.put(nodes.get(i), Double.POSITIVE_INFINITY);
+            distanceMap.put(start, 0.0);
+        }
+
+        pq = new IndexMinPQ<>(G.getVertex());
+        pq.insert(G.indexes.get(start), distanceMap.get(start));
+        while (!pq.isEmpty()) {
+            int v = pq.delMin();
+            for (Edge e : G.list) {
+                relax(e, target);
+            }
         }
     }
 
-    public void relax(Edge e, PolyPoint target){
-        if(distanceMap.get)
+    float h(PolyPoint start, PolyPoint target) { //Start of A*
+        Distance d = new Distance();
+        return d.haversineFormula(start, target);
+
     }
 
+    public void relax(Edge e, PolyPoint target) {
+        int v = G.indexes.get(e.getFrom());
+        int w = G.indexes.get(e.getTo());
+        if (distanceMap.get(e.getTo()) > distanceMap.get(e.getFrom()) + e.getWeight()) {
+            distanceMap.replace(e.getTo(), distanceMap.get(e.getFrom()) + e.getWeight());
+            edgeTo[w] = e;
+            double priority = distanceMap.get(e.getTo()) + h(e.getTo(), e.getFrom());
+            if (pq.contains(w)) {
+                pq.decreaseKey(w, priority);
+            } else {
+                pq.insert(w, priority);
+            }
+        }
+    }
+
+    public double distTo(PolyPoint v) {
+        return distanceMap.get(v);
+    }
+
+    public Iterable<Edge> pathTo(Edge e) {
+        if (!hasPathTo(edgeMap.get(e.getFrom()))) return null;
+        Stack<Edge> path = new Stack<>();
+        for (Edge i = edgeTo[G.indexes.get(e.getFrom())]; i != null; i = edgeTo[G.indexes.get(e.getFrom())]) {
+            path.push(e);
+        }
+        return path;
+    }
+
+
+    public boolean hasPathTo(PolyPoint v) {
+        return distanceMap.get(v) < Double.POSITIVE_INFINITY;
+    }
+}
     /*
     public DijkstraSP(Graph G, int s, int t){
         distTo = new double[G.getVertex()];
@@ -46,13 +93,7 @@ public class DijkstraSP {
     }
     */
 
-
-    float h(int start, int target){ //Start of A*
-         Distance d = new Distance();
-         return d.haversineFormula(start, target);
-
-    }
-
+    /*
     private void relax(Edge e, int target){
         int v = e.getFrom();
         int w = e.getTo();
@@ -68,23 +109,6 @@ public class DijkstraSP {
 
         }
     }
-
-    public double getDistTo(int v){
-        return distTo[v];
-    }
-
-    public boolean hasPathTo(int v){
-        return distTo[v] < Double.POSITIVE_INFINITY;
-    }
-
-    public Iterable<Edge> pathTo(int v){
-        if (!hasPathTo(v)) return null;
-        Stack<Edge> path = new Stack<>();
-        for (Edge e = edgeTo[v]; e != null; e = edgeTo[e.getFrom()]) {
-            path.push(e);
-        }
-        return path;
-    }
-}
+    */
 
 
