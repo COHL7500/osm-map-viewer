@@ -1,17 +1,16 @@
 package bfst22.vector;
 
-import java.io.IOException;
-
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.util.MissingResourceException;
+import java.util.Objects;
+
 // Responsible for displaying model data.
 public class View {
+    public View(Model model, Stage stage) throws Exception {
+        this.setDisplayBound(stage);
 
     @FXML
     private BorderPane someBorderPane;
@@ -52,9 +51,8 @@ public class View {
     }
 
     // Setting the window displaybound so the scene spawns within the screen
-    public void setDisplayBound(Stage primaryStage){
+    private void setDisplayBound(Stage primaryStage){
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
-
         primaryStage.setX((primScreenBounds.getWidth() - primaryStage.getWidth()) / 2);
         primaryStage.setY((primScreenBounds.getHeight() - primaryStage.getHeight() / 2));
     }
