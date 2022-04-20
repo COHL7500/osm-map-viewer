@@ -62,7 +62,6 @@ public class Address implements Comparable<Address> {
     public static class Builder {
         private String street, house, floor, side, postcode, city;
         private float lat, lon;
-        private long id;
         public boolean isEmpty = true;
 
         public Builder street(String _street) {

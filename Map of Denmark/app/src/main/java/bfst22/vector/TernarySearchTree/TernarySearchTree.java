@@ -1,7 +1,5 @@
 package bfst22.vector.TernarySearchTree;
 
-import bfst22.vector.Search;
-
 import java.util.ArrayList;
 
 public class TernarySearchTree {
@@ -24,10 +22,6 @@ public class TernarySearchTree {
 
     public void clearTree() {
         root = null;
-    }
-
-    public void insertSearchString(String word) {
-        root = insert(root, word.toLowerCase().toCharArray(), 0, 0);
     }
 
     public void insertAddress(String address, int id) {
@@ -53,27 +47,6 @@ public class TernarySearchTree {
         return node;
     }
 
-    public void delete(String word) {
-        delete(root, word.toCharArray(), 0);
-    }
-
-    private void delete(SearchNode node, char[] word, int index) {
-        if (node == null)
-            return;
-        if (word[index] < node.character)
-            delete(node.left, word, index);
-        else if (word[index] > node.character)
-            delete(node.right, word, index);
-        else {
-            if (node.isEndOString && index == word.length - 1) {
-                node.isEndOString = false;
-            }
-            else if (index + 1 < word.length) {
-                delete(node.equal, word, index + 1);
-            }
-        }
-    }
-
     public SearchNode search(String word) {
         return search(root, word.toCharArray(), 0);
     }
@@ -95,19 +68,45 @@ public class TernarySearchTree {
         }
     }
 
+    private SearchNode nodeOfLastLetter(String word) {
+        return nodeOfLastLetter(root, word.toCharArray(), 0);
+    }
+
+    private SearchNode nodeOfLastLetter(SearchNode node, char[] word, int index) {
+        if (node == null || word.length == 0)
+            return null;
+        if (word[index] < node.character)
+            return nodeOfLastLetter(node.left, word, index);
+        else if (word[index] > node.character)
+            return nodeOfLastLetter(node.right, word, index);
+        else {
+            if (index == word.length - 1)
+                return node;
+            else
+                return nodeOfLastLetter(node.equal, word, index + 1);
+        }
+    }
+
+    public ArrayList<SearchNode> suggestions(String string) {
+        suggestions = new ArrayList<>();
+        traverse(nodeOfLastLetter(string), string);
+        return suggestions;
+    }
+
     public String toString() {
         entireTree = new ArrayList<String>();
         traverse(root, "");
-        return "\nSearch Tree: "+ entireTree;
+        return "\nTernary Search Tree : "+ entireTree;
     }
 
-    private void traverse(SearchNode node, String string) {
+    public void traverse(SearchNode node, String string) {
         if (node != null) {
             traverse(node.left, string);
 
             string = string + node.character;
             if (node.isEndOString)
-                entireTree.add(string);
+                //entireTree.add(string);
+                suggestions.add(node);
 
             traverse(node.equal, string);
             string = string.substring(0, string.length() - 1);
@@ -116,36 +115,31 @@ public class TernarySearchTree {
         }
     }
 
+
+
+
+
     public String autoComplete(String word) {
         return autoComplete(root, word.toCharArray(),0);
     }
 
     private String autoComplete(SearchNode node, char[] word, int index) {
-        String result = null;
+        String result;
         if (node == null || word.length <= index) return null;
         if (word[index] == node.character) {
+
             if (word[index] == word.length - 1) return word.toString();
             else {
                 result = (node.equal == null ? null : autoComplete(node.equal, word, index + 1));
                 if (result == null) result = word.toString();
             }
         }
-            if (word[index] > node.character) {
-                result = (node.right == null ? null : autoComplete(node.right, word, index + 1));
-            }
-            else {
-                result = (node.left == null ? null : autoComplete(node.left, word, index + 1));
-            }
+        if (word[index] > node.character) {
+            result = (node.right == null ? null : autoComplete(node.right, word, index + 1));
+        }
+        else {
+            result = (node.left == null ? null : autoComplete(node.left, word, index + 1));
+        }
         return result;
     }
-
-    public ArrayList<SearchNode> getSuggestions() {
-        ArrayList<SearchNode> suggestions = new ArrayList<>();
-        suggestions("", suggestions);
-        return suggestions;
-    }
-
-    public void suggestions(String currentPath, ArrayList<SearchNode> suggestions) {
-    }
-
 }

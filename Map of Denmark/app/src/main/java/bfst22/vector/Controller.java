@@ -490,10 +490,7 @@ public class Controller {
     }
 
     public void autoComplete() {
-        String suggestion = search.autoComplete(searchField.getText());
-        if (suggestion == null) {
-            return;
-        }
-        else searchField.setText(suggestion);
+        for (Address address : search.searchSuggestions(searchField.getText()))
+        System.out.println(address.toString());
     }
 }
