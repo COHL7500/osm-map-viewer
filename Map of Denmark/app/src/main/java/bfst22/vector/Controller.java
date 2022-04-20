@@ -284,7 +284,7 @@ public class Controller {
         if (k.getCode().equals(KeyCode.ENTER)) {
             search();
         }
-        else autoComplete();
+        else searchSuggestions();
     }
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
@@ -486,11 +486,14 @@ public class Controller {
         } catch (NullPointerException n) {
             System.out.println("No result");
         }
-        searchField.setText("");
     }
 
-    public void autoComplete() {
+    public void searchSuggestions() {
         for (Address address : search.searchSuggestions(searchField.getText()))
         System.out.println(address.toString());
     }
+    public void clearSearchField() {
+        searchField.setText("");
+    }
+
 }
