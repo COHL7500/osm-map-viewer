@@ -29,57 +29,93 @@ import java.util.Map;
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
     private Stage stage;
-	private Model model;
+    private Model model;
     private List<String> loadedMaps;
     private ContextMenu canvasCM;
 
     private Search search;
-	
-	@FXML private MapCanvas canvas;
-    @FXML private VBox pinPointSidebar;
-    @FXML private ScrollPane vBox_scrollpane;
-    @FXML private HBox paintBox;
-    @FXML private Pane somePane;
-    @FXML private ToolBar paintBar;
-    @FXML private BorderPane someBorderPane;
-	@FXML private MenuItem unloadFileButton;
-    @FXML private Menu recentMapsSubmenu;
-    @FXML private ToggleGroup mapdisplay, brushModeGroup;
-    @FXML private ColorPicker paintColourPicker;
-    @FXML private Spinner<Double> paintStrokeSize;
-    @FXML private Spinner<Integer> paintFontSize;
-    @FXML private Button searchButton;
-    @FXML private TextField searchField;
-    @FXML private ToggleButton zoomBoxButton;
-    @FXML private ToggleButton zoomMagnifyingGlass;
-    @FXML private ToggleButton pinpointButton;
-    @FXML private ComboBox<String> fontBox;
-    @FXML private TreeView<String> featuresTreeView;
-    @FXML private ListView<HBox> pinPointList;
+
+    @FXML
+    private MapCanvas canvas;
+    @FXML
+    private VBox pinPointSidebar;
+    @FXML
+    private ScrollPane vBox_scrollpane;
+    @FXML
+    private HBox paintBox;
+    @FXML
+    private Pane somePane;
+    @FXML
+    private ToolBar paintBar;
+    @FXML
+    private BorderPane someBorderPane;
+    @FXML
+    private MenuItem unloadFileButton;
+    @FXML
+    private Menu recentMapsSubmenu;
+    @FXML
+    private ToggleGroup mapdisplay, brushModeGroup;
+    @FXML
+    private ColorPicker paintColourPicker;
+    @FXML
+    private Spinner<Double> paintStrokeSize;
+    @FXML
+    private Spinner<Integer> paintFontSize;
+    @FXML
+    private Button searchButton;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ToggleButton zoomBoxButton;
+    @FXML
+    private ToggleButton zoomMagnifyingGlass;
+    @FXML
+    private ToggleButton pinpointButton;
+    @FXML
+    private ComboBox<String> fontBox;
+    @FXML
+    private TreeView<String> featuresTreeView;
+    @FXML
+    private ListView<HBox> pinPointList;
 
     // Debug menu variables
-    @FXML private ScrollPane vbox_debug_scrollpane;
-    @FXML private Label canvas_min;
-    @FXML private Label canvas_max;
-    @FXML private Label canvas_origin;
-    @FXML private Label canvas_mouse;
-    @FXML private Label canvas_zoom;
-    @FXML private Label canvas_bounds_min;
-    @FXML private Label canvas_bounds_max;
-    @FXML private Label canvas_nodes;
-    @FXML private Label canvas_ways;
-    @FXML private Label canvas_relations;
-    @FXML private Label canvas_filesize;
-    @FXML private Label canvas_load_time;
-    @FXML private Label canvas_repaint_time;
-    @FXML private Label canvas_avg_repaint_time;
+    @FXML
+    private ScrollPane vbox_debug_scrollpane;
+    @FXML
+    private Label canvas_min;
+    @FXML
+    private Label canvas_max;
+    @FXML
+    private Label canvas_origin;
+    @FXML
+    private Label canvas_mouse;
+    @FXML
+    private Label canvas_zoom;
+    @FXML
+    private Label canvas_bounds_min;
+    @FXML
+    private Label canvas_bounds_max;
+    @FXML
+    private Label canvas_nodes;
+    @FXML
+    private Label canvas_ways;
+    @FXML
+    private Label canvas_relations;
+    @FXML
+    private Label canvas_filesize;
+    @FXML
+    private Label canvas_load_time;
+    @FXML
+    private Label canvas_repaint_time;
+    @FXML
+    private Label canvas_avg_repaint_time;
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public Controller(final Model model, final Stage primarystage) {
-        primarystage.setScene(new Scene(Controller.smartFXMLLoader(this,"View.fxml")));
+        primarystage.setScene(new Scene(Controller.smartFXMLLoader(this, "View.fxml")));
         primarystage.setWidth(this.someBorderPane.getPrefWidth());
         primarystage.setHeight(this.someBorderPane.getPrefHeight());
 
@@ -108,7 +144,7 @@ public class Controller {
             this.canvas.checkInBounds();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setHeight(newValue.doubleValue()-80);
+            this.canvas.setHeight(newValue.doubleValue() - 80);
             this.canvas.update();
             this.canvas.checkInBounds();
         });
@@ -121,7 +157,7 @@ public class Controller {
         this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
     }
 
-    private void generateContextMenu(){
+    private void generateContextMenu() {
         MenuItem addPoint = new MenuItem("Add Pin Point Here");
         addPoint.setGraphic(new FontIcon("fas-map-pin:12"));
         addPoint.setOnAction(item -> this.canvas.pinpoints.newWindow(this.canvas));
@@ -134,14 +170,14 @@ public class Controller {
             FXMLLoader loader = new FXMLLoader(con.getClass().getResource(filename));
             loader.setController(con);
             return loader.load();
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
 
-    private void updateDebugInfo(){
-        if(!this.model.isLoaded() || this.model.isLoaded() && this.someBorderPane.getRight() != null){
+    private void updateDebugInfo() {
+        if (!this.model.isLoaded() || this.model.isLoaded() && this.someBorderPane.getRight() != null) {
             this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
             this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
             this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
@@ -153,13 +189,13 @@ public class Controller {
             this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
             this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
             this.canvas_filesize.setText(String.format("%-27s%d bytes", "file size:", this.model.filesize));
-            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
-            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
-            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime / 1000000));
+            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime / 1000000));
+            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT / 1000000));
         }
     }
 
-    private String inputWindow(String title, String contentText){
+    private String inputWindow(String title, String contentText) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
         dialog.setContentText(contentText);
@@ -170,18 +206,18 @@ public class Controller {
         return dialog.showAndWait().orElse(null);
     }
 
-    private void generateTreeView(){
+    private void generateTreeView() {
         CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Map Elements");
         root.setExpanded(true);
         root.selectedProperty().addListener(this::treeboxselected);
         this.featuresTreeView.setCellFactory(CheckBoxTreeCell.forTreeView());
         this.featuresTreeView.setRoot(root);
 
-        for(Map.Entry<String,keyFeature> feature : this.model.yamlObj.ways.entrySet()){
+        for (Map.Entry<String, keyFeature> feature : this.model.yamlObj.ways.entrySet()) {
             CheckBoxTreeItem<String> featureString = new CheckBoxTreeItem<>(feature.getKey());
             featureString.selectedProperty().addListener(this::treeboxselected);
             root.getChildren().add(featureString);
-            for(Map.Entry<String,valueFeature> subfeature : feature.getValue().valuefeatures.entrySet()){
+            for (Map.Entry<String, valueFeature> subfeature : feature.getValue().valuefeatures.entrySet()) {
                 CheckBoxTreeItem<String> subfeatureString = new CheckBoxTreeItem<>(subfeature.getKey());
                 featureString.getChildren().add(subfeatureString);
                 subfeatureString.selectedProperty().addListener(this::treeboxselected);
@@ -190,7 +226,7 @@ public class Controller {
         }
     }
 
-    private void treeboxselected(Observable box){
+    private void treeboxselected(Observable box) {
         TreeItem<String> root = this.featuresTreeView.getRoot();
         MapFeature yaml = this.model.yamlObj;
 
@@ -216,13 +252,13 @@ public class Controller {
         this.canvas.reset();
         this.canvas.zoomTo(42000);
         this.canvas.centerPos();
-        this.canvas.panTo(new Point2D(0,-50));
+        this.canvas.panTo(new Point2D(0, -50));
         this.canvas.setDisable(false);
         this.unloadFileButton.setDisable(false);
         this.updateDebugInfo();
     }
 
-    private void unloadMap(){
+    private void unloadMap() {
         this.model.unload();
         this.canvas.reset();
         this.canvas.setDisable(true);
@@ -231,15 +267,15 @@ public class Controller {
         this.updateDebugInfo();
     }
 
-    private void addRecentLoadedMap(String filename){
+    private void addRecentLoadedMap(String filename) {
         this.loadedMaps.remove(filename);
         this.loadedMaps.add(filename);
-        if (this.loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size()-1);
+        if (this.loadedMaps.size() > 10) this.loadedMaps.remove(this.loadedMaps.size() - 1);
         this.recentMapsSubmenu.getItems().clear();
 
-        for (int i = this.loadedMaps.size()-1; i > -1; i--) {
-            String map = this.loadedMaps.get(i).replace("\\","/");
-            MenuItem entry = new MenuItem((this.loadedMaps.size()-1-i) + ". " + map);
+        for (int i = this.loadedMaps.size() - 1; i > -1; i--) {
+            String map = this.loadedMaps.get(i).replace("\\", "/");
+            MenuItem entry = new MenuItem((this.loadedMaps.size() - 1 - i) + ". " + map);
             entry.setUserData(map);
             entry.setOnAction(event -> {
                 this.model.unload();
@@ -262,30 +298,41 @@ public class Controller {
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ Menubar Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
-    @FXML private void onMenuButtonPress(ActionEvent e){
+    @FXML
+    private void onMenuButtonPress(ActionEvent e) {
         this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox_scrollpane : null);
         this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
     }
 
-    @FXML private void onZoomBoxButtonPressed(ActionEvent e){
+    @FXML
+    private void onZoomBoxButtonPressed(ActionEvent e) {
         this.canvas.zoombox.setState(this.zoomBoxButton.isSelected());
     }
 
-    @FXML private void onZoomMagnifyingGlassButtonPressed(ActionEvent e){
+    @FXML
+    private void onZoomMagnifyingGlassButtonPressed(ActionEvent e) {
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
     }
 
-    @FXML private void onSearchButtonPressed(ActionEvent e){
+    @FXML
+    private void onSearchButtonPressed(ActionEvent e) {
         search();
     }
 
-    @FXML private void onKeyPressed(KeyEvent k){
+    @FXML
+    private void onSearchKeyPressed(KeyEvent k){
         if (k.getCode().equals(KeyCode.ENTER)) {
             search();
         }
-        else searchSuggestions();
     }
+
+    @FXML
+    private void onSearchKeyTyped(KeyEvent k){
+        searchSuggestions();
+    }
+
+
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
         this.canvas.painter.toggleFill();
@@ -492,6 +539,7 @@ public class Controller {
         for (Address address : search.searchSuggestions(searchField.getText()))
         System.out.println(address.toString());
     }
+
     public void clearSearchField() {
         searchField.setText("");
     }

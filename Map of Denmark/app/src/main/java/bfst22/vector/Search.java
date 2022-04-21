@@ -19,7 +19,9 @@ public class Search {
    public ArrayList<Address> searchSuggestions(String searchString) {
         ArrayList<Address> searchSuggestions = new ArrayList<Address>();
             for (SearchNode node : model.getSearchTree().suggestions(searchString)) {
+                if (searchSuggestions.size() < 6) {
                     searchSuggestions.add(model.addresses.get(node.getId()));
+                }
             }
         return searchSuggestions;
      }

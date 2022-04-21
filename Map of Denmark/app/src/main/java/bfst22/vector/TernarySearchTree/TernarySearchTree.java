@@ -12,16 +12,8 @@ public class TernarySearchTree {
         root = null;
     }
 
-    public boolean isEmpty() {
-        return root == null;
-    }
-
     public SearchNode getRoot() {
         return root;
-    }
-
-    public void clearTree() {
-        root = null;
     }
 
     public void insertAddress(String address, int id) {
@@ -48,7 +40,7 @@ public class TernarySearchTree {
     }
 
     public SearchNode search(String word) {
-        return search(root, word.toCharArray(), 0);
+        return search(root, word.toLowerCase().toCharArray(), 0);
     }
 
     private SearchNode search(SearchNode node, char[] word, int index) {
@@ -68,10 +60,33 @@ public class TernarySearchTree {
         }
     }
 
+    public ArrayList<SearchNode> suggestions(String string) {
+        suggestions = new ArrayList<>();
+        traverseForSuggestions(nodeOfLastLetter(string), string);
+        return suggestions;
+    }
+
+    public void traverseForSuggestions(SearchNode node, String string) {
+        if (node != null) {
+            traverse(node.left, string);
+
+            string = string + node.character;
+            if (node.isEndOString)
+                suggestions.add(node);
+
+            traverse(node.equal, string);
+            string = string.substring(0, string.length() - 1);
+
+            traverse(node.right, string);
+        }
+    }
+
+    //Helper method for searchsuggestions
     private SearchNode nodeOfLastLetter(String word) {
         return nodeOfLastLetter(root, word.toCharArray(), 0);
     }
 
+    //Helper method for searchsuggestions
     private SearchNode nodeOfLastLetter(SearchNode node, char[] word, int index) {
         if (node == null || word.length == 0)
             return null;
@@ -87,12 +102,6 @@ public class TernarySearchTree {
         }
     }
 
-    public ArrayList<SearchNode> suggestions(String string) {
-        suggestions = new ArrayList<>();
-        traverse(nodeOfLastLetter(string), string);
-        return suggestions;
-    }
-
     public String toString() {
         entireTree = new ArrayList<String>();
         traverse(root, "");
@@ -105,8 +114,7 @@ public class TernarySearchTree {
 
             string = string + node.character;
             if (node.isEndOString)
-                //entireTree.add(string);
-                suggestions.add(node);
+                entireTree.add(string);
 
             traverse(node.equal, string);
             string = string.substring(0, string.length() - 1);
@@ -115,19 +123,16 @@ public class TernarySearchTree {
         }
     }
 
-
-
-
+    //Experimental code for better autocomplete/suggestions - not working at the moment
 
     public String autoComplete(String word) {
-        return autoComplete(root, word.toCharArray(),0);
+        return autoComplete(root, word.toLowerCase().toCharArray(),0);
     }
 
     private String autoComplete(SearchNode node, char[] word, int index) {
         String result;
         if (node == null || word.length <= index) return null;
         if (word[index] == node.character) {
-
             if (word[index] == word.length - 1) return word.toString();
             else {
                 result = (node.equal == null ? null : autoComplete(node.equal, word, index + 1));
