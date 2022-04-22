@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -13,14 +14,15 @@ public class View {
         this.setDisplayBound(stage);
 
         model.load("data/small.osm.zip");
-        new Controller(model,stage);
+        new Controller(model, stage);
 
-        stage.setTitle("Danmarkskort - Gruppe #1");
+        stage.getIcons().add(new Image("https://i.imgur.com/kz7ZeOl.png"));
+        stage.setTitle("Map of Denmark - #1");
         stage.show();
     }
 
     // Setting the window displaybound so the scene spawns within the screen
-    private void setDisplayBound(Stage primaryStage){
+    private void setDisplayBound(Stage primaryStage) {
         Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX((primScreenBounds.getWidth() - primaryStage.getWidth()) / 2);
         primaryStage.setY((primScreenBounds.getHeight() - primaryStage.getHeight() / 2));
