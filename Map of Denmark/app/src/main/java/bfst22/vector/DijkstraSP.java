@@ -9,7 +9,6 @@ public class DijkstraSP {
     private double[] distTo;
     private Edge[] edgeTo;
     private IndexMinPQ<Double> pq;
-
     List<PolyPoint> nodes;
     Graph G = new Graph(nodes);
 
@@ -73,7 +72,8 @@ public class DijkstraSP {
         return distanceMap.get(v) < Double.POSITIVE_INFINITY;
     }
 }
-    /*
+
+    /* Integer implementation
     public DijkstraSP(Graph G, int s, int t){
         distTo = new double[G.getVertex()];
         edgeTo = new Edge[G.getEdge()];
