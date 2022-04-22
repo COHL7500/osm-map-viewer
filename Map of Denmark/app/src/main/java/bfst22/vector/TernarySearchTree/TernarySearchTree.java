@@ -68,16 +68,16 @@ public class TernarySearchTree {
 
     public void traverseForSuggestions(SearchNode node, String string) {
         if (node != null) {
-            traverse(node.left, string);
+            traverseForSuggestions(node.left, string);
 
             string = string + node.character;
             if (node.isEndOString)
                 suggestions.add(node);
 
-            traverse(node.equal, string);
+            traverseForSuggestions(node.equal, string);
             string = string.substring(0, string.length() - 1);
 
-            traverse(node.right, string);
+            traverseForSuggestions(node.right, string);
         }
     }
 

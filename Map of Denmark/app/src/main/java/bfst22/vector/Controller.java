@@ -64,6 +64,8 @@ public class Controller {
     @FXML
     private Button searchButton;
     @FXML
+    private Button clearButton;
+    @FXML
     private TextField searchField;
     @FXML
     private ToggleButton zoomBoxButton;
@@ -330,6 +332,11 @@ public class Controller {
     @FXML
     private void onSearchKeyTyped(KeyEvent k){
         searchSuggestions();
+    }
+
+    @FXML
+    private void onClearButtonPressed(ActionEvent e){
+        clearSearchField();
     }
 
 
