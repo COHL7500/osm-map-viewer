@@ -562,17 +562,17 @@ public class Controller {
         }
     }
 
-    public ArrayList<Address> suggestions() {
-        return search.searchSuggestions(searchField.getText());
-    }
-
     public void clearSearchField() {
         searchField.setText("");
     }
 
+    public ArrayList<Address> suggestions() {
+        return search.searchSuggestions(searchField.getText());
+    }
+
     public VBox suggestionsDropdown(ArrayList<Address> suggestions){
         VBox dropDownMenu = new VBox();
-        dropDownMenu.setAlignment(Pos.CENTER); // all these are optional and up to you
+        dropDownMenu.setAlignment(Pos.CENTER);
         for(Address suggestion : suggestions()){
             Label label = new Label(suggestion.toString());
             dropDownMenu.getChildren().add(label);

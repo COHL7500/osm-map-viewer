@@ -208,7 +208,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                 </HBox>
                 <HBox fx:id="search_root" maxHeight="30" spacing="5" alignment="CENTER_RIGHT">
                     <GridPane fx:id="search_pane">
-                        <HBox fx:id="search_box" GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="5" maxWidth="290">
+                        <HBox fx:id="search_box" GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="290">
                             <TextField fx:id="searchField" onKeyPressed="#onSearchKeyPressed" prefWidth="250" promptText="Search..."/>
                                 <Button fx:id="searchButton" onAction="#onSearchButtonPressed" prefWidth="25">
                                     <graphic>
