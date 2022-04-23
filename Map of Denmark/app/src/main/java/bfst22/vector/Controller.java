@@ -5,8 +5,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
@@ -20,6 +27,7 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.xml.stream.XMLStreamException;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +69,12 @@ public class Controller {
     private Spinner<Double> paintStrokeSize;
     @FXML
     private Spinner<Integer> paintFontSize;
+    @FXML
+    private HBox search_root;
+    @FXML
+    private GridPane search_pane;
+    @FXML
+    private HBox search_box;
     @FXML
     private Button searchButton;
     @FXML
@@ -157,6 +171,14 @@ public class Controller {
         });
         this.fontBox.getItems().addAll(Font.getFamilies());
         this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
+
+        this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+             if(search_pane.getChildren().size()>1){
+                search_pane.getChildren().remove(1);
+            }
+            search_pane.add(suggestionsDropdown(suggestions()),0,1);
+        });
+
     }
 
     private void generateContextMenu() {
@@ -329,17 +351,15 @@ public class Controller {
         }
     }
 
-    @FXML
-    private void onSearchKeyTyped(KeyEvent k){
-        searchSuggestions();
-    }
+   // @FXML
+   // private void onSearchKeyTyped(KeyEvent k){
+   //     searchSuggestions();
+   // }
 
     @FXML
     private void onClearButtonPressed(ActionEvent e){
         clearSearchField();
     }
-
-
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
         this.canvas.painter.toggleFill();
@@ -542,13 +562,21 @@ public class Controller {
         }
     }
 
-    public void searchSuggestions() {
-        for (Address address : search.searchSuggestions(searchField.getText()))
-        System.out.println(address.toString());
+    public ArrayList<Address> suggestions() {
+        return search.searchSuggestions(searchField.getText());
     }
 
     public void clearSearchField() {
         searchField.setText("");
     }
 
+    public VBox suggestionsDropdown(ArrayList<Address> suggestions){
+        VBox dropDownMenu = new VBox();
+        dropDownMenu.setAlignment(Pos.CENTER); // all these are optional and up to you
+        for(Address suggestion : suggestions()){
+            Label label = new Label(suggestion.toString());
+            dropDownMenu.getChildren().add(label);
+        }
+        return dropDownMenu;
+    }
 }
