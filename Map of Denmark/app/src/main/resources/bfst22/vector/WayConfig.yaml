@@ -1,26 +1,4 @@
 ways:
-  water:
-    draw:
-      stroke: true
-      stroke_color: #b5d2de"
-      fill: true
-      fill_color: "#b5d2de"
-      zoom_level: 20000
-    valuefeatures:
-      river: {}
-      oxbow: {}
-      ditch: {}
-      lock: {}
-      fish_pass: {}
-      lake: {}
-      reservoir: {}
-      pond: {}
-      basin: {}
-      lagoon: {}
-      stream_pool: {}
-      reflecting_pool: {}
-      moat: {}
-      wastewater: {}
   place:
     draw:
       fill: true
@@ -135,7 +113,6 @@ ways:
       plant_nusery: {}
       port: {}
       quarry: {}
-      railway: {}
       recreation_ground:
         draw:
           stroke: true
@@ -145,6 +122,10 @@ ways:
       religious: {}
       village_green: {}
       winter_sports: {}
+      railway:
+        draw:
+            stroke_color: "#e6dae7"
+            fill_color: "#e6dae7"
   amenity:
     valuefeatures:
         parking:
@@ -254,6 +235,11 @@ ways:
               stroke_color: "#cbd6ab"
               fill: true
               fill_color: "#cbd6ab"
+      sand:
+        draw:
+            stroke_color: "#f1e8c7"
+            fill: true
+            fill_color: "#f1e8c7"
 
   aeroway:
     valuefeatures:
@@ -294,7 +280,7 @@ ways:
       fill_color: "#d8d0c9"
       zoom_level: 20000
     valuefeatures:
-      yes: {}
+      # yes: {}
       hangar: {}
       industrial: {}
       office: {}
@@ -313,6 +299,15 @@ ways:
       university: {}
       retail: {}
       roof: {}
+      terrace: {}
+      house: {}
+      residential: {}
+      farm: {}
+      ger: {}
+      detached: {}
+      bungalow: {}
+      barracks: {}
+
   barrier:
       draw:
           stroke: true
@@ -390,6 +385,7 @@ ways:
             stroke_color: "#e39483"
             line_width: 0.000010
             dash_size: 0.000025
+      unclassified: {}
   railway:
     draw:
         stroke: true
@@ -459,6 +455,12 @@ ways:
               dash_size: 0.0000175
               line_width: 0.0000085
               zoom_level: 45000
+  tourism:
+    valuefeatures:
+        zoo:
+            draw:
+                stroke: true
+                stroke_color: "#b19aa8"
   route:
     draw:
       stroke: true

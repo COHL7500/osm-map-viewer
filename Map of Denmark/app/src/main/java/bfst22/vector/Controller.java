@@ -103,13 +103,13 @@ public class Controller {
 
     public void updateDebugInfo(){
         if(this.model.isOMSloaded && this.paneVisibility[1]){
-            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minx) + ", " + String.format("%.5f", this.canvas.miny)));
-            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxx) + ", " + String.format("%.5f", this.canvas.maxy)));
-            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originx) + ", " + String.format("%.5f", this.canvas.originy)));
-            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousex) + ", " + String.format("%.5f", this.canvas.mousey)));
-            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
-            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minlon) + ", " + String.format("%.5f", this.model.minlat)));
-            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxlon) + ", " + String.format("%.5f", this.model.maxlat)));
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.3f", this.canvas.minx) + ", " + String.format("%.3f", this.canvas.miny)));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.3f", this.canvas.maxx) + ", " + String.format("%.3f", this.canvas.maxy)));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.3f", this.canvas.originx) + ", " + String.format("%.3f", this.canvas.originy)));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.3f", this.canvas.mousex) + ", " + String.format("%.3f", this.canvas.mousey)));
+            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.3f", this.canvas.zoom_current)));
+            this.canvas_bounds_min.setText(String.format("%-21s%s.2f", "bounds min:", String.format("%.3f", this.model.minlon) + ", " + String.format("%.3f", this.model.minlat)));
+            this.canvas_bounds_max.setText(String.format("%-20s%s.2f", "bounds max:", String.format("%.3f", this.model.maxlon) + ", " + String.format("%.3f", this.model.maxlat)));
             this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
             this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
             this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
