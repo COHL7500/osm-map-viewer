@@ -6,11 +6,11 @@ import javafx.scene.canvas.GraphicsContext;
 public interface Drawable {
     // The default keyword allow methods in an interface to have a body.
     // draws the current element.
-    default void draw(GraphicsContext gc) {
+    default void stroke(GraphicsContext gc) {
         gc.beginPath();
         this.trace(gc);
         gc.stroke();
-        gc.closePath(); // Just as a safety measure; uncertain if it does anything different.
+        gc.closePath();
     }
 
     // fills an object.

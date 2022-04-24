@@ -8,6 +8,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.FillRule;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.NonInvertibleTransformException;
@@ -128,12 +129,10 @@ public class MapCanvas extends Canvas {
     private void repaint() {
         this.gc.setTransform(new Affine());
 
-        // Clears the screen for the next frame
-        // this.gc.clearRect(0, 0, super.getWidth(), super.getHeight());
-
         // Background color
         this.gc.setFill(Color.web("#b5d2de"));
         this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
+        this.gc.setFillRule(FillRule.NON_ZERO);
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
@@ -149,7 +148,7 @@ public class MapCanvas extends Canvas {
             // Only display if set to do so, else display nothing at all
             if(this.model.yamlObj.draw.display) {
                 // Loops through all the key features and sets the default styling for all its objects
-                for (keyFeature element : this.model.yamlObj.ways.values()) {
+                for (keyFeature element : this.model.yamlObj.keyfeatures.values()) {
                     if (element.draw.display) {
                         this.setStylingDefault();
 
@@ -164,14 +163,14 @@ public class MapCanvas extends Canvas {
                                         this.setStyling(element.draw);
                                         this.setStyling(element2.draw);
 
-                                        if (element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
-                                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current) {
-                                            if (!debugValMap.get("debugDisplayWireframe")) draw.fill(this.gc);
-                                            draw.draw(this.gc);
+                                        if ((element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
+                                                || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current)
+                                                && !debugValMap.get("debugDisplayWireframe")) {
+                                            draw.fill(this.gc);
                                         }
                                         if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
                                                 || element2.draw != null && element2.draw.stroke && element2.draw.zoom_level < this.zoom_current)
-                                            draw.draw(this.gc);
+                                            draw.stroke(this.gc);
                                     }
                                 }
                             }
@@ -209,6 +208,7 @@ public class MapCanvas extends Canvas {
         this.gc.setFill(Color.BLACK);
         this.gc.setLineWidth(0.00001);
         this.gc.setStroke(Color.BLACK);
+        this.gc.setFillRule(FillRule.NON_ZERO);
         this.gc.setLineDashes(1);
         this.gc.setGlobalAlpha(1);
     }

@@ -1,8 +1,10 @@
 
 package bfst22.vector;
 
+import javafx.scene.canvas.GraphicsContext;
+
 // Defines what a node is in the OSM file and its properties.
-public class PolyPoint {
+public class PolyPoint implements Drawable {
     public long id;
     public float lat, lon;
 
@@ -10,5 +12,9 @@ public class PolyPoint {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
+    }
+
+    @Override public void trace(GraphicsContext gc) {
+        gc.moveTo(this.lat,this.lon);
     }
 }

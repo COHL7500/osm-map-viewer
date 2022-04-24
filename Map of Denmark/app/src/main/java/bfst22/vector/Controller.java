@@ -167,10 +167,11 @@ public class Controller {
         CheckBoxTreeItem<String> root = new CheckBoxTreeItem<>("Map Elements");
         root.setExpanded(true);
         root.selectedProperty().addListener(this::treeboxselected);
+
         this.featuresTreeView.setCellFactory(CheckBoxTreeCell.forTreeView());
         this.featuresTreeView.setRoot(root);
 
-        for(Map.Entry<String,keyFeature> feature : this.model.yamlObj.ways.entrySet()){
+        for(Map.Entry<String,keyFeature> feature : this.model.yamlObj.keyfeatures.entrySet()){
             CheckBoxTreeItem<String> featureString = new CheckBoxTreeItem<>(feature.getKey());
             featureString.selectedProperty().addListener(this::treeboxselected);
             root.getChildren().add(featureString);
@@ -184,18 +185,13 @@ public class Controller {
     }
 
     private void treeboxselected(Observable box){
-        TreeItem<String> root = this.featuresTreeView.getRoot();
-        MapFeature yaml = this.model.yamlObj;
+        this.featuresTreeView.getRoot().getChildren().forEach(keyFeature -> keyFeature.getChildren().forEach(valueFeature -> {
+            keyFeature keyobj = this.model.yamlObj.keyfeatures.get(keyFeature.getValue());
+            valueFeature valueobj = keyobj.valuefeatures.get(valueFeature.getValue());
+            CheckBoxTreeItem<String> valuebox = ((CheckBoxTreeItem<String>) valueFeature);
+            valueobj.draw.display = valuebox.isSelected();
+        }));
 
-        root.getChildren().forEach(keyFeature -> {
-            keyFeature keyobj = yaml.ways.get(keyFeature.getValue());
-            keyFeature.getChildren().forEach(valueFeature -> {
-                valueFeature valueobj = keyobj.valuefeatures.get(valueFeature.getValue());
-                valueobj.draw.display = ((CheckBoxTreeItem<String>) valueFeature).isSelected();
-            });
-            keyobj.draw.display = ((CheckBoxTreeItem<String>) keyFeature).isSelected();
-        });
-        yaml.draw.display = ((CheckBoxTreeItem<String>) root).isSelected();
         this.canvas.update();
     }
 

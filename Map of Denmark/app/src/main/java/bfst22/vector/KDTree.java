@@ -12,17 +12,25 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		this.lines = new ArrayList<>();
 	}
 
-	public void add(PolyLine element) throws RuntimeException {
+	public void add(final PolyPoint element, Drawable owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
-		for(int i = 0; i < element.coords.length; i+=3)
-			this.lines.add(new Node(element.coords[i+1],element.coords[i+2],element));
+		this.lines.add(new Node(element.lat,element.lon,owner));
 	}
 
-	public void add(MultiPolygon element) throws RuntimeException {
+	public void add(final PolyLine element, Drawable owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
-		element.parts.forEach(polyline -> {
-			for(int i = 0; i < ((PolyLine) polyline).coords.length; i+=3)
-				this.lines.add(new Node(((PolyLine) polyline).coords[i+1], ((PolyLine) polyline).coords[i+2], element));
+		for(int i = 0; i < element.coords.length; i+=2)
+			this.lines.add(new Node(element.coords[i],element.coords[i+1],owner));
+	}
+
+	public void add(PolyRelation element, Drawable owner) throws RuntimeException {
+		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
+		element.parts.forEach(poly -> {
+			switch(poly.getClass().getName()){
+				case "PolyPoint" -> this.add((PolyPoint) poly, owner);
+				case "PolyLine" -> this.add((PolyLine) poly, owner);
+				case "PolyRelation" -> this.add((PolyRelation) poly, owner);
+			}
 		});
 	}
 
