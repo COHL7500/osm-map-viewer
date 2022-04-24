@@ -196,7 +196,7 @@ public class Painter {
 				midtx += super.coords[i+1];
 				midty += super.coords[i+2];
 			}
-			return new Point2D(midtx/(super.coords.length/3),midty/(super.coords.length/3));
+			return new Point2D(midtx/(super.coords.length/3.0),midty/(super.coords.length/3.0));
 		}
 
 		public Point2D getPos(){
@@ -213,7 +213,9 @@ public class Painter {
 	}
 
 	private abstract static class PolyBox implements PaintObj {
-		private Point2D pos, curr, size;
+		private final Point2D pos;
+		private Point2D curr;
+		private Point2D size;
 		private final Color colour;
 		private final boolean filled;
 		private final double strokeSize;
