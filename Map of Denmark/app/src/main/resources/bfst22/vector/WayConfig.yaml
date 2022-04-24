@@ -1,4 +1,4 @@
-ways:
+ ways:
   place:
     draw:
       fill: true
@@ -280,7 +280,7 @@ ways:
       fill_color: "#d8d0c9"
       zoom_level: 20000
     valuefeatures:
-      # yes: {}
+      yes: {}
       hangar: {}
       industrial: {}
       office: {}
