@@ -13,17 +13,17 @@ public class DijkstraSP {
     Graph G = new Graph(nodes);
 
 
-    public DijkstraSP(Graph G, PolyPoint start, PolyPoint target) {
+    public DijkstraSP(Graph G, PolyPoint start, PolyPoint target, VehicleType vehicle) {
         distanceMap = new HashMap<>();
         edgeMap = new HashMap<>();
-        edgeTo = new Edge[G.getVertex()];
+        edgeTo = new Edge[G.getVertexIndex()];
 
-        for (int i = 0; i < G.getVertex(); i++) {
+        for (int i = 0; i < G.getVertexIndex(); i++) {
             distanceMap.put(nodes.get(i), Double.POSITIVE_INFINITY);
             distanceMap.put(start, 0.0);
         }
 
-        pq = new IndexMinPQ<>(G.getVertex());
+        pq = new IndexMinPQ<>(G.getVertexIndex());
         pq.insert(G.indexes.get(start), distanceMap.get(start));
         while (!pq.isEmpty()) {
             int v = pq.delMin();
@@ -58,15 +58,14 @@ public class DijkstraSP {
         return distanceMap.get(v);
     }
 
-    public Iterable<Edge> pathTo(Edge e) {
-        if (!hasPathTo(edgeMap.get(e.getFrom()))) return null;
+    public Iterable<Edge> pathTo(PolyPoint v){
+        if (!hasPathTo(v)) return null;
         Stack<Edge> path = new Stack<>();
-        for (Edge i = edgeTo[G.indexes.get(e.getFrom())]; i != null; i = edgeTo[G.indexes.get(e.getFrom())]) {
+        for(Edge e = edgeTo[G.indexes.get(v)]; e != null; e = edgeTo[G.indexes.get(v)]) {
             path.push(e);
         }
         return path;
     }
-
 
     public boolean hasPathTo(PolyPoint v) {
         return distanceMap.get(v) < Double.POSITIVE_INFINITY;
@@ -108,6 +107,15 @@ public class DijkstraSP {
             }
 
         }
+    }
+
+    public Iterable<Edge> pathTo(Edge e) {
+        if (!hasPathTo(edgeMap.get(e.getFrom()))) return null;
+        Stack<Edge> path = new Stack<>();
+        for (Edge i = edgeTo[G.indexes.get(e.getFrom())]; i != null; i = edgeTo[G.indexes.get(e.getFrom())]) {
+            path.push(e);
+        }
+        return path;
     }
     */
 

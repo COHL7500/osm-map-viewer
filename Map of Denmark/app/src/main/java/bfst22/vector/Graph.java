@@ -40,11 +40,11 @@ public class Graph {
         if(V == 0) V = nodecount;
     }
 
-    public int getVertex(){
+    public int getVertexIndex(){
         return V;
     }
 
-    public int getEdge(){
+    public int getEdgeIndex(){
         return E;
     }
 

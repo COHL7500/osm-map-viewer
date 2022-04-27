@@ -101,6 +101,7 @@ public class Model {
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
         Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
+        Graph graph = new Graph(nodes);
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
@@ -173,7 +174,7 @@ public class Model {
                                     e.isAllowed = v.equals("yes");
                                     break;
                                 case "oneway":
-                                    if (v.equals("yes")) e.isOneway = true;
+                                    e.isOneway = v.equals("yes");
                                     break;
                                 case "maxspeed":
                                     e.speedLimit = Integer.parseInt(v);
@@ -227,6 +228,13 @@ public class Model {
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
+        }
+
+        for(int i = 0; i < nodes.size(); i++){
+            graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
+            //For now all roads go back and forth
+            graph.addEdge(nodes.get(i+1),nodes.get(i), graph.setWeight(nodes.get(i+1),nodes.get(i), graph.speedlimit));
+
         }
     }
 
