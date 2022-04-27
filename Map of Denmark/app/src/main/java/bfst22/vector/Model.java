@@ -104,7 +104,7 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
-        String suptype = null, subtype = null, name = null;
+        String keyType = null, valueType = null, name = null;
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -136,24 +136,16 @@ public class Model {
                         String v = reader.getAttributeValue(null, "v");
                         if (k.equals("name")) name = v;
 						if (k.contains("addr:")) {
-							switch (k) {
-								case "addr:city":
-									builder = builder.city(v);
-									break;
-								case "addr:housenumber":
-									builder = builder.house(v);
-									break;
-								case "addr:postcode":
-									builder = builder.postcode(v);
-									break;
-								case "addr:street":
-									builder = builder.street(v);
-									break;
-							}
+                            switch (k) {
+                                case "addr:city" -> builder = builder.city(v);
+                                case "addr:housenumber" -> builder = builder.house(v);
+                                case "addr:postcode" -> builder = builder.postcode(v);
+                                case "addr:street" -> builder = builder.street(v);
+                            }
                         }
                         if (this.yamlObj.ways.containsKey(k)) {
-                            suptype = k;
-                            subtype = v;
+                            keyType = k;
+                            valueType = v;
 
                             switch (k) {
                                 case "motorcar":
@@ -199,15 +191,15 @@ public class Model {
                         this.kdtree.add(way);
                         this.waycount++;
                         nodes.clear();
-                        if (this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                            this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
+                        if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
+                            this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
                         }
                     } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
                         MultiPolygon multipoly = new MultiPolygon(rel);
                         this.kdtree.add(multipoly);
                         this.relcount++;
-                        if (suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                            List<Drawable> yamlList = this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable;
+                        if (keyType != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
+                            List<Drawable> yamlList = this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable;
                             yamlList.add(multipoly);
                         }
                         rel.clear();
