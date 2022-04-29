@@ -27,6 +27,7 @@ public class Model {
     public ArrayList<Address> addresses = new ArrayList<>();
     public Address.Builder builder = new Address.Builder();
     public TernarySearchTree searchTree = new TernarySearchTree();
+    public Graph graph;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
