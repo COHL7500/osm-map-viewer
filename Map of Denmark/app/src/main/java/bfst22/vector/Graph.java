@@ -10,16 +10,17 @@ public class Graph {
     float speedlimit = 0;
     Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
     Map<PolyPoint, Integer> indexes = new HashMap<>();
-    LinkedList<Edge> list = new LinkedList<>();
+    private final LinkedList<Edge> list = new LinkedList<>();
+    private final List<PolyPoint> graphNodes = new LinkedList<>();
     int index = -1;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public Graph(List<PolyPoint> nodes){
-        for(int i = 0; i < nodes.size(); i++){
-            PolyPoint node = nodes.get(i);
-            adjList.put(node,list);
-            indexes.put(node,++index);
+        for (PolyPoint node : nodes) {
+            adjList.put(node, list);
+            indexes.put(node, ++index);
+            graphNodes.add(node);
         }
     }
 
@@ -42,6 +43,21 @@ public class Graph {
 
     public int getVertexIndex(){
         return V;
+    }
+
+    public Map<PolyPoint, LinkedList<Edge>> getAdjList()
+    {
+        return adjList;
+    }
+
+    public List<PolyPoint> getGraphNodes()
+    {
+        return graphNodes;
+    }
+
+    public LinkedList<Edge> getList()
+    {
+        return list;
     }
 
     public int getEdgeIndex(){

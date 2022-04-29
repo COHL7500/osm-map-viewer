@@ -160,7 +160,7 @@ public class MapCanvas extends Canvas {
                                 // Checks if the styling requires them to be drawn with filling and/or strokes
                                 // and then proceed to draw the value feature in the way it has been told to
                                 for (Drawable draw : element2.drawable) {
-                                    if (range.contains(draw) || element2.draw.always_draw) {
+                                    if (range.contains(draw) || Objects.requireNonNull(element2.draw).always_draw) {
                                         this.setStyling(element.draw);
                                         this.setStyling(element2.draw);
 
@@ -187,9 +187,28 @@ public class MapCanvas extends Canvas {
 
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
+            this.drawGraph(model.graph);
             this.drawBounds();
             this.strokeCursor();
             this.strokeBox(padding);
+        }
+    }
+
+    private void drawGraph(final Graph graph)
+    {
+        if(graph != null)
+        {
+            this.gc.setStroke(Color.BLUE);
+            gc.beginPath();
+            this.gc.moveTo(graph.getGraphNodes().get(0).lon, graph.getGraphNodes().get(0).lat);
+
+            for(int i = 1; i < graph.getGraphNodes().size(); i++)
+            {
+                this.gc.lineTo(graph.getGraphNodes().get(i).lon, graph.getGraphNodes().get(i).lat);
+            }
+
+            this.gc.stroke();
+            this.gc.closePath();
         }
     }
 
@@ -314,7 +333,7 @@ public class MapCanvas extends Canvas {
             this.gc.setStroke(Color.RED);
             this.gc.beginPath();
             this.gc.moveTo(this.model.minBoundsPos.getY(),this.model.minBoundsPos.getX());
-            this.gc.lineTo(this.model.maxBoundsPos.getY(), this.model.minBoundsPos.getX());
+            this.gc.lineTo(this.model.maxBoundsPos.getY(),this.model.minBoundsPos.getX());
             this.gc.lineTo(this.model.maxBoundsPos.getY(),this.model.maxBoundsPos.getX());
             this.gc.lineTo(this.model.minBoundsPos.getY(),this.model.maxBoundsPos.getX());
             this.gc.lineTo(this.model.minBoundsPos.getY(),this.model.minBoundsPos.getX());

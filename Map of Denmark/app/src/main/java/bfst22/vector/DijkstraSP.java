@@ -27,7 +27,7 @@ public class DijkstraSP {
         pq.insert(G.indexes.get(start), distanceMap.get(start));
         while (!pq.isEmpty()) {
             int v = pq.delMin();
-            for (Edge e : G.list) {
+            for (Edge e : G.getList()) {
                 relax(e, target);
             }
         }
