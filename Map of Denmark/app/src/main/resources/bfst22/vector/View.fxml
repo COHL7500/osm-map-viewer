@@ -190,7 +190,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </MenuItem>
                 </Menu>
             </MenuBar>
-            <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
+            <ToolBar fx:id="menuToolBar" prefHeight="30.0" HBox.hgrow="ALWAYS">
                 <HBox maxHeight="30" spacing="5" alignment="CENTER_LEFT">
                     <Button onAction="#onMenuButtonPress" text="Menu"/>
                     <ToggleButton fx:id="zoomBoxButton" text="Box Zoom" onAction="#onZoomBoxButtonPressed" toggleGroup="$zoomGroup">
@@ -263,7 +263,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
     </top>
     <left>
         <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_LEFT">
-            <VBox id="vBox" spacing="10" prefWidth="250">
+            <VBox fx:id="vBox" id="vBox" spacing="10" prefWidth="250">
                 <VBox fx:id="pinPointSidebar" styleClass="vbox_debug_section">
                     <Label text="Pin Points" styleClass="debugSectionHeader">
                         <graphic>
@@ -340,7 +340,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                    onMouseReleased="#onMouseReleased"/>
     </center>
     <bottom>
-        <ToolBar prefHeight="30.0" maxWidth="${someBorderPane.width}">
+        <ToolBar fx:id="contentContainer" prefHeight="30.0" maxWidth="${someBorderPane.width}">
             <Button text="Button1"/>
             <Button text="Button2"/>
             <Button text="Button3"/>
