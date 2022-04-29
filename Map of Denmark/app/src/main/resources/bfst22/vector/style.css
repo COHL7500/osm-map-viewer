@@ -1,7 +1,3 @@
-#menuActivation {
-    -fx-background-color: rgb(255, 0, 212);
-}
-
 #vBox, #vbox_debug {
     -fx-padding: 5 10 10 10;
 }
@@ -64,8 +60,13 @@ center {
 
 #menuToolBar {
     -fx-background-color: #416A9F;
+    -fx-border-color: black;
 }
 
 #vBox, #vBox_scrollpane {
     -fx-background-color: #7D9ECA;
+}
+
+#contentContainer {
+    -fx-background-color: #416A9F;
 }

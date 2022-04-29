@@ -265,7 +265,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
         <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_LEFT">
             <VBox fx:id="vBox" id="vBox" spacing="10" prefWidth="250" minHeight="${vBox_scrollpane.height}">
                 <VBox fx:id="pinPointSidebar" styleClass="vbox_debug_section">
-                    <Label text="Pin Points" styleClass="debugSectionHeader">
+                    <Label fx:id="contentContainer" text="Pin Points" styleClass="debugSectionHeader">
                         <graphic>
                             <FontIcon iconLiteral="fas-map-pin:12:WHITE"/>
                         </graphic>
@@ -277,7 +277,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </ListView>
                 </VBox>
                 <VBox styleClass="vbox_debug_section">
-                    <Label text="Toggle Features" styleClass="debugSectionHeader">
+                    <Label fx:id="contentContainer" text="Toggle Features" styleClass="debugSectionHeader">
                         <graphic>
                             <FontIcon iconLiteral="fas-toggle-off:12:WHITE"/>
                         </graphic>
