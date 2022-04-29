@@ -9,9 +9,11 @@ import java.util.*;
 public class DijkstraSPTest {
     //ArrayList<PolyPoint> list = new ArrayList<>(); ArrayList that will hold all the PolyPoints in the Graph.
     List<PolyPoint> nodes = new ArrayList<>();
-    Graph g = new Graph(nodes);
+    Graph g;
+    Distance d;
+    DijkstraShortestPath sp;
     VehicleType vehicleType = VehicleType.MOTORCAR;
-    Distance d = new Distance();
+
     /*PolyPoint objects*/
         PolyPoint A = new PolyPoint(1,12,3);
         PolyPoint B = new PolyPoint(2, 10,4);
@@ -40,11 +42,10 @@ public class DijkstraSPTest {
         */
 
     @BeforeEach void setUp(){
+        System.out.println(nodes.isEmpty());
+        d = new Distance();
+        g = new Graph(nodes);
 
-
-    }
-
-    @Test void dijkstraTest(){
         nodes.add(A);
         nodes.add(B);
         nodes.add(C);
@@ -56,6 +57,8 @@ public class DijkstraSPTest {
         nodes.add(I);
         nodes.add(J);
         nodes.add(K);
+        System.out.println(nodes.toString());
+        System.out.println(nodes.isEmpty());
 
         g.addEdge(nodes.get(0), nodes.get(1),d.haversineFormula(nodes.get(0), nodes.get(1)));
         g.addEdge(nodes.get(1), nodes.get(2),d.haversineFormula(nodes.get(1), nodes.get(2)));
@@ -73,8 +76,12 @@ public class DijkstraSPTest {
         g.addEdge(nodes.get(10), nodes.get(4),d.haversineFormula(nodes.get(10), nodes.get(4)));
         g.addEdge(nodes.get(7), nodes.get(4),d.haversineFormula(nodes.get(7), nodes.get(4)));
         g.addEdge(nodes.get(7), nodes.get(2),d.haversineFormula(nodes.get(7), nodes.get(2)));
+        sp = new DijkstraShortestPath(g, nodes.get(0), vehicleType);
+        System.out.println(nodes.isEmpty());
+        System.out.println(sp.pathTo(nodes.get(10)));
+    }
+    @Test void dijkstraTest(){
 
-        DijkstraSP sp = new DijkstraSP(g, nodes.get(0), nodes.get(10), vehicleType);
         assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(nodes.get(10)).toString());
     }
 

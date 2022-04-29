@@ -5,30 +5,62 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    private int V;
-    private int E;
+    public int vertexCount;
+    public int edgeCount;
     float speedlimit = 0;
+
     Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
     Map<PolyPoint, Integer> indexes = new HashMap<>();
+    Map<Integer, PolyPoint> indexPoly = new HashMap<>();
     LinkedList<Edge> list = new LinkedList<>();
     int index = -1;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public Graph(List<PolyPoint> nodes){
+        this.vertexCount = nodes.size();
         for(int i = 0; i < nodes.size(); i++){
             PolyPoint node = nodes.get(i);
             adjList.put(node,list);
-            indexes.put(node,++index);
+            indexes.put(node, ++index);
+            indexPoly.put(++index, node);
         }
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
-        LinkedList<Edge> list = new LinkedList<>();
-        list.add(new Edge(from, to, setWeight(from,to, speedlimit)));
+        Edge e = new Edge(from, to, setWeight(from, to ,speedlimit));
+
+        if(!adjList.containsKey(from)){
+            addVertex(from);
+            indexes.put(from,++index);
+            indexPoly.put(index,from);
+            vertexCount++;
+        }
+        else {
+            adjList.get(from).add(e);
+            edgeCount++;
+        }
+
 
     }
 
+    public void addVertex(PolyPoint node){
+        adjList.put(node,new LinkedList<Edge>());
+    }
+
+    public Iterable<Edge> edges() {
+        Bag<Edge> bagList = new Bag<>();
+        for(int v = 0; v < vertexCount; v++){
+            for(Edge e : adjList.get(v)){
+                bagList.add(e);
+            }
+        }
+        return bagList;
+    }
+
+    public Iterable<Edge> adj(int v){
+        return adjList.get(v);
+    }
 
     /*
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
@@ -36,26 +68,29 @@ public class Graph {
     }
 
     */
+
+    /*Getters & Setters method for edgeCount and vertexCount */
     public void setNodecount(int nodecount){
-        if(V == 0) V = nodecount;
+        if(vertexCount == 0) vertexCount = nodecount;
     }
 
-    public int getVertexIndex(){
-        return V;
+    public int getVertexCount(){
+        return vertexCount;
     }
 
-    public int getEdgeIndex(){
-        return E;
+    public int getEdgeCount(){
+        return edgeCount;
     }
 
     public void setWaycount(int waycount){
-        if(E == 0) E = waycount;
+        if(edgeCount == 0) edgeCount = waycount;
     }
 
     public float setWeight(PolyPoint from, PolyPoint to, float speedlimit){
         Distance d = new Distance();
         return d.haversineFormula(from,to)/speedlimit;
     }
+
 
     /*
     //private Bag<PolyPoint>[] adj;

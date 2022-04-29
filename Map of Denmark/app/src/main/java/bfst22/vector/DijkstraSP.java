@@ -1,33 +1,31 @@
 package bfst22.vector;
 import java.util.*;
-
+/*
 public class DijkstraSP {
-    Map<PolyPoint, Double> distanceMap;
-    Map<PolyPoint, PolyPoint> edgeMap;
 
-
-    private double[] distTo;
+    Map<PolyPoint, Double> distanceMap = new HashMap<>();
+    Map<PolyPoint, Edge> edgeMap = new HashMap<>();
     private Edge[] edgeTo;
     private IndexMinPQ<Double> pq;
-    List<PolyPoint> nodes;
-    Graph G = new Graph(nodes);
+    Graph G;
 
 
-    public DijkstraSP(Graph G, PolyPoint start, PolyPoint target, VehicleType vehicle) {
-        distanceMap = new HashMap<>();
-        edgeMap = new HashMap<>();
-        edgeTo = new Edge[G.getVertexIndex()];
-
-        for (int i = 0; i < G.getVertexIndex(); i++) {
-            distanceMap.put(nodes.get(i), Double.POSITIVE_INFINITY);
+    public DijkstraSP(Graph graph, PolyPoint start, PolyPoint target, VehicleType vehicle) {
+        G = graph;
+        edgeTo = new Edge[graph.getVertexIndex()];
+        for (int i = 0; i < graph.getVertexIndex(); i++) {
+            distanceMap.put(graph.indexPoly.get(i), Double.POSITIVE_INFINITY);
             distanceMap.put(start, 0.0);
+            System.out.println(1);
         }
 
-        pq = new IndexMinPQ<>(G.getVertexIndex());
-        pq.insert(G.indexes.get(start), distanceMap.get(start));
+        pq = new MinPQ<Double>(graph.vertexCount);
+        System.out.println("pq size is: " + pq.size());
+
+        pq.insert(graph.indexes.get(start), distanceMap.get(start));
         while (!pq.isEmpty()) {
             int v = pq.delMin();
-            for (Edge e : G.list) {
+            for (Edge e : graph.list) {
                 relax(e, target);
             }
         }
