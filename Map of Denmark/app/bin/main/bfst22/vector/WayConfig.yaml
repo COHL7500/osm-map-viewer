@@ -1,41 +1,4 @@
-ways:
-  water:
-    draw:
-      fill: true
-      fill_color: "#b5d2de"
-      zoom_level: 20000
-    valuefeatures:
-      river: {}
-      oxbow: {}
-      canal: {}
-      ditch: {}
-      lock: {}
-      fish_pass: {}
-      lake: {}
-      reservoir: {}
-      pond: {}
-      basin: {}
-      lagoon: {}
-      stream_pool: {}
-      reflecting_pool: {}
-      moat: {}
-      wastewater: {}
-  natural:
-    valuefeatures:
-      water:
-        draw:
-          fill: true
-          fill_color: "#b5d2de"
-      coastline:
-        draw:
-          always_draw: true
-          fill: true
-          stroke_color: "#b0a1ba"
-          fill_color: "white"
-      wood:
-        draw:
-          fill: true
-          fill_color: "#b7d09f"
+ ways:
   place:
     draw:
       fill: true
@@ -61,7 +24,12 @@ ways:
       hamlet: {}
       isolated_dwelling: {}
       farm: {}
-      allotments: {}
+      allotments:
+        draw:
+            stroke: true
+            stroke_color: "#cfe0bf"
+            fill: true
+            fill_color: "#cfe0bf"
       continent: {}
       archipelago: {}
       island: {}
@@ -75,6 +43,8 @@ ways:
       ocean: {}
   landuse:
     draw:
+      stroke: true
+      stroke_color: "beige"
       fill: true
       fill_color: "beige"
       zoom_level: 2000
@@ -82,10 +52,25 @@ ways:
       commercial: {}
       construction: {}
       education: {}
-      industrial: {}
-      residential: {}
+      industrial:
+        draw:
+            stroke: true
+            stroke_color: "#e6dae7"
+            fill: true
+            fill_color: "#e6dae7"
+      residential:
+        draw:
+            stroke: true
+            stroke_color: "#dfdede"
+            fill: true
+            fill_color: "#dfdede"
       retail: {}
-      allotments: {}
+      allotments:
+        draw:
+            stroke: true
+            stroke_color: "#cfe0bf"
+            fill: true
+            fill_color: "#cfe0bf"
       farmland: {}
       farmyard: {}
       flowerbed: {}
@@ -100,15 +85,27 @@ ways:
       basin: {}
       reservoir: {}
       salt_pond: {}
-      brownfield: {}
-      cemetery: {}
+      brownfield:
+        draw:
+            stroke: true
+            stroke_color: "#c6c6b4"
+            fill: true
+            fill_color: "#c6c6b4"
+      cemetery:
+        draw:
+            stroke: true
+            stroke_color: "#b2caaf"
+            fill: true
+            fill_color: "#b2caaf"
       conservation: {}
       depot: {}
       garages: {}
       grass:
         draw:
+          stroke: true
+          stroke_color: "#cdebb0"
           fill: true
-          fill_color: "cdebb0"
+          fill_color: "#cdebb0"
       greenfield: {}
       greenhouse_horticulture: {}
       landfill: {}
@@ -116,18 +113,34 @@ ways:
       plant_nusery: {}
       port: {}
       quarry: {}
-      railway: {}
       recreation_ground:
         draw:
+          stroke: true
+          stroke_color: "#e7fce2"
           fill: true
-          fill_color: "#d5ebb2"
+          fill_color: "#e7fce2"
       religious: {}
       village_green: {}
       winter_sports: {}
+      railway:
+        draw:
+            stroke_color: "#e6dae7"
+            fill_color: "#e6dae7"
+  amenity:
+    valuefeatures:
+        parking:
+            draw:
+                stroke: true
+                line_width: 0.0000025
+                stroke_color: "#d6d6d6"
+                fill: true
+                fill_color: "#ededed"
   leisure:
     draw:
+      stroke: true
+      stroke_color: "#cdebb0"
       fill: false
-      fill_color: "darkgreen"
+      fill_color: "#cdebb0"
       zoom_level: 20000
     valuefeatures:
       adult_gaming_centre: {}
@@ -144,7 +157,12 @@ ways:
       fishing: {}
       fitness_centre: {}
       fitness_station: {}
-      garden: {}
+      garden:
+        draw:
+            stroke: true
+            stroke_color: "#d5eab2"
+            fill: true
+            fill_color: "#d5eab2"
       hackerspace: {}
       horse_riding: {}
       ice_rink: {}
@@ -162,140 +180,157 @@ ways:
           stroke_color: "#a1ccb1"
           fill: true
           fill_color: "#bfdaca"
-      playground: {}
+      playground:
+        draw:
+            fill: true
       slipway: {}
-      sports_centre: {}
+      sports_centre:
+        draw:
+            stroke: true
+            line_width: 0.0000040
+            stroke_color: "#c7bfb7"
+            fill: true
+            fill_color: "#d8d0c9"
+            zoom_level: 20000
       stadium: {}
       summer_camp: {}
       swimming_area: {}
       swimming_pool: {}
+      golf_course:
+        draw:
+            stroke: true
+            stroke_color: "#e4f5c1"
+            fill: true
+            fill_color: "#e4f5c1"
       track:
         draw:
           stroke: true
           stroke_color: "#92a89b"
       water_park: {}
+  natural:
+    valuefeatures:
+      water:
+        draw:
+          stroke: true
+          stroke_color: "#b5d2de"
+          fill: true
+          fill_color: "#b5d2de"
+      coastline:
+        draw:
+          always_draw: true
+          stroke_color: "white"
+          fill_color: "white"
+      grassland:
+        draw:
+            stroke_color: "#d5eab2"
+            fill: true
+            fill_color: "#d5eab2"
+      wood:
+          draw:
+              fill: true
+              fill_color: "#b7d09f"
+      scrub:
+          draw:
+              stroke: true
+              stroke_color: "#cbd6ab"
+              fill: true
+              fill_color: "#cbd6ab"
+      sand:
+        draw:
+            stroke_color: "#f1e8c7"
+            fill: true
+            fill_color: "#f1e8c7"
+
+  aeroway:
+    valuefeatures:
+        apron:
+            draw:
+                stroke: true
+                stroke_color: "#d9d9de"
+                fill: true
+                fill_color: "#d9d9de"
+        taxilane:
+            draw:
+                stroke: true
+                stroke_color: "#babac9"
+                line_width: 0.0001
+                zoom_level: 35000
+        taxiway:
+            draw:
+                stroke: true
+                stroke_color: "#babac9"
+                line_width: 0.0001
+        runway:
+            draw:
+                stroke: true
+                stroke_color: "#babac9"
+                line_width: 0.00025
+        terminal:
+            draw:
+                stroke: true
+                stroke_color: "#a99b8d"
+                fill: true
+                fill_color: "#a99b8d"
   building:
     draw:
       stroke: true
-      line_width: 0.000001
+      line_width: 0.0000040
+      stroke_color: "#c7bfb7"
       fill: true
       fill_color: "#d8d0c9"
       zoom_level: 20000
     valuefeatures:
       yes: {}
+      hangar: {}
+      industrial: {}
       office: {}
       apartments: {}
+      allotment_house: {}
+      school: {}
+      hotel: {}
       bridge: {}
-      parking: {}
+      parking:
+        draw:
+            stroke: true
+            stroke_color: "#ededed"
+            fill: true
+            fill_color: "#ededed"
       dormitory: {}
       university: {}
       retail: {}
-  office:
-    draw:
-      stroke: true
-      fill: true
-      fill_color: "teal"
-      zoom_level: 20000
-    valuefeatures:
-      yes: {}
-      accountant: {}
-      advertising_agency: {}
-      architect: {}
-      association: {}
-      charity: {}
-      company: {}
-      consulting: {}
-      courier: {}
-      coworking: {}
-      diplomatic: {}
-      educational_institution: {}
-      employment_agency: {}
-      energy_supplier: {}
-      engineer: {}
-      estate_agent: {}
-      financial: {}
-      financial_advisor: {}
-      forestry: {}
-      foundation: {}
-      geodesist: {}
-      government: {}
-      graphic_design: {}
-      guide: {}
-      harbour_master: {}
-      insurance: {}
-      it: {}
-      lawyer: {}
-      logistics: {}
-      moving_company: {}
-      newspaper: {}
-      ngo: {}
-      notary: {}
-      political_party: {}
-      property_management: {}
-      quango: {}
-      religion: {}
-      research: {}
-      security: {}
-      surveyor: {}
-      tax_advisor: {}
-      telecommunication: {}
-      travel_agent: {}
-      union: {}
-      visa: {}
-      water_utility: {}
-  man_made:
-    draw:
-      stroke: true
-      fill: true
-      fill_color: "grey"
-      zoom_level: 20000
-    valuefeatures:
-      bridge:
-        draw:
-          fill: true
-          fill_color: "#8a8a8a"
-      unclassified: {}
+      roof: {}
+      terrace: {}
+      house: {}
       residential: {}
-      motorwar_link: {}
-      trunk_link: {}
-      primary_link: {}
-      secondary_link: {}
-      teritary_link: {}
-      living_street: {}
-      service: {}
-      pedestrian:
-        draw:
-          stroke: true
-          stroke_color: "#c5c7cc"
-          fill: true
-          fill_color: "#dcdce7"
+      farm: {}
+      ger: {}
+      detached: {}
+      bungalow: {}
+      barracks: {}
 
-      track: {}
-      bus_guideway: {}
-      escape: {}
-      raceway: {}
-      road: {}
-      busway: {}
-      footway:
-        draw:
+  barrier:
+      draw:
           stroke: true
-          stroke_color: "#e29488"
-          dash_size: 0.0000175
-          line_width: 0.0000085
-          zoom_level: 45000
-      bridleway: {}
-      steps: {}
-      corridor: {}
-      path: {}
-      cycleway:
-        draw:
-          stroke: true
-          stroke_color: "#3333f8"
-          dash_size: 0.0000175
-          line_width: 0.0000085
-          zoom_level: 45000
-      proposed: {}
-      construction: {}
+          stroke_color: "#adad9b"
+      valuefeatures:
+          wall:
+            draw:
+                stroke_color: "#d6cec8"
+                fill: true
+                fill_color: "#d6cec8"
+          city_wall: {}
+          cable_barrier: {}
+          fence:
+            draw:
+                line_width: 0.0000050
+          ditch: {}
+          guard_rail: {}
+          handrail: {}
+          hedge:
+            draw:
+                stroke: true
+                stroke_color: "#b7d09f"
+          retaining_wall: {}
   highway:
     draw:
       stroke: true
@@ -303,6 +338,11 @@ ways:
       line_width: 0.00005
       zoom_level: 30000
     valuefeatures:
+      footway:
+        draw:
+            stroke: true
+            line_width: 0.000010
+            stroke_color: "#e1e3d8"
       motorway: {}
       trunk: {}
       primary:
@@ -322,26 +362,105 @@ ways:
           stroke: true
           stroke_color: "white"
           line_width: 0.00010
+      residential: {}
       pedestrian:
         draw:
           stroke: true
           stroke_color: "#c5c7cc"
           fill: true
           fill_color: "#dcdce7"
+      service:
+        draw:
+            stroke: true
+            stroke_color: "white"
+            line_width: 0.000025
+            zoom_level: 35000
+      track:
+        draw:
+            line_width: 0.000010
+            dash_size: 0.00005
+            stroke_color: "#9c8235"
+      path:
+        draw:
+            stroke_color: "#e39483"
+            line_width: 0.000010
+            dash_size: 0.000025
       unclassified: {}
-  cycleway:
+  railway:
     draw:
-      stroke: true
-      stroke_color: "purple"
-      fill: true
-      fill_color: "#ffffff"
-      zoom_level: 20000
+        stroke: true
+        stroke_color: "#889194"
+        zoom_level: 30000
     valuefeatures:
-      track: {}
-      lane: {}
-      shared_lane: {}
-      share_busway: {}
-      separate: {}
+        subway:
+            draw:
+                dash_size: 0.00005
+        rail:
+            draw:
+                stroke: true
+                stroke_color: "#6f6f6f"
+
+  man_made:
+        draw:
+          zoom_level: 20000
+        valuefeatures:
+          bridge:
+            draw:
+              stroke: true
+              stroke_color: "#b7b7b7"
+              fill: true
+              fill_color: "#b7b7b7"
+          unclassified: {}
+          residential: {}
+          motorwar_link: {}
+          trunk_link: {}
+          primary_link: {}
+          secondary_link: {}
+          teritary_link: {}
+          living_street: {}
+          service: {}
+          breakwater:
+            draw:
+                stroke: true
+                stroke_color: "#a9a9a9"
+                fill: true
+                fill_color: "#a9a9a9"
+          pedestrian:
+            draw:
+              stroke: true
+              stroke_color: "#c5c7cc"
+              fill: true
+              fill_color: "#dcdce7"
+          track: {}
+          bus_guideway: {}
+          escape: {}
+          raceway: {}
+          road: {}
+          busway: {}
+          footway:
+            draw:
+              stroke: true
+              stroke_color: "#e29488"
+              dash_size: 0.0000175
+              line_width: 0.0000085
+              zoom_level: 45000
+          bridleway: {}
+          steps: {}
+          corridor: {}
+          path: {}
+          cycleway:
+            draw:
+              stroke: true
+              stroke_color: "#3333f8"
+              dash_size: 0.0000175
+              line_width: 0.0000085
+              zoom_level: 45000
+  tourism:
+    valuefeatures:
+        zoo:
+            draw:
+                stroke: true
+                stroke_color: "#b19aa8"
   route:
     draw:
       stroke: true
@@ -350,9 +469,7 @@ ways:
       zoom_level: 30000
     valuefeatures:
       bus: {}
-      canoe: {}
       detour: {}
-      ferry: {}
       foot: {}
       hiking: {}
       horse: {}
@@ -363,6 +480,8 @@ ways:
       railway: {}
       road: {}
       running: {}
+      canoe: {}
+      ferry: {}
       ski: {}
       subway:
         draw:

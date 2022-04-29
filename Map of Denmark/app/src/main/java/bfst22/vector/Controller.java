@@ -261,6 +261,12 @@ public class Controller {
         this.canvas.update();
     }
 
+    @FXML private void onNaviButtonPress(ActionEvent e){
+        this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox_scrollpane : null);
+        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 265 : -265)); // Find a way to make this non-hardcoded
+        this.canvas.update();
+    }
+
     @FXML private void onZoomBoxButtonPressed(ActionEvent e){
         this.canvas.zoombox.setState(this.zoomBoxButton.isSelected());
     }

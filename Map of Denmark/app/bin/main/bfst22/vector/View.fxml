@@ -341,7 +341,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
     </center>
     <bottom>
         <ToolBar fx:id="contentContainer" prefHeight="30.0" maxWidth="${someBorderPane.width}">
-            <Button text="Button1"/>
+            <Button onAction="#onNaviButtonPress" text="Navigation"/>
             <Button text="Button2"/>
             <Button text="Button3"/>
         </ToolBar>

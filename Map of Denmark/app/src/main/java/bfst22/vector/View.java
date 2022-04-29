@@ -1,6 +1,7 @@
 package bfst22.vector;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -15,6 +16,7 @@ public class View {
         model.load("data/small.osm.zip");
         new Controller(model,stage);
 
+        stage.getIcons().add(new Image("https://i.imgur.com/kz7ZeOl.png"));
         stage.setTitle("Danmarkskort - Gruppe #1");
         stage.show();
     }
