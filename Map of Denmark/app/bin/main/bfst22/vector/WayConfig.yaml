@@ -1,4 +1,40 @@
- ways:
+ways:
+  water:
+    draw:
+      fill: true
+      fill_color: "#b5d2de"
+      zoom_level: 20000
+    valuefeatures:
+      river: {}
+      oxbow: {}
+      canal: {}
+      ditch: {}
+      lock: {}
+      fish_pass: {}
+      lake: {}
+      reservoir: {}
+      pond: {}
+      basin: {}
+      lagoon: {}
+      stream_pool: {}
+      reflecting_pool: {}
+      moat: {}
+      wastewater: {}
+  natural:
+    valuefeatures:
+      water:
+        draw:
+          fill: true
+          fill_color: "#b5d2de"
+      coastline:
+        draw:
+          always_draw: true
+          stroke_color: "#b0a1ba"
+          fill_color: "black"
+      wood:
+        draw:
+          fill: true
+          fill_color: "#b7d09f"
   place:
     draw:
       fill: true
@@ -32,11 +68,11 @@
             fill_color: "#cfe0bf"
       continent: {}
       archipelago: {}
-      island: {}
-      islet:
+      island:
         draw:
           fill: true
-          fill_color: "#b5b2ac"
+          fill_color: "pink"
+      islet: {}
       square: {}
       locality: {}
       sea: {}
@@ -139,6 +175,7 @@
     draw:
       stroke: true
       stroke_color: "#cdebb0"
+      display: false
       fill: false
       fill_color: "#cdebb0"
       zoom_level: 20000
@@ -273,6 +310,7 @@
                 fill_color: "#a99b8d"
   building:
     draw:
+      display: false
       stroke: true
       line_width: 0.0000040
       stroke_color: "#c7bfb7"
@@ -310,6 +348,95 @@
 
   barrier:
       draw:
+  office:
+    draw:
+      display: false
+      stroke: true
+      fill: true
+      fill_color: "teal"
+      zoom_level: 20000
+    valuefeatures:
+      yes: {}
+      accountant: {}
+      advertising_agency: {}
+      architect: {}
+      association: {}
+      charity: {}
+      company: {}
+      consulting: {}
+      courier: {}
+      coworking: {}
+      diplomatic: {}
+      educational_institution: {}
+      employment_agency: {}
+      energy_supplier: {}
+      engineer: {}
+      estate_agent: {}
+      financial: {}
+      financial_advisor: {}
+      forestry: {}
+      foundation: {}
+      geodesist: {}
+      government: {}
+      graphic_design: {}
+      guide: {}
+      harbour_master: {}
+      insurance: {}
+      it: {}
+      lawyer: {}
+      logistics: {}
+      moving_company: {}
+      newspaper: {}
+      ngo: {}
+      notary: {}
+      political_party: {}
+      property_management: {}
+      quango: {}
+      religion: {}
+      research: {}
+      security: {}
+      surveyor: {}
+      tax_advisor: {}
+      telecommunication: {}
+      travel_agent: {}
+      union: {}
+      visa: {}
+      water_utility: {}
+  man_made:
+    draw:
+      display: false
+      stroke: true
+      fill: true
+      fill_color: "grey"
+      zoom_level: 20000
+    valuefeatures:
+      bridge:
+        draw:
+          fill: true
+          fill_color: "#8a8a8a"
+      unclassified: {}
+      residential: {}
+      motorwar_link: {}
+      trunk_link: {}
+      primary_link: {}
+      secondary_link: {}
+      teritary_link: {}
+      living_street: {}
+      service: {}
+      pedestrian:
+        draw:
+          stroke: true
+          stroke_color: "#c5c7cc"
+          fill: true
+          fill_color: "#dcdce7"
+      track: {}
+      bus_guideway: {}
+      escape: {}
+      raceway: {}
+      road: {}
+      busway: {}
+      footway:
+        draw:
           stroke: true
           stroke_color: "#adad9b"
       valuefeatures:
@@ -333,6 +460,7 @@
           retaining_wall: {}
   highway:
     draw:
+      display: false
       stroke: true
       stroke_color: "#ffffff"
       line_width: 0.00005
@@ -461,8 +589,29 @@
             draw:
                 stroke: true
                 stroke_color: "#b19aa8"
+      display: false
+      stroke: true
+      stroke_color: "purple"
+      fill: true
+      fill_color: "#ffffff"
+      zoom_level: 20000
+    valuefeatures:
+      track: {}
+      lane: {}
+      shared_lane: {}
+      share_busway: {}
+      separate: {}
+  railway:
+      draw:
+          stroke: true
+          stroke_color: "#889194"
+          dash_size: 0.00005
+          zoom_level: 30000
+      valuefeatures:
+          subway: {}
   route:
     draw:
+      display: false
       stroke: true
       stroke_color: "#889194"
       dash_size: 0.00005

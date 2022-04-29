@@ -13,7 +13,7 @@ public class View {
     public View(Model model, Stage stage) throws Exception {
         this.setDisplayBound(stage);
 
-        model.load("data/small.osm.zip");
+        model.load("data/samso.osm.zip");
         new Controller(model,stage);
 
         stage.getIcons().add(new Image("https://i.imgur.com/kz7ZeOl.png"));

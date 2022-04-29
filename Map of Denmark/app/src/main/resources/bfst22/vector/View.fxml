@@ -32,6 +32,8 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="someBorderPane"
             id="someBorderPane" stylesheets="@style.css" minWidth="400" prefWidth="800" minHeight="300" prefHeight="600">
     <fx:define>
@@ -204,13 +206,22 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                         </graphic>
                     </ToggleButton>
                 </HBox>
-                <HBox maxHeight="30" HBox.hgrow="ALWAYS" spacing="5" alignment="CENTER_RIGHT">
-                    <TextField prefWidth="250" promptText="Search..."/>
-                    <Button text="Search" prefWidth="75">
-                        <graphic>
-                            <FontIcon iconLiteral="fas-search" iconSize="12"/>
-                        </graphic>
-                    </Button>
+                <HBox fx:id="search_root" maxHeight="30" spacing="5" alignment="CENTER_RIGHT">
+                    <GridPane fx:id="search_pane">
+                        <HBox fx:id="search_box" GridPane.columnIndex="0" GridPane.rowIndex="0" maxWidth="290">
+                            <TextField fx:id="searchField" onKeyPressed="#onSearchKeyPressed" prefWidth="250" promptText="Search..."/>
+                                <Button fx:id="searchButton" onAction="#onSearchButtonPressed" prefWidth="25">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-search" iconSize="12"/>
+                                    </graphic>
+                                </Button>
+                                <Button fx:id="clearButton" onAction="#onClearButtonPressed" prefWidth="25">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-times" iconSize="12"/>
+                                    </graphic>
+                                </Button>
+                        </HBox>
+                    </GridPane>
                 </HBox>
             </ToolBar>
             <ToolBar fx:id="paintBar" prefHeight="30.0" visible="false">
