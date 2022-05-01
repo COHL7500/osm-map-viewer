@@ -5,9 +5,9 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    public int vertexCount;
-    public int edgeCount;
-    float speedlimit = 0;
+    public int vertexCount; //Amount of vertices.
+    public int edgeCount; //Amount of edges
+    float speedlimit = 0; //Speedlimit
 
     Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
     Map<PolyPoint, Integer> indexes = new HashMap<>();
@@ -24,8 +24,8 @@ public class Graph {
         for(int i = 0; i < nodes.size(); i++){
             PolyPoint node = nodes.get(i);
             adjList.put(node,list);
-            indexes.put(node, ++index);
-            indexPoly.put(++index, node);
+            indexes.put(node, i);
+            indexPoly.put(i, node);
 
             graphNodes.add(node);
         }
