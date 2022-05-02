@@ -44,7 +44,6 @@ public class DijkstraSPTest {
     @BeforeEach void setUp(){
         System.out.println(nodes.isEmpty());
         d = new Distance();
-        g = new Graph(nodes);
 
         nodes.add(A);
         nodes.add(B);
@@ -57,12 +56,24 @@ public class DijkstraSPTest {
         nodes.add(I);
         nodes.add(J);
         nodes.add(K);
-        System.out.println(nodes.toString());
-        System.out.println(nodes.isEmpty());
+
+        g = new Graph(nodes);
+
+        System.out.println("Vertex Count: " + g.getVertexCount());
+        System.out.println("Edge Count: " + g.getEdgeCount());
 
         g.addEdge(nodes.get(0), nodes.get(1),d.haversineFormula(nodes.get(0), nodes.get(1)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(1), nodes.get(2),d.haversineFormula(nodes.get(1), nodes.get(2)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(2), nodes.get(3),d.haversineFormula(nodes.get(2), nodes.get(3)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(3), nodes.get(4),d.haversineFormula(nodes.get(3), nodes.get(4)));
         g.addEdge(nodes.get(0), nodes.get(5),d.haversineFormula(nodes.get(0), nodes.get(5)));
         g.addEdge(nodes.get(5), nodes.get(6),d.haversineFormula(nodes.get(5), nodes.get(6)));
@@ -76,6 +87,14 @@ public class DijkstraSPTest {
         g.addEdge(nodes.get(10), nodes.get(4),d.haversineFormula(nodes.get(10), nodes.get(4)));
         g.addEdge(nodes.get(7), nodes.get(4),d.haversineFormula(nodes.get(7), nodes.get(4)));
         g.addEdge(nodes.get(7), nodes.get(2),d.haversineFormula(nodes.get(7), nodes.get(2)));
+
+        System.out.println("Vertex Count: " + g.getVertexCount());
+        System.out.println("Edge Count: " + g.getEdgeCount());
+
+        for(int v = 0; v < g.getVertexCount(); v++){
+            System.out.println(g.polyMap.get(v));
+            System.out.println(g.adjMap.get(g.polyMap.get(v)));
+        }
         sp = new DijkstraShortestPath(g, nodes.get(0), vehicleType);
         System.out.println(nodes.isEmpty());
         System.out.println(sp.pathTo(nodes.get(10)));

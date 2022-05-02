@@ -22,7 +22,7 @@ public class DijkstraShortestPath {
     public DijkstraShortestPath(Graph g, PolyPoint start, VehicleType vehicleType ) {
         pq = new MinPQ<Edge>(new compareDistance());
         for (int v = 0; v < g.getVertexCount(); v++) {
-            distanceMap.put(g.indexPoly.get(v), Double.POSITIVE_INFINITY);
+            distanceMap.put(g.polyMap.get(v), Double.POSITIVE_INFINITY);
             distanceMap.put(start, 0.0);
             relax(g, start);
         }
@@ -42,7 +42,7 @@ public class DijkstraShortestPath {
 
         private void relax(Graph g, PolyPoint v){
             markMap.put(v, true);
-            for(Edge e : g.adjList.get(v)){
+            for(Edge e : g.adjMap.get(v)){
                 PolyPoint w = e.getTo();
                 if(distanceMap.get(w) > distanceMap.get(v) + e.getWeight()) {
                     distanceMap.replace(w,distanceMap.get(v) + e.getWeight());

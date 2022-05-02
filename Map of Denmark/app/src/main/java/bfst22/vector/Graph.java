@@ -5,27 +5,29 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    public int vertexCount; //Amount of vertices.
-    public int edgeCount; //Amount of edges
+    private int vertexCount; //Number of vertices.
+    private int edgeCount; //Number of edges
     float speedlimit = 0; //Speedlimit
 
-    Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
-    Map<PolyPoint, Integer> indexes = new HashMap<>();
-    Map<Integer, PolyPoint> indexPoly = new HashMap<>();
 
-    private final LinkedList<Edge> list = new LinkedList<>();
+    Map<PolyPoint, LinkedList<Edge>> adjMap = new HashMap<>();
+    Map<PolyPoint, Integer> indexMap = new HashMap<>();
+    Map<Integer, PolyPoint> polyMap = new HashMap<>();
+
+    private final LinkedList<Edge> list = new LinkedList<Edge>();
     private final List<PolyPoint> graphNodes = new LinkedList<>();
     int index = -1;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public Graph(List<PolyPoint> nodes){
-        this.vertexCount = nodes.size();
-        for(int i = 0; i < nodes.size(); i++){
+
+        vertexCount = nodes.size();
+        for(int i = 0; i < vertexCount; i++){
             PolyPoint node = nodes.get(i);
-            adjList.put(node,list);
-            indexes.put(node, i);
-            indexPoly.put(i, node);
+            adjMap.put(node,new LinkedList<Edge>());
+            indexMap.put(node, index++);
+            polyMap.put(index, node);
 
             graphNodes.add(node);
         }
@@ -34,28 +36,32 @@ public class Graph {
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
         Edge e = new Edge(from, to, setWeight(from, to ,speedlimit));
 
-        if(!adjList.containsKey(from)){
+        if(!adjMap.containsKey(from)){
             addVertex(from);
-            indexes.put(from,++index);
-            indexPoly.put(index,from);
+            indexMap.put(from,++index);
+            polyMap.put(index,from);
+
             vertexCount++;
         }
-        else {
-            adjList.get(from).add(e);
-            edgeCount++;
+        if(!adjMap.containsKey(to)){
+            addVertex(to);
+            indexMap.put(from,++index);
+            polyMap.put(index,from);
+
+            vertexCount++;
         }
-
-
+        adjMap.get(from).add(e);
+        edgeCount++;
     }
 
     public void addVertex(PolyPoint node){
-        adjList.put(node,new LinkedList<Edge>());
+        adjMap.put(node,new LinkedList<Edge>());
     }
 
     public Iterable<Edge> edges() {
         Bag<Edge> bagList = new Bag<>();
         for(int v = 0; v < vertexCount; v++){
-            for(Edge e : adjList.get(v)){
+            for(Edge e : adjMap.get(v)){
                 bagList.add(e);
             }
         }
@@ -63,8 +69,10 @@ public class Graph {
     }
 
     public Iterable<Edge> adj(int v){
-        return adjList.get(v);
+        return adjMap.get(v);
     }
+
+    public int getIndex(){ return index; }
 
     /*
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
@@ -79,16 +87,16 @@ public class Graph {
     }
 
     public int getVertexCount(){
-        return vertexCount;
+        return this.vertexCount;
     }
 
     public int getEdgeCount() {
-        return edgeCount;
+        return this.edgeCount;
     }
 
-        public Map<PolyPoint, LinkedList<Edge>> getAdjList ()
+        public Map<PolyPoint, LinkedList<Edge>> getAdjMap()
         {
-            return adjList;
+            return adjMap;
         }
 
         public List<PolyPoint> getGraphNodes ()
