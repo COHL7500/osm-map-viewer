@@ -42,6 +42,8 @@ public class DijkstraShortestPath {
 
         private void relax(Graph g, PolyPoint v){
             markMap.put(v, true);
+            /* I think this loop is the problem, and will fix the dijkstra */
+            /* I think I am looping over this in the wrong way */
             for(Edge e : g.adjMap.get(v)){
                 PolyPoint w = e.getTo();
                 if(distanceMap.get(w) > distanceMap.get(v) + e.getWeight()) {
