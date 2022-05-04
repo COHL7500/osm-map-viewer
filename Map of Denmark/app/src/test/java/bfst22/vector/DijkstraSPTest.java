@@ -94,10 +94,16 @@ public class DijkstraSPTest {
         for(int v = 0; v < g.getVertexCount(); v++){
             System.out.println(g.polyMap.get(v));
             System.out.println(g.adjMap.get(g.polyMap.get(v)));
+
         }
+
+        System.out.println(g.edges());
+
         sp = new DijkstraShortestPath(g, nodes.get(0), vehicleType);
         System.out.println(nodes.isEmpty());
+        System.out.println(3);
         System.out.println(sp.pathTo(nodes.get(10)));
+        System.out.println(3);
     }
     @Test void dijkstraTest(){
 

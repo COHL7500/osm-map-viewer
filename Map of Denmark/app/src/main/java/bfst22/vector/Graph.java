@@ -61,7 +61,7 @@ public class Graph {
     public Iterable<Edge> edges() {
         Bag<Edge> bagList = new Bag<>();
         for(int v = 0; v < vertexCount; v++){
-            for(Edge e : adjMap.get(v)){
+            for(Edge e : adjMap.get(polyMap.get(v))){
                 bagList.add(e);
             }
         }
