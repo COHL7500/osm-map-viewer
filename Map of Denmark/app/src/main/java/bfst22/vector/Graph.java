@@ -5,174 +5,111 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    private int V;
-    private int E;
-    float speedlimit = 0;
-    Map<PolyPoint, LinkedList<Edge>> adjList = new HashMap<>();
-    Map<PolyPoint, Integer> indexes = new HashMap<>();
-    private final LinkedList<Edge> list = new LinkedList<>();
+    private int vertexCount; //Number of vertices.
+    private int edgeCount; //Number of edges
+    float speedlimit = 0; //Speedlimit
+
+
+    Map<PolyPoint, LinkedList<Edge>> adjMap = new HashMap<>();
+    Map<PolyPoint, Integer> indexMap = new HashMap<>();
+    Map<Integer, PolyPoint> polyMap = new HashMap<>();
+
+    private final LinkedList<Edge> list = new LinkedList<Edge>();
     private final List<PolyPoint> graphNodes = new LinkedList<>();
     int index = -1;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public Graph(List<PolyPoint> nodes){
-        for (PolyPoint node : nodes) {
-            adjList.put(node, list);
-            indexes.put(node, ++index);
+
+        vertexCount = nodes.size();
+        for(int i = 0; i < vertexCount; i++){
+            PolyPoint node = nodes.get(i);
+            adjMap.put(node,new LinkedList<Edge>());
+            indexMap.put(node, index++);
+            polyMap.put(index, node);
+
             graphNodes.add(node);
         }
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
-        LinkedList<Edge> list = new LinkedList<>();
-        list.add(new Edge(from, to, setWeight(from,to, speedlimit)));
+        Edge e = new Edge(from, to, setWeight(from, to ,speedlimit));
 
+        if(!adjMap.containsKey(from)){
+            addVertex(from);
+            indexMap.put(from,++index);
+            polyMap.put(index,from);
+
+            vertexCount++;
+        }
+        if(!adjMap.containsKey(to)){
+            addVertex(to);
+            indexMap.put(from,++index);
+            polyMap.put(index,from);
+
+            vertexCount++;
+        }
+        adjMap.get(from).add(e);
+        edgeCount++;
     }
 
-
-    /*
-    public void addEdge(PolyPoint from, PolyPoint to, float weight){
-
-    }
-
-    */
-    public void setNodecount(int nodecount){
-        if(V == 0) V = nodecount;
-    }
-
-    public int getVertexIndex(){
-        return V;
-    }
-
-    public Map<PolyPoint, LinkedList<Edge>> getAdjList()
-    {
-        return adjList;
-    }
-
-    public List<PolyPoint> getGraphNodes()
-    {
-        return graphNodes;
-    }
-
-    public LinkedList<Edge> getList()
-    {
-        return list;
-    }
-
-    public int getEdgeIndex(){
-        return E;
-    }
-
-    public void setWaycount(int waycount){
-        if(E == 0) E = waycount;
-    }
-
-    public float setWeight(PolyPoint from, PolyPoint to, float speedlimit){
-        Distance d = new Distance();
-        return d.haversineFormula(from,to)/speedlimit;
-    }
-
-    /*
-    //private Bag<PolyPoint>[] adj;
-    private int[] indegree;
-    PolyLine way;
-    int speedLimit;
-    private PolyPoint from;
-    private PolyPoint to;
-    private float weight;
-
-    public Graph(int V){
-        if (V < 0) throw new IllegalArgumentException("error");
-        this.V = V;
-        this.E = 0; //The graph will start with 0 edges
-        adj = new Bag[V];
-            for (int i = 0; i < V; i++){
-                adj[i] = new Bag<Edge>();
-            }
-        this.indegree = new int[V];
-    }
-
-    public Graph(int V, int E){
-        this(V); //Calls previous Graph constructor
-            for(int i = 0; i < E; i++){
-
-                Edge e = new Edge(from, to, weight);
-            }
-
-    }
-
- */
-    /*
-    public Graph(List<PolyLine> nodes, int V){
-        this.vertex = vertex;
-        this.edge = 0;
-        indegree = new int[vertex]
-        adj = new Bag[vertex];
-            for(int i = 0; i < vertex; i++){
-                adj[i] = new Bag<Edge>();
-            }
-    }
-
-    public Graph(List<PolyLine> ways,int V,int E){
-        this(ways,V);
-            int i = 0;
-            for(PolyLine w : ways){
-                from.lat = way.coords[i++];
-                from.lon = way.coords[i++];
-                to.lat = way.coords[i++];
-                to.lon = way.coords[i++];
-                weight = setWeight(from, to, speedLimit);
-                Edge e = new Edge(from, to , weight);
-            }
-    }
-
-    public Iterable<Edge> adj(int v){
-        return adj[v];
+    public void addVertex(PolyPoint node){
+        adjMap.put(node,new LinkedList<Edge>());
     }
 
     public Iterable<Edge> edges() {
-        Bag<Edge> list = new Bag<Edge>();
-        for(int i = 0; i < vertex; i++){
-            for(Edge e : adj(i)){
-                list.add(e);
+        Bag<Edge> bagList = new Bag<>();
+        for(int v = 0; v < vertexCount; v++){
+            for(Edge e : adjMap.get(v)){
+                bagList.add(e);
             }
         }
-        return list;
+        return bagList;
     }
 
-    public int getV(){
-        return vertex;
+    public Iterable<Edge> adj(int v){
+        return adjMap.get(v);
     }
-    public int getE() { return edge; }
 
+    public int getIndex(){ return index; }
+
+    // Getters & Setters method for edgeCount and vertexCount
     public void setNodecount(int nodecount){
-        if(vertex == 0) vertex = nodecount;
+        if(vertexCount == 0) vertexCount = nodecount;
     }
 
-    public void setWaycount(int waycount){
-        if(edge == 0) edge = waycount;
+    public int getVertexCount(){
+        return this.vertexCount;
     }
 
-    public float setWeight(PolyPoint from, PolyPoint to, int speedlimit){
-        Distance d = new Distance();
-        return d.haversineFormula(from,to)/speedlimit;
+    public int getEdgeCount() {
+        return this.edgeCount;
     }
 
-    public void addEdge(Edge e){
-        PolyPoint from = e.getFrom();
-        PolyPoint to = e.getTo();
-        adj[from].add(e);
-        indegree[to]++;
-    }
+        public Map<PolyPoint, LinkedList<Edge>> getAdjMap()
+        {
+            return adjMap;
+        }
 
-    public int getIndegree(int v){
-        return indegree[v];
-    }
+        public List<PolyPoint> getGraphNodes ()
+        {
+            return graphNodes;
+        }
 
-    public void setSpeedLimit(int limit){
-        speedLimit = limit;
-    }
+        public LinkedList<Edge> getList ()
+        {
+            return list;
+        }
 
-    */
-}
+        public void setWaycount ( int waycount){
+            if (edgeCount == 0) edgeCount = waycount;
+        }
+
+        public float setWeight (PolyPoint from, PolyPoint to,float speedlimit){
+            Distance d = new Distance();
+            return d.haversineFormula(from, to) / speedlimit;
+        }
+
+
+    }

@@ -9,9 +9,11 @@ import java.util.*;
 public class DijkstraSPTest {
     //ArrayList<PolyPoint> list = new ArrayList<>(); ArrayList that will hold all the PolyPoints in the Graph.
     List<PolyPoint> nodes = new ArrayList<>();
-    Graph g = new Graph(nodes);
+    Graph g;
+    Distance d;
+    DijkstraShortestPath sp;
     VehicleType vehicleType = VehicleType.MOTORCAR;
-    Distance d = new Distance();
+
     /*PolyPoint objects*/
         PolyPoint A = new PolyPoint(1,12,3);
         PolyPoint B = new PolyPoint(2, 10,4);
@@ -40,11 +42,9 @@ public class DijkstraSPTest {
         */
 
     @BeforeEach void setUp(){
+        System.out.println(nodes.isEmpty());
+        d = new Distance();
 
-
-    }
-
-    @Test void dijkstraTest(){
         nodes.add(A);
         nodes.add(B);
         nodes.add(C);
@@ -57,9 +57,23 @@ public class DijkstraSPTest {
         nodes.add(J);
         nodes.add(K);
 
+        g = new Graph(nodes);
+
+        System.out.println("Vertex Count: " + g.getVertexCount());
+        System.out.println("Edge Count: " + g.getEdgeCount());
+
         g.addEdge(nodes.get(0), nodes.get(1),d.haversineFormula(nodes.get(0), nodes.get(1)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(1), nodes.get(2),d.haversineFormula(nodes.get(1), nodes.get(2)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(2), nodes.get(3),d.haversineFormula(nodes.get(2), nodes.get(3)));
+
+        System.out.println(g.getIndex());
+
         g.addEdge(nodes.get(3), nodes.get(4),d.haversineFormula(nodes.get(3), nodes.get(4)));
         g.addEdge(nodes.get(0), nodes.get(5),d.haversineFormula(nodes.get(0), nodes.get(5)));
         g.addEdge(nodes.get(5), nodes.get(6),d.haversineFormula(nodes.get(5), nodes.get(6)));
@@ -74,7 +88,19 @@ public class DijkstraSPTest {
         g.addEdge(nodes.get(7), nodes.get(4),d.haversineFormula(nodes.get(7), nodes.get(4)));
         g.addEdge(nodes.get(7), nodes.get(2),d.haversineFormula(nodes.get(7), nodes.get(2)));
 
-        DijkstraSP sp = new DijkstraSP(g, nodes.get(0), nodes.get(10), vehicleType);
+        System.out.println("Vertex Count: " + g.getVertexCount());
+        System.out.println("Edge Count: " + g.getEdgeCount());
+
+        for(int v = 0; v < g.getVertexCount(); v++){
+            System.out.println(g.polyMap.get(v));
+            System.out.println(g.adjMap.get(g.polyMap.get(v)));
+        }
+        sp = new DijkstraShortestPath(g, nodes.get(0), vehicleType);
+        System.out.println(nodes.isEmpty());
+        System.out.println(sp.pathTo(nodes.get(10)));
+    }
+    @Test void dijkstraTest(){
+
         assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(nodes.get(10)).toString());
     }
 
