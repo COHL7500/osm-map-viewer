@@ -194,17 +194,17 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private void drawGraph(final Graph graph)
+    private void drawGraph(Graph graph)
     {
         if(graph != null)
         {
             this.gc.setStroke(Color.BLUE);
             gc.beginPath();
-            this.gc.moveTo(graph.getGraphNodes().get(0).lon, graph.getGraphNodes().get(0).lat);
 
-            for(int i = 1; i < graph.getGraphNodes().size(); i++)
+            for(int i = 0; i < graph.getList().size(); i++)
             {
-                this.gc.lineTo(graph.getGraphNodes().get(i).lon, graph.getGraphNodes().get(i).lat);
+                this.gc.moveTo(graph.getList().get(i).getFrom().lon, graph.getList().get(i).getFrom().lat);
+                this.gc.lineTo(graph.getList().get(i).getTo().lon, graph.getList().get(i).getTo().lat);
             }
 
             this.gc.stroke();

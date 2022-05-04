@@ -102,7 +102,6 @@ public class Model {
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
         Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
-        Graph graph = new Graph(nodes);
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
@@ -141,20 +140,12 @@ public class Model {
                         if (k.equals("name")) name = v;
 						// parses address tags and adds to address builder
 						if (k.contains("addr:")) {
-							switch (k) {
-								case "addr:city":
-									builder = builder.city(v);
-									break;
-								case "addr:housenumber":
-									builder = builder.house(v);
-									break;
-								case "addr:postcode":
-									builder = builder.postcode(v);
-									break;
-								case "addr:street":
-									builder = builder.street(v);
-									break;
-							}
+                            switch (k) {
+                                case "addr:city" -> builder = builder.city(v);
+                                case "addr:housenumber" -> builder = builder.house(v);
+                                case "addr:postcode" -> builder = builder.postcode(v);
+                                case "addr:street" -> builder = builder.street(v);
+                            }
 							break;
 						}
                         if (this.yamlObj.ways.containsKey(k)) {
@@ -231,12 +222,18 @@ public class Model {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
 
+        graph = new Graph(nodes);
+        System.out.println(nodes.size());
+
         for(int i = 0; i < nodes.size(); i++){
             graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
             //For now all roads go back and forth
             graph.addEdge(nodes.get(i+1),nodes.get(i), graph.setWeight(nodes.get(i+1),nodes.get(i), graph.speedlimit));
-
+            System.out.println(graph.getEdgeCount());
+            System.out.println(graph.getVertexCount());
         }
+
+
     }
 
     public ArrayList<Address> getAddresses() {
