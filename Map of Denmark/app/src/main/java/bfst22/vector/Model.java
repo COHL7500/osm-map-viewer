@@ -233,13 +233,13 @@ public class Model {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
 
-
-        for(int i = 0; i < nodes.size(); i++){
+        for(int i = 0; i < graph.nodes.size(); i++){
             graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
             //For now all roads go back and forth
             graph.addEdge(nodes.get(i+1),nodes.get(i), graph.setWeight(nodes.get(i+1),nodes.get(i), graph.speedlimit));
 
         }
+        graph.clearList();
     }
 
     public ArrayList<Address> getAddresses() {

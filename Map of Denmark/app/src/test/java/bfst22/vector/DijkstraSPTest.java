@@ -44,6 +44,7 @@ public class DijkstraSPTest {
     @BeforeEach void setUp(){
         System.out.println(nodes.isEmpty());
         d = new Distance();
+        g = new Graph();
 
         nodes.add(A);
         nodes.add(B);
@@ -57,7 +58,6 @@ public class DijkstraSPTest {
         nodes.add(J);
         nodes.add(K);
 
-        g = new Graph();
         g.add(nodes);
         g.generate();
 
@@ -90,6 +90,7 @@ public class DijkstraSPTest {
         g.addEdge(g.nodes.get(7), g.nodes.get(4),d.haversineFormula(g.nodes.get(7), g.nodes.get(4)));
         g.addEdge(g.nodes.get(7), g.nodes.get(2),d.haversineFormula(g.nodes.get(7), g.nodes.get(2)));
 
+
         System.out.println("Vertex Count: " + g.getVertexCount());
         System.out.println("Edge Count: " + g.getEdgeCount());
 
@@ -106,6 +107,7 @@ public class DijkstraSPTest {
         System.out.println(3);
         System.out.println(sp.pathTo(g.nodes.get(10)));
         System.out.println(3);
+
     }
     @Test void dijkstraTest(){
 
@@ -114,7 +116,7 @@ public class DijkstraSPTest {
 
 
     @AfterEach void tearDown(){
-
+        g.clearList();
 
     }
 
