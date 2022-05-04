@@ -28,6 +28,7 @@ public class DijkstraShortestPath {
         for (int v = 0; v < g.getVertexCount(); v++) {
             distanceMap.put(g.polyMap.get(v), Double.POSITIVE_INFINITY);
             distanceMap.put(start, 0.0);
+            markMap.put(g.polyMap.get(v),false);
             relax(g, start);
         }
 
@@ -66,6 +67,9 @@ public class DijkstraShortestPath {
         }
 
         public boolean hasPathTo(PolyPoint v){
+            if(markMap.get(v) == null){
+                markMap.put(v, false);
+            }
             return markMap.get(v);
         }
 

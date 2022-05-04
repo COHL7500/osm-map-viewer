@@ -8,7 +8,7 @@ public class Graph {
     private int vertexCount; //Number of vertices.
     private int edgeCount; //Number of edges
     float speedlimit = 0; //Speedlimit
-
+    List<PolyPoint> nodes = new ArrayList<>();
 
     Map<PolyPoint, LinkedList<Edge>> adjMap = new HashMap<>();
     Map<PolyPoint, Integer> indexMap = new HashMap<>();
@@ -20,17 +20,24 @@ public class Graph {
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
-    public Graph(List<PolyPoint> nodes){
+    public void add(List<PolyPoint> nodes){
+        this.nodes.addAll(nodes);
+    }
 
-        vertexCount = nodes.size();
+    public void generate(){
+        vertexCount = this.nodes.size();
         for(int i = 0; i < vertexCount; i++){
-            PolyPoint node = nodes.get(i);
+            PolyPoint node = this.nodes.get(i);
             adjMap.put(node,new LinkedList<Edge>());
             indexMap.put(node, index++);
             polyMap.put(index, node);
 
             graphNodes.add(node);
         }
+    }
+
+    public void clearList(){
+        this.nodes = null;
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
@@ -61,7 +68,7 @@ public class Graph {
     public Iterable<Edge> edges() {
         Bag<Edge> bagList = new Bag<>();
         for(int v = 0; v < vertexCount; v++){
-            for(Edge e : adjMap.get(v)){
+            for(Edge e : adjMap.get(polyMap.get(v))){
                 bagList.add(e);
             }
         }

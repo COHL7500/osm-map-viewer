@@ -57,36 +57,38 @@ public class DijkstraSPTest {
         nodes.add(J);
         nodes.add(K);
 
-        g = new Graph(nodes);
+        g = new Graph();
+        g.add(nodes);
+        g.generate();
 
         System.out.println("Vertex Count: " + g.getVertexCount());
         System.out.println("Edge Count: " + g.getEdgeCount());
 
-        g.addEdge(nodes.get(0), nodes.get(1),d.haversineFormula(nodes.get(0), nodes.get(1)));
+        g.addEdge(g.nodes.get(0), g.nodes.get(1),d.haversineFormula(nodes.get(0), nodes.get(1)));
 
         System.out.println(g.getIndex());
 
-        g.addEdge(nodes.get(1), nodes.get(2),d.haversineFormula(nodes.get(1), nodes.get(2)));
+        g.addEdge(g.nodes.get(1), g.nodes.get(2),d.haversineFormula(g.nodes.get(1), g.nodes.get(2)));
 
         System.out.println(g.getIndex());
 
-        g.addEdge(nodes.get(2), nodes.get(3),d.haversineFormula(nodes.get(2), nodes.get(3)));
+        g.addEdge(g.nodes.get(2), g.nodes.get(3),d.haversineFormula(g.nodes.get(2), g.nodes.get(3)));
 
         System.out.println(g.getIndex());
 
-        g.addEdge(nodes.get(3), nodes.get(4),d.haversineFormula(nodes.get(3), nodes.get(4)));
-        g.addEdge(nodes.get(0), nodes.get(5),d.haversineFormula(nodes.get(0), nodes.get(5)));
-        g.addEdge(nodes.get(5), nodes.get(6),d.haversineFormula(nodes.get(5), nodes.get(6)));
-        g.addEdge(nodes.get(6), nodes.get(7),d.haversineFormula(nodes.get(6), nodes.get(7)));
-        g.addEdge(nodes.get(0), nodes.get(3),d.haversineFormula(nodes.get(0), nodes.get(3)));
-        g.addEdge(nodes.get(0), nodes.get(7),d.haversineFormula(nodes.get(0), nodes.get(7)));
-        g.addEdge(nodes.get(6), nodes.get(8),d.haversineFormula(nodes.get(6), nodes.get(8)));
-        g.addEdge(nodes.get(6), nodes.get(9),d.haversineFormula(nodes.get(6), nodes.get(9)));
-        g.addEdge(nodes.get(9), nodes.get(10),d.haversineFormula(nodes.get(9), nodes.get(10)));
-        g.addEdge(nodes.get(8), nodes.get(9),d.haversineFormula(nodes.get(8), nodes.get(9)));
-        g.addEdge(nodes.get(10), nodes.get(4),d.haversineFormula(nodes.get(10), nodes.get(4)));
-        g.addEdge(nodes.get(7), nodes.get(4),d.haversineFormula(nodes.get(7), nodes.get(4)));
-        g.addEdge(nodes.get(7), nodes.get(2),d.haversineFormula(nodes.get(7), nodes.get(2)));
+        g.addEdge(g.nodes.get(3), g.nodes.get(4),d.haversineFormula(g.nodes.get(3), g.nodes.get(4)));
+        g.addEdge(g.nodes.get(0), g.nodes.get(5),d.haversineFormula(g.nodes.get(0), g.nodes.get(5)));
+        g.addEdge(g.nodes.get(5), g.nodes.get(6),d.haversineFormula(g.nodes.get(5), g.nodes.get(6)));
+        g.addEdge(g.nodes.get(6), g.nodes.get(7),d.haversineFormula(g.nodes.get(6), g.nodes.get(7)));
+        g.addEdge(g.nodes.get(0), g.nodes.get(3),d.haversineFormula(g.nodes.get(0), g.nodes.get(3)));
+        g.addEdge(g.nodes.get(0), g.nodes.get(7),d.haversineFormula(g.nodes.get(0), g.nodes.get(7)));
+        g.addEdge(g.nodes.get(6), g.nodes.get(8),d.haversineFormula(g.nodes.get(6), g.nodes.get(8)));
+        g.addEdge(g.nodes.get(6), g.nodes.get(9),d.haversineFormula(g.nodes.get(6), g.nodes.get(9)));
+        g.addEdge(g.nodes.get(9), g.nodes.get(10),d.haversineFormula(g.nodes.get(9), g.nodes.get(10)));
+        g.addEdge(g.nodes.get(8), g.nodes.get(9),d.haversineFormula(g.nodes.get(8), g.nodes.get(9)));
+        g.addEdge(g.nodes.get(10), g.nodes.get(4),d.haversineFormula(g.nodes.get(10), g.nodes.get(4)));
+        g.addEdge(g.nodes.get(7), g.nodes.get(4),d.haversineFormula(g.nodes.get(7), g.nodes.get(4)));
+        g.addEdge(g.nodes.get(7), g.nodes.get(2),d.haversineFormula(g.nodes.get(7), g.nodes.get(2)));
 
         System.out.println("Vertex Count: " + g.getVertexCount());
         System.out.println("Edge Count: " + g.getEdgeCount());
@@ -94,14 +96,20 @@ public class DijkstraSPTest {
         for(int v = 0; v < g.getVertexCount(); v++){
             System.out.println(g.polyMap.get(v));
             System.out.println(g.adjMap.get(g.polyMap.get(v)));
+
         }
-        sp = new DijkstraShortestPath(g, nodes.get(0), vehicleType);
-        System.out.println(nodes.isEmpty());
-        System.out.println(sp.pathTo(nodes.get(10)));
+
+        System.out.println(g.edges());
+
+        sp = new DijkstraShortestPath(g, g.nodes.get(0), vehicleType);
+        System.out.println(g.nodes.isEmpty());
+        System.out.println(3);
+        System.out.println(sp.pathTo(g.nodes.get(10)));
+        System.out.println(3);
     }
     @Test void dijkstraTest(){
 
-        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(nodes.get(10)).toString());
+        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(g.nodes.get(10)).toString());
     }
 
 
