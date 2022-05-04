@@ -7,8 +7,8 @@ public class DijkstraSP {
 
 
     private double[] distTo;
-    private Edge[] edgeTo;
-    private IndexMinPQ<Double> pq;
+    private final Edge[] edgeTo;
+    private final IndexMinPQ<Double> pq;
     List<PolyPoint> nodes;
     Graph G = new Graph(nodes);
 
