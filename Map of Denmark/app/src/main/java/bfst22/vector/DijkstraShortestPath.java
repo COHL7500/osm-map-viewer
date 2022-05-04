@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Stack;
 
 public class DijkstraShortestPath {
-    private Map<PolyPoint, Boolean> markMap = new HashMap<>();
-    private Map<PolyPoint,Double> distanceMap = new HashMap<>();
-    private Map<PolyPoint, Edge> edgeMap = new HashMap<>();
+    private Map<PolyPoint, Boolean> markMap;
+    private Map<PolyPoint,Double> distanceMap;
+    private Map<PolyPoint, Edge> edgeMap;
     private MinPQ<Edge> pq;
 
     private class compareDistance implements Comparator<Edge> {
@@ -20,7 +20,11 @@ public class DijkstraShortestPath {
     }
 
     public DijkstraShortestPath(Graph g, PolyPoint start, VehicleType vehicleType ) {
+        markMap = new HashMap<>();
+        distanceMap = new HashMap();
+        edgeMap = new HashMap<>();
         pq = new MinPQ<Edge>(new compareDistance());
+
         for (int v = 0; v < g.getVertexCount(); v++) {
             distanceMap.put(g.polyMap.get(v), Double.POSITIVE_INFINITY);
             distanceMap.put(start, 0.0);
@@ -46,6 +50,9 @@ public class DijkstraShortestPath {
             /* I think I am looping over this in the wrong way */
             for(Edge e : g.adjMap.get(v)){
                 PolyPoint w = e.getTo();
+                if(distanceMap.get(w) == null){
+                    distanceMap.put(w, Double.POSITIVE_INFINITY);
+                }
                 if(distanceMap.get(w) > distanceMap.get(v) + e.getWeight()) {
                     distanceMap.replace(w,distanceMap.get(v) + e.getWeight());
                     edgeMap.put(w,e);
