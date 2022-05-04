@@ -232,7 +232,7 @@ public class Model {
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
-
+        System.out.println(graph.nodes.size());
         for(int i = 0; i < graph.nodes.size(); i++){
             graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
             //For now all roads go back and forth
