@@ -34,7 +34,10 @@ public class Graph {
 
             graphNodes.add(node);
         }
-        nodes = null;
+    }
+
+    public void clearList(){
+        this.nodes = null;
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
