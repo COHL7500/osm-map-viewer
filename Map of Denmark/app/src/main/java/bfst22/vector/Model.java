@@ -105,6 +105,7 @@ public class Model {
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
+        Graph graph = new Graph();
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -204,6 +205,7 @@ public class Model {
                         id2way.put(relID, way);
                         this.kdtree.add(way);
                         this.waycount++;
+                        graph.add(nodes);
                         nodes.clear();
                         if (this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
                             this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
@@ -223,6 +225,7 @@ public class Model {
         }
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
+        graph.generate();
 		
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
