@@ -141,12 +141,20 @@ public class Model {
                         if (k.equals("name")) name = v;
 						// parses address tags and adds to address builder
 						if (k.contains("addr:")) {
-                            switch (k) {
-                                case "addr:city" -> builder = builder.city(v);
-                                case "addr:housenumber" -> builder = builder.house(v);
-                                case "addr:postcode" -> builder = builder.postcode(v);
-                                case "addr:street" -> builder = builder.street(v);
-                            }
+							switch (k) {
+								case "addr:city":
+									builder = builder.city(v);
+									break;
+								case "addr:housenumber":
+									builder = builder.house(v);
+									break;
+								case "addr:postcode":
+									builder = builder.postcode(v);
+									break;
+								case "addr:street":
+									builder = builder.street(v);
+									break;
+							}
 							break;
 						}
                         if (this.yamlObj.ways.containsKey(k)) {
@@ -218,20 +226,21 @@ public class Model {
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
         graph.generate();
-
+		
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
 
-        for(int i = 0; i < nodes.size(); i++){
+        for(int i = 0; i < graph.nodes.size(); i++){
             graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
             //For now all roads go back and forth
             graph.addEdge(nodes.get(i+1),nodes.get(i), graph.setWeight(nodes.get(i+1),nodes.get(i), graph.speedlimit));
             System.out.println(graph.getEdgeCount());
             System.out.println(graph.getVertexCount());
         }
+        graph.clearList();
     }
 
     public ArrayList<Address> getAddresses() {
