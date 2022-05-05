@@ -104,7 +104,7 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
-        String suptype = null, subtype = null, name = null;
+        String keyType = null, valueType = null, name = null;
         graph = new Graph();
 
         // Reads the entire .OSM file.
@@ -158,8 +158,8 @@ public class Model {
 							break;
 						}
                         if (this.yamlObj.ways.containsKey(k)) {
-                            suptype = k;
-                            subtype = v;
+                            keyType = k;
+                            valueType = v;
 
                             switch (k) {
                                 case "motorcar":
@@ -207,15 +207,16 @@ public class Model {
                         this.waycount++;
                         graph.add(nodes);
                         nodes.clear();
-                        if (this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                            this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable.add(way);
+                        if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
+                            this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
                         }
+
                     } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
                         MultiPolygon multipoly = new MultiPolygon(rel);
                         this.kdtree.add(multipoly);
                         this.relcount++;
-                        if (suptype != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(suptype) && this.yamlObj.ways.get(suptype).valuefeatures.containsKey(subtype)) {
-                            List<Drawable> yamlList = this.yamlObj.ways.get(suptype).valuefeatures.get(subtype).drawable;
+                        if (keyType != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
+                            List<Drawable> yamlList = this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable;
                             yamlList.add(multipoly);
                         }
                         rel.clear();
