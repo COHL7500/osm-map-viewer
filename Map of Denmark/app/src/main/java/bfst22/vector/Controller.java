@@ -5,9 +5,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -27,10 +30,10 @@ import java.util.Map;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
-    private Stage stage;
-	private Model model;
-    private List<String> loadedMaps;
-    private ContextMenu canvasCM;
+    private final Stage stage;
+	private final Model model;
+    private final List<String> loadedMaps;
+    private final ContextMenu canvasCM, suggestionPopup;
 	
 	@FXML private MapCanvas canvas;
     @FXML private VBox pinPointSidebar;
@@ -45,6 +48,12 @@ public class Controller {
     @FXML private ColorPicker paintColourPicker;
     @FXML private Spinner<Double> paintStrokeSize;
     @FXML private Spinner<Integer> paintFontSize;
+    @FXML private HBox search_root;
+    @FXML private GridPane search_pane;
+    @FXML private HBox search_box;
+    @FXML private Button searchButton;
+    @FXML private Button clearButton;
+    @FXML private TextField searchField;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
@@ -82,6 +91,7 @@ public class Controller {
         this.stage = primarystage;
         this.loadedMaps = new ArrayList<>();
         this.canvasCM = new ContextMenu();
+        this.suggestionPopup = new ContextMenu();
 
         this.someBorderPane.setLeft(null);
         this.someBorderPane.setRight(null);
@@ -112,6 +122,22 @@ public class Controller {
         });
         this.fontBox.getItems().addAll(Font.getFamilies());
         this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
+        this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.isEmpty()) this.suggestionPopup.hide();
+            this.suggestionPopup.getItems().clear();
+            this.model.searchTree.searchSuggestions(searchField.getText())
+                    .forEach(suggestion -> {
+                        MenuItem item = new MenuItem(suggestion.toString());
+                        item.setOnAction(action -> {
+                            this.canvas.goToPosAbsolute(suggestion.coordPos);
+                            this.canvas.zoomTo(300000);
+                            searchField.setText(suggestion.toString());
+                            suggestionPopup.hide();
+                        });
+                        suggestionPopup.getItems().add(item);
+                    });
+            suggestionPopup.show(searchField, Side.BOTTOM, 0, 0);
+        });
     }
 
     private void generateContextMenu(){
@@ -275,6 +301,20 @@ public class Controller {
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
     }
 
+    @FXML private void onSearchButtonPressed(ActionEvent e) {
+        //search();
+    }
+
+    @FXML private void onSearchKeyPressed(KeyEvent k){
+        if (k.getCode().equals(KeyCode.ENTER)) {
+            //search();
+        }
+    }
+
+    @FXML private void onClearButtonPressed(ActionEvent e){
+        searchField.clear();
+    }
+
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
         this.canvas.painter.toggleFill();
     }
@@ -314,6 +354,7 @@ public class Controller {
     // updates the variable lastMouse upon pressing (necessary for onMouseDragged)
     @FXML private void onMousePressed(final MouseEvent e) {
         this.canvasCM.hide();
+        this.suggestionPopup.hide();
         if(e.getClickCount() == 2) this.canvas.pinpoints.doubleClick(this.canvas);
         this.canvas.pressed(e);
         this.updateDebugInfo();

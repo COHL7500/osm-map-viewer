@@ -61,13 +61,11 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 					if (node.coords[d?0:1] > n.point[d?0:1]) n.right.elements.add(node);
 					else n.left.elements.add(node);
 				}
-
-				n.elements = null;
 			} else {
 				n.objects = new HashSet<>();
 				for(Node node : n.elements) n.objects.add(node.obj);
-				n.elements = null;
 			}
+			n.elements = null;
 		};
 		this.bfs(kd,null);
 		this.lines = null;

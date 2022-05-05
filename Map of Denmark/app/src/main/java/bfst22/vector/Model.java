@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
 import javafx.geometry.Point2D;
-import bfst22.vector.TernarySearchTree.TernarySearchTree;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -18,17 +17,13 @@ public class Model {
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     public MapFeature yamlObj;
     public KdTree kdtree;
+    public TernarySearchTree searchTree;
     public Point2D minBoundsPos, maxBoundsPos, originBoundsPos; // lat, lon
-    public float tempLat, tempLon; // Address Parser Testing
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
 	public VehicleType vehicleType;
     public Edge e;
-    public ArrayList<Address> addresses = new ArrayList<>();
-    public Address.Builder builder = new Address.Builder();
-    public TernarySearchTree searchTree = new TernarySearchTree();
-
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
@@ -97,6 +92,7 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
+        this.searchTree = new TernarySearchTree();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
@@ -125,6 +121,7 @@ public class Model {
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                         id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
+                        this.searchTree.setAddressPos(0.56f * lon, -lat);
                         this.nodecount++;
                     } case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
@@ -137,10 +134,10 @@ public class Model {
                         if (k.equals("name")) name = v;
 						if (k.contains("addr:")) {
                             switch (k) {
-                                case "addr:city" -> builder = builder.city(v);
-                                case "addr:housenumber" -> builder = builder.house(v);
-                                case "addr:postcode" -> builder = builder.postcode(v);
-                                case "addr:street" -> builder = builder.street(v);
+                                case "addr:city" -> searchTree.addAddressElement("city",v);
+                                case "addr:housenumber" -> searchTree.addAddressElement("house",v);
+                                case "addr:postcode" -> searchTree.addAddressElement("postcode",v);
+                                case "addr:street" -> searchTree.addAddressElement("street",v);
                             }
                         }
                         if (this.yamlObj.ways.containsKey(k)) {
@@ -180,12 +177,8 @@ public class Model {
                 }
             } else if(element == XMLStreamConstants.END_ELEMENT){
                 switch (reader.getLocalName()) {
-					case "node" -> {
-						if (!builder.isEmpty()) {
-							addresses.add(builder.build());
-							builder.emptyBuilder();
-						}
-					} case "way" -> { // "way" - All lines in the program; linking point A to B
+					case "node" -> searchTree.insertAddress();
+					case "way" -> { // "way" - All lines in the program; linking point A to B
                         PolyLine way = new PolyLine(nodes);
                         id2way.put(relID, way);
                         this.kdtree.add(way);
@@ -207,22 +200,9 @@ public class Model {
                 }
             }
         }
+
         this.kdtree.generate();
+        this.searchTree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
-		
-        Collections.sort(addresses);
-        for (Address address : addresses) {
-            searchTree.insertAddress(address.toString(), addresses.indexOf(address));
-        }
-        //System.out.println(searchTree.search("admiralgade 1, 1066 københavn") ? "Found" : "Not found");
-        //System.out.println(searchTree.toString());
-    }
-
-    public ArrayList<Address> getAddresses() {
-        return addresses;
-    }
-
-    public TernarySearchTree getSearchTree() {
-        return searchTree;
     }
 }
