@@ -16,7 +16,7 @@ public class Graph {
 
     private final LinkedList<Edge> list = new LinkedList<Edge>();
     private final List<PolyPoint> graphNodes = new LinkedList<>();
-    int index = -1;
+    int index = 0;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
@@ -29,9 +29,9 @@ public class Graph {
         for(int i = 0; i < vertexCount; i++){
             PolyPoint node = this.nodes.get(i);
             adjMap.put(node,new LinkedList<Edge>());
-            indexMap.put(node, index++);
+            indexMap.put(node, index);
             polyMap.put(index, node);
-
+            index++;
             graphNodes.add(node);
         }
     }
@@ -75,7 +75,7 @@ public class Graph {
         return bagList;
     }
 
-    public Iterable<Edge> adj(int v){
+    public Iterable<Edge> adj(PolyPoint v){
         return adjMap.get(v);
     }
 

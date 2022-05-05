@@ -110,8 +110,7 @@ public class DijkstraSPTest {
 
     }
     @Test void dijkstraTest(){
-
-        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(g.nodes.get(10)).toString());
+        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathTo(g.nodes.get(10)));
     }
 
 

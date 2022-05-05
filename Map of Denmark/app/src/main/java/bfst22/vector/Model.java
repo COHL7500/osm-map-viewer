@@ -226,7 +226,7 @@ public class Model {
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
         graph.generate();
-
+		
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
