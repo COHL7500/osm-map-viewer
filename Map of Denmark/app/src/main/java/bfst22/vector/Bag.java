@@ -36,6 +36,7 @@ public class Bag<Item> implements Iterable<Item> {
         n++;
     }
 
+
     public Iterator<Item> iterator(){
         return new LinkedIterator(first);
     }

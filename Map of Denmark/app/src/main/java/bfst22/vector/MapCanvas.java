@@ -184,7 +184,6 @@ public class MapCanvas extends Canvas {
             this.calcRollingAvg();
             this.painter.stroke(this.gc, this.mousePos, this.zoom_current);
             this.setStylingDefault();
-
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
             this.drawGraph(model.graph);
@@ -198,13 +197,14 @@ public class MapCanvas extends Canvas {
     {
         if(graph != null)
         {
-            this.gc.setStroke(Color.BLUE);
+            this.gc.setStroke(Color.RED);
+            this.gc.setLineWidth(0.000015);
             gc.beginPath();
 
-            for(int i = 0; i < graph.getList().size(); i++)
+            for(Edge e : graph.edges())
             {
-                this.gc.moveTo(graph.getList().get(i).getFrom().lon, graph.getList().get(i).getFrom().lat);
-                this.gc.lineTo(graph.getList().get(i).getTo().lon, graph.getList().get(i).getTo().lat);
+                this.gc.moveTo(e.getFrom().lat,e.getFrom().lon);
+                this.gc.lineTo(e.getTo().lat,e.getTo().lon);
             }
 
             this.gc.stroke();

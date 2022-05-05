@@ -105,7 +105,7 @@ public class Model {
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String suptype = null, subtype = null, name = null;
-        Graph graph = new Graph();
+        graph = new Graph();
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -226,21 +226,21 @@ public class Model {
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
         graph.generate();
-		
+
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
 
-        for(int i = 0; i < graph.nodes.size(); i++){
-            graph.addEdge(nodes.get(i),nodes.get(i+1), graph.setWeight(nodes.get(i),nodes.get(i+1), graph.speedlimit));
+        for(int i = 0; i < (graph.nodes.size() - 1); i++){
+
+            graph.addEdge(graph.nodes.get(i),graph.nodes.get(i+1), graph.setWeight(graph.nodes.get(i),graph.nodes.get(i+1), graph.speedlimit));
             //For now all roads go back and forth
-            graph.addEdge(nodes.get(i+1),nodes.get(i), graph.setWeight(nodes.get(i+1),nodes.get(i), graph.speedlimit));
-            System.out.println(graph.getEdgeCount());
-            System.out.println(graph.getVertexCount());
+            graph.addEdge(graph.nodes.get(i+1),graph.nodes.get(i), graph.setWeight(graph.nodes.get(i+1),graph.nodes.get(i), graph.speedlimit));
         }
-        graph.clearList();
+
+        //graph.clearList();
     }
 
     public ArrayList<Address> getAddresses() {
