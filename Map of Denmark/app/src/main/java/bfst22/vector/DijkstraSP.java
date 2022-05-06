@@ -1,8 +1,9 @@
-/*
 package bfst22.vector;
 import java.util.*;
 
 public class DijkstraSP {
+}
+    /*
     Map<PolyPoint, Double> distanceMap;
     Map<PolyPoint, PolyPoint> edgeMap;
 
@@ -118,6 +119,6 @@ public class DijkstraSP {
         }
         return path;
     }
-*/
 
+*/
 

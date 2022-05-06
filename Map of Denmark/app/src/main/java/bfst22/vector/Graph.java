@@ -32,16 +32,15 @@ public class Graph {
             indexMap.put(node, index);
             polyMap.put(index, node);
             index++;
-            graphNodes.add(node);
         }
     }
 
     public void clearList(){
-        this.nodes = null;
+        this.nodes.clear();
     }
 
     public void addEdge(PolyPoint from, PolyPoint to, float weight){
-        Edge e = new Edge(from, to, setWeight(from, to ,speedlimit));
+        Edge e = new Edge(from, to, setWeight(weight));
 
         if(!adjMap.containsKey(from)){
             addVertex(from);
@@ -113,9 +112,15 @@ public class Graph {
             if (edgeCount == 0) edgeCount = waycount;
         }
 
+        /*
         public float setWeight (PolyPoint from, PolyPoint to,float speedlimit){
             Distance d = new Distance();
             return d.haversineFormula(from, to) / speedlimit;
+        }
+        */
+
+        public float setWeight(float weight){
+            return weight;
         }
 
 

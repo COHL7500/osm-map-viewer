@@ -12,24 +12,22 @@ public class Distance {
 
     final int R = 6371;
 
-
-
     //Computes the straight-line distance between two pairs of lat/lon using Haversine formula.
-    public float haversineFormula(PolyPoint start, PolyPoint target){
+    public double haversineFormula(PolyPoint start, PolyPoint target){
         final int R = 6371; //Earth's radius in kilometers.
-        float dLat = toRadians(start.lat - target.lat);
-        float dLon = toRadians(start.lon - target.lon);
+        double dLat = toRadians(start.lat - target.lat);
+        double dLon = toRadians(start.lon - target.lon);
 
-        float a = (float)Math.sin(dLat / 2) * (float)Math.sin(dLat / 2) +
-                (float)Math.cos(toRadians(start.lat)) * (float)Math.cos(toRadians(target.lat))
-                        * (float)Math.sin(dLon / 2) * (float)Math.sin(dLon / 2);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRadians(start.lat)) * Math.cos(toRadians(target.lat))
+                        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-        float c = 2 * (float)Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         return R * c; //Returns d
     }
 
-    public float toRadians(float val){
-        return val * (float)Math.PI / 180;
+    public double toRadians(double val){
+        return val * Math.PI / 180;
     }
 
 }

@@ -103,6 +103,7 @@ public class Model {
         Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
+        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary","secondary","tertiary"));
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
@@ -184,6 +185,12 @@ public class Model {
                                     if (v.equals("no_left_turn")) e.leftTurn = false;
                                     else if (v.equals("no_right_turn")) e.rightTurn = false;
                                     break;
+                                case "highway":
+                                        if(highwayTypes.contains(v)){
+                                            graph.add(nodes);
+
+                                        }
+                                        break;
                             }
                         }
                     } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -205,7 +212,6 @@ public class Model {
                         id2way.put(relID, way);
                         this.kdtree.add(way);
                         this.waycount++;
-                        graph.add(nodes);
                         nodes.clear();
                         if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
                             this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
@@ -226,20 +232,20 @@ public class Model {
         }
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
-        graph.generate();
 		
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
+        graph.generate();
+        for(int i = 0; i < (graph.nodes.size() - 1); i++) {
 
-        for(int i = 0; i < (graph.nodes.size() - 1); i++){
-
-            graph.addEdge(graph.nodes.get(i),graph.nodes.get(i+1), graph.setWeight(graph.nodes.get(i),graph.nodes.get(i+1), graph.speedlimit));
+            //graph.addEdge(graph.nodes.get(i), graph.nodes.get(i + 1), graph.setWeight(graph.nodes.get(i), graph.nodes.get(i + 1), graph.speedlimit));
             //For now all roads go back and forth
-            graph.addEdge(graph.nodes.get(i+1),graph.nodes.get(i), graph.setWeight(graph.nodes.get(i+1),graph.nodes.get(i), graph.speedlimit));
+            //graph.addEdge(graph.nodes.get(i+1),graph.nodes.get(i), graph.setWeight(graph.nodes.get(i+1),graph.nodes.get(i), graph.speedlimit));
         }
+
 
         //graph.clearList();
     }
@@ -251,4 +257,5 @@ public class Model {
     public TernarySearchTree getSearchTree() {
         return searchTree;
     }
+
 }

@@ -41,7 +41,7 @@ public class DijkstraShortestPath {
     }
 
     /*I haven't implemented the heruristic yet*/
-    float h(PolyPoint start, PolyPoint target){
+    double h(PolyPoint start, PolyPoint target){
         Distance d = new Distance();
         return d.haversineFormula(start,target);
     }
@@ -78,6 +78,19 @@ public class DijkstraShortestPath {
                 path.push(e);
             }
             return path;
+        }
+
+        /* Test Function */
+        public Iterable<String> pathToString(Iterable<Edge> path){
+            Stack<String> pathToString = new Stack<>();
+            for(Edge e : path){
+                long from = e.getFrom().id;
+                long to = e.getTo().id;
+                float weight = e.getWeight();
+                String output = from + "->" + to + "  " + weight;
+                pathToString.push(output);
+            }
+            return pathToString;
         }
 
     }
