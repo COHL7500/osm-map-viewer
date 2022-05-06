@@ -28,6 +28,7 @@ public class Model {
     public Address.Builder builder = new Address.Builder();
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
+    public int currIndex = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -103,16 +104,18 @@ public class Model {
         Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
-        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary","secondary","tertiary"));
+        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary"));
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
+        boolean isHighway = false;
+        Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
             int element = reader.next();
 
-            if(element == XMLStreamConstants.START_ELEMENT){
+            if (element == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
                     case "bounds" -> { // Configures the longitude and latitude. An element present in all OSM files. Uncertain as to why, though adjusting the floats will make the map not draw.
                         double maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
@@ -122,45 +125,50 @@ public class Model {
                         this.minBoundsPos = new Point2D(minlat, minlon);
                         this.maxBoundsPos = new Point2D(maxlat, maxlon);
                         this.originBoundsPos = new Point2D((maxlon + minlon) / 2, (maxlat + minlat) / 2);
-                    } case "node" -> { // Parses information from a node, adding it to the id2node list.
+                    }
+                    case "node" -> { // Parses information from a node, adding it to the id2node list.
                         long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                         id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
                         this.nodecount++;
-						//adds lat and lon to address builder
+                        //adds lat and lon to address builder
                         builder = builder.lat(-lat);
                         builder = builder.lon(0.56f * lon);
-                    } case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
+                    }
+                    case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                         nodes.add(id2node.get(ref));
-                    } case "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
+                    }
+                    case "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                         relID = Long.parseLong(reader.getAttributeValue(null, "id"));
-                    } case "tag" -> { // Parses the key and value of tags, changing the waytype to the corresponding type.
+                    }
+                    case "tag" -> { // Parses the key and value of tags, changing the waytype to the corresponding type.
                         String k = reader.getAttributeValue(null, "k");
                         String v = reader.getAttributeValue(null, "v");
                         if (k.equals("name")) name = v;
-						// parses address tags and adds to address builder
-						if (k.contains("addr:")) {
-							switch (k) {
-								case "addr:city":
-									builder = builder.city(v);
-									break;
-								case "addr:housenumber":
-									builder = builder.house(v);
-									break;
-								case "addr:postcode":
-									builder = builder.postcode(v);
-									break;
-								case "addr:street":
-									builder = builder.street(v);
-									break;
-							}
-							break;
-						}
+                        // parses address tags and adds to address builder
+                        if (k.contains("addr:")) {
+                            switch (k) {
+                                case "addr:city":
+                                    builder = builder.city(v);
+                                    break;
+                                case "addr:housenumber":
+                                    builder = builder.house(v);
+                                    break;
+                                case "addr:postcode":
+                                    builder = builder.postcode(v);
+                                    break;
+                                case "addr:street":
+                                    builder = builder.street(v);
+                                    break;
+                            }
+                            break;
+                        }
                         if (this.yamlObj.ways.containsKey(k)) {
                             keyType = k;
                             valueType = v;
+                            isHighway = false;
 
                             switch (k) {
                                 case "motorcar":
@@ -186,38 +194,47 @@ public class Model {
                                     else if (v.equals("no_right_turn")) e.rightTurn = false;
                                     break;
                                 case "highway":
-                                        if(highwayTypes.contains(v)){
-                                            graph.add(nodes);
-
-                                        }
-                                        break;
+                                    if (highwayTypes.contains(v)) {
+                                        isHighway = true;
+                                        graph.add(nodes);
+                                    }
+                                    break;
                             }
                         }
-                    } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
+                    }
+                    case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                         PolyLine elm = id2way.get(ref);
                         if (elm != null) rel.add(elm);
                     }
                 }
-            } else if(element == XMLStreamConstants.END_ELEMENT){
+            } else if (element == XMLStreamConstants.END_ELEMENT) {
                 switch (reader.getLocalName()) {
-					//adds finished address object to arraylist
-					case "node" -> {
-						if (!builder.isEmpty()) {
-							addresses.add(builder.build());
-							builder.emptyBuilder();
-						}
-					} case "way" -> { // "way" - All lines in the program; linking point A to B
+                    //adds finished address object to arraylist
+                    case "node" -> {
+                        if (!builder.isEmpty()) {
+                            addresses.add(builder.build());
+                            builder.emptyBuilder();
+                        }
+                    }
+                    case "way" -> { // "way" - All lines in the program; linking point A to B
                         PolyLine way = new PolyLine(nodes);
                         id2way.put(relID, way);
                         this.kdtree.add(way);
                         this.waycount++;
+                        if (isHighway) {
+                            index2way.put(currIndex, new LinkedList<>());
+                            for (PolyPoint p : nodes) index2way.get(currIndex).add(p);
+                            currIndex++;
+
+                        }
                         nodes.clear();
                         if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
                             this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
                         }
 
-                    } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
+                    }
+                    case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
                         MultiPolygon multipoly = new MultiPolygon(rel);
                         this.kdtree.add(multipoly);
                         this.relcount++;
@@ -232,23 +249,38 @@ public class Model {
         }
         this.kdtree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
-		
+
         //sorts addresses and adds to ternary search tree
         Collections.sort(addresses);
         for (Address address : addresses) {
             searchTree.insertAddress(address.toString(), addresses.indexOf(address));
         }
-        graph.generate();
-        for(int i = 0; i < (graph.nodes.size() - 1); i++) {
 
-            //graph.addEdge(graph.nodes.get(i), graph.nodes.get(i + 1), graph.setWeight(graph.nodes.get(i), graph.nodes.get(i + 1), graph.speedlimit));
+        graph.generate();
+
+        for (int i = 0; i < (index2way.size()); i++) {
+            for (int j = 0; j < (index2way.get(i).size() - 1); j++) {
+                //if(index2way.get(i) != null && index2way.get(i).get(j) != null && index2way.get(i).get(j++) != null){
+                graph.addEdge(index2way.get(i).get(j), index2way.get(i).get(j++), graph.setWeightDistance(index2way.get(i).get(j), index2way.get(i).get(j++), 75));
+            }
+        }
+    }
+
+        
+
+
+        /*
+        for(int i = 0; i < (graph.nodes.size() - 1); i++) {
+            graph.addEdge(graph.nodes.get(i), graph.nodes.get(i + 1), graph.setWeightDistance(graph.nodes.get(i), graph.nodes.get(i + 1), graph.speedlimit));
             //For now all roads go back and forth
             //graph.addEdge(graph.nodes.get(i+1),graph.nodes.get(i), graph.setWeight(graph.nodes.get(i+1),graph.nodes.get(i), graph.speedlimit));
         }
 
+         */
+
 
         //graph.clearList();
-    }
+    
 
     public ArrayList<Address> getAddresses() {
         return addresses;
