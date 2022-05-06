@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
@@ -125,7 +126,7 @@ public class Controller {
         this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.isEmpty()) this.suggestionPopup.hide();
             this.suggestionPopup.getItems().clear();
-            this.model.searchTree.searchSuggestions(searchField.getText())
+            this.model.searchTree.searchSuggestions(searchField.getText().toLowerCase(Locale.ROOT))
                     .forEach(suggestion -> {
                         MenuItem item = new MenuItem(suggestion.toString());
                         item.setOnAction(action -> {
