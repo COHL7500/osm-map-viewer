@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
@@ -74,7 +75,7 @@ public class Controller {
      * ----------------------------------------------------------------------------------------------------------------- */
     // Runs upon start of program: Initializes our MapCanvas based on model.
     public Controller(final Model model, final Stage primarystage) {
-        primarystage.setScene(new Scene(Controller.smartFXMLLoader(this,"View.fxml")));
+        primarystage.setScene(new Scene(Objects.requireNonNull(Controller.smartFXMLLoader(this, "View.fxml"))));
         primarystage.setWidth(this.someBorderPane.getPrefWidth());
         primarystage.setHeight(this.someBorderPane.getPrefHeight());
 
