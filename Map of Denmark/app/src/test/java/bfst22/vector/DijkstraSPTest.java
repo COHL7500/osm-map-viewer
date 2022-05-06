@@ -106,19 +106,22 @@ public class DijkstraSPTest {
         System.out.println("Edge Count: " + g.getEdgeCount());
 
 
-        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4));
-        System.out.println(3);
-        System.out.println(sp.pathTo(g.nodes.get(4)));
-        System.out.println(3);
-
     }
-    @Test void dijkstraTest(){
-        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathToString(sp.pathTo(g.nodes.get(4))));
+    @Test void dijkstraTest0to4(){
+        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4));
+        assertEquals("[4->5  4.181843, 1->4  10.410108]","" + sp.pathToString(sp.pathTo(g.nodes.get(4))));
+    }
+
+    @Test void dijkstraTest0to10(){
+        sp = new DijkstraSP(g,g.nodes.get(0),g.nodes.get(10));
+        assertEquals("[10->11  4.6753273, 7->10  6.6010547, 6->7  4.447797, 1->6  3.3030636]","" + sp.pathToString(sp.pathTo(g.nodes.get(10))));
     }
 
 
     @AfterEach void tearDown(){
         g.clearList();
+        nodes.clear();
+        sp = null;
 
     }
 

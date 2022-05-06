@@ -10,15 +10,15 @@ public class Directions {
 
             /*Driving Forward*/
             if (angle > 45 || angle < 135) {
-                return "Continue along " + adress.street + "for " + d.haversineFormula(start, to) + " m";
+                return "Continue along /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " m";
             }
             /*Right Turn*/
             if (angle < 45 || angle > 315) {
-                return "Turn right onto " + adress.street + "for " + d.haversineFormula(start, to) + " m";
+                return "Turn right onto /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " m";
             }
             /*Left Turn*/
             if(angle > 135 || angle < 225){
-                return "Turn left onto " + adress.street + "for " + d.haversineFormula(start, to) + " m";
+                return "Turn left onto /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " m";
             }
             else return null; //Ved ikke lige hvad ellers man kan return for nu
     }
@@ -29,5 +29,6 @@ public class Directions {
 
         return angle;
     }
+
 
 }
