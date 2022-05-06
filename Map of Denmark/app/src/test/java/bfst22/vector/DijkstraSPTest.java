@@ -11,7 +11,8 @@ public class DijkstraSPTest {
     List<PolyPoint> nodes = new ArrayList<>();
     Graph g;
     Distance d;
-    DijkstraShortestPath sp;
+    DijkstraSP sp;
+    int speedLimit = 75;
     VehicleType vehicleType = VehicleType.MOTORCAR;
 
     /*PolyPoint objects*/
@@ -64,6 +65,7 @@ public class DijkstraSPTest {
         System.out.println("Vertex Count: " + g.getVertexCount());
         System.out.println("Edge Count: " + g.getEdgeCount());
 
+        /*
         g.addEdge(g.nodes.get(0), g.nodes.get(1),g.setWeight((float)2.24));
         g.addEdge(g.nodes.get(1), g.nodes.get(2),g.setWeight((float)2.83));
         g.addEdge(g.nodes.get(2), g.nodes.get(3),(float)2.24);
@@ -80,20 +82,38 @@ public class DijkstraSPTest {
         g.addEdge(g.nodes.get(10), g.nodes.get(4),(float)1.41);
         g.addEdge(g.nodes.get(7), g.nodes.get(4),(float)6.32);
         g.addEdge(g.nodes.get(7), g.nodes.get(2),(float)2.24);
+        */
+
+        g.addEdge(g.nodes.get(0), g.nodes.get(1),g.setWeightDistance(g.nodes.get(0), g.nodes.get(1),speedLimit));
+        g.addEdge(g.nodes.get(1), g.nodes.get(2),g.setWeightDistance(g.nodes.get(1), g.nodes.get(2),speedLimit));
+        g.addEdge(g.nodes.get(2), g.nodes.get(3),g.setWeightDistance(g.nodes.get(2), g.nodes.get(3),speedLimit));
+        g.addEdge(g.nodes.get(3), g.nodes.get(4),g.setWeightDistance(g.nodes.get(3), g.nodes.get(4),speedLimit));
+        g.addEdge(g.nodes.get(0), g.nodes.get(5),g.setWeightDistance(g.nodes.get(0), g.nodes.get(5),speedLimit));
+        g.addEdge(g.nodes.get(5), g.nodes.get(6),g.setWeightDistance(g.nodes.get(5), g.nodes.get(6),speedLimit));
+        g.addEdge(g.nodes.get(6), g.nodes.get(7),g.setWeightDistance(g.nodes.get(6), g.nodes.get(7),speedLimit));
+        g.addEdge(g.nodes.get(0), g.nodes.get(3),g.setWeightDistance(g.nodes.get(0), g.nodes.get(3),speedLimit));
+        g.addEdge(g.nodes.get(0), g.nodes.get(7),g.setWeightDistance(g.nodes.get(0), g.nodes.get(7),speedLimit));
+        g.addEdge(g.nodes.get(6), g.nodes.get(8),g.setWeightDistance(g.nodes.get(6), g.nodes.get(8),speedLimit));
+        g.addEdge(g.nodes.get(6), g.nodes.get(9),g.setWeightDistance(g.nodes.get(6), g.nodes.get(9),speedLimit));
+        g.addEdge(g.nodes.get(9), g.nodes.get(10),g.setWeightDistance(g.nodes.get(9), g.nodes.get(10),speedLimit));
+        g.addEdge(g.nodes.get(8), g.nodes.get(9),g.setWeightDistance(g.nodes.get(8), g.nodes.get(9),speedLimit));
+        g.addEdge(g.nodes.get(10), g.nodes.get(4),g.setWeightDistance(g.nodes.get(10), g.nodes.get(4),speedLimit));
+        g.addEdge(g.nodes.get(7), g.nodes.get(4),g.setWeightDistance(g.nodes.get(7), g.nodes.get(4),speedLimit));
+        g.addEdge(g.nodes.get(7), g.nodes.get(2),g.setWeightDistance(g.nodes.get(7), g.nodes.get(2),speedLimit));
 
 
         System.out.println("Vertex Count: " + g.getVertexCount());
         System.out.println("Edge Count: " + g.getEdgeCount());
 
 
-        sp = new DijkstraShortestPath(g, g.nodes.get(0), vehicleType);
+        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4));
         System.out.println(3);
-        System.out.println(sp.pathTo(g.nodes.get(10)));
+        System.out.println(sp.pathTo(g.nodes.get(4)));
         System.out.println(3);
 
     }
     @Test void dijkstraTest(){
-        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathToString(sp.pathTo(g.nodes.get(9))));
+        assertEquals("0->7  5,10 7->4  6,32 4->10 1.44 ",sp.pathToString(sp.pathTo(g.nodes.get(4))));
     }
 
 

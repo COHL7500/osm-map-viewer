@@ -112,12 +112,11 @@ public class Graph {
             if (edgeCount == 0) edgeCount = waycount;
         }
 
-        /*
-        public float setWeight (PolyPoint from, PolyPoint to,float speedlimit){
+        public float setWeightDistance (PolyPoint from, PolyPoint to,float speedlimit){
             Distance d = new Distance();
-            return d.haversineFormula(from, to) / speedlimit;
+            return (float)d.haversineFormula(from, to) / speedlimit;
         }
-        */
+
 
         public float setWeight(float weight){
             return weight;

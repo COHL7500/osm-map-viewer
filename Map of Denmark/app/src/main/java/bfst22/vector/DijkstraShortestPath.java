@@ -80,18 +80,7 @@ public class DijkstraShortestPath {
             return path;
         }
 
-        /* Test Function */
-        public Iterable<String> pathToString(Iterable<Edge> path){
-            Stack<String> pathToString = new Stack<>();
-            for(Edge e : path){
-                long from = e.getFrom().id;
-                long to = e.getTo().id;
-                float weight = e.getWeight();
-                String output = from + "->" + to + "  " + weight;
-                pathToString.push(output);
-            }
-            return pathToString;
-        }
+
 
     }
 
