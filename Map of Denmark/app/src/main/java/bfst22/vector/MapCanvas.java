@@ -11,9 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.stage.Screen;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
@@ -60,6 +57,7 @@ public class MapCanvas extends Canvas {
         this.repaintTime = this.avgRT = this.avgRTNum = 0;
         this.trans = new Affine();
         this.gc = super.getGraphicsContext2D();
+        this.gc.setFillRule(FillRule.NON_ZERO);
         this.zoom_current = 1;
         this.drags = false;
     }
@@ -132,11 +130,10 @@ public class MapCanvas extends Canvas {
         // Background color
         this.gc.setFill(Color.web("#b5d2de"));
         this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
-        this.gc.setFillRule(FillRule.NON_ZERO);
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
         // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/transform/Affine.html
-        this.gc.setTransform(trans);
+        this.gc.setTransform(this.trans);
 
         if(this.model.isLoaded()) {
             this.repaintTime = System.nanoTime();
@@ -292,7 +289,7 @@ public class MapCanvas extends Canvas {
 
     private void splitsTree(){
         if(debugValMap.get("debugSplits") && this.model.isLoaded()){
-            List<float[]> lines = this.model.kdtree.getSplit();
+            List<float[]> lines = this.model.kdtree.getSplits();
             this.gc.setLineWidth(this.z(2.5));
             this.gc.setStroke(Color.GREEN);
             this.gc.setLineDashes(0);

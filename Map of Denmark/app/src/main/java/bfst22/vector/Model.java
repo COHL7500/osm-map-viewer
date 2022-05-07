@@ -231,7 +231,8 @@ public class Model {
             }
         }
 
-        this.kdtree.generate();
+        this.kdtree.generateTree();
+        this.kdtree.generateSplits();
         this.loadTime = System.nanoTime() - this.loadTime;
 		
         //sorts addresses and adds to ternary search tree

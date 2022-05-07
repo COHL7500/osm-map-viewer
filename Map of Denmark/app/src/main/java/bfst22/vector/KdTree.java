@@ -2,14 +2,17 @@ package bfst22.vector;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KdTree implements Serializable, SerialVersionIdentifiable {
-	private final intNode root;
+	private final List<float[]> splits;
+	private final List<intNode> tree;
 	private List<Node> lines;
 
 	public KdTree(){
-		this.root = new intNode();
+		this.tree = new ArrayList<>();
 		this.lines = new ArrayList<>();
+		this.splits = new ArrayList<>();
 	}
 
 	public void add(final PolyPoint element, Drawable owner) throws RuntimeException {
@@ -35,112 +38,102 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 	}
 
 	// KD-Tree generic 'Breadth-first search' method
-	private void bfs(bfsCall lambda, Collection array){
+	private void bfs(bfsCall lambda){
 		Queue<intNode> intNodes = new LinkedList<>();
-		boolean depth = true;
-		intNodes.add(this.root);
+		intNodes.add(this.tree.get(0));
+		int depth = 1;
 
 		while(!intNodes.isEmpty()){
 			int queueSize = intNodes.size();
-			depth = !depth;
+			depth = depth==0?1:0;
 
-			for(int i = 0; i < queueSize; i++){
-				intNode lnode = intNodes.remove();
-				lambda.call(intNodes,lnode,depth,array);
-			}
+			for(int i = 0; i < queueSize; i++)
+				lambda.call(intNodes,intNodes.remove(),depth);
 		}
 	}
 
-	public void generate(){
-		this.root.elements = this.lines;
-		bfsCall kd = (q,n,d,a) -> {
-			if(n.elements.size() > 1000) {
-				for (Node k : n.elements) k.setCompareAxis(d?1:0);
-				Collections.sort(n.elements);
+	public void generateTree() {
+		this.tree.add(new intNode());
+		this.tree.get(0).elements = this.lines;
+		this.lines = null;
+		this.bfs((q,n,d) -> {
+			if (n.elements.size() > 1000) {
+				n.elements.sort((o1, o2) -> Float.compare(o1.coords[d], o2.coords[d]));
 
 				n.point = n.elements.get(n.elements.size()/2).coords;
-				n.min   = n.elements.get(0).coords[d?1:0];
-				n.max   = n.elements.get(n.elements.size()-1).coords[d?1:0];
+				n.min = n.elements.get(0).coords[d];
+				n.max = n.elements.get(n.elements.size()-1).coords[d];
 
-				q.add(n.left = new intNode());
-				q.add(n.right = new intNode());
+				this.tree.add(new intNode());
+				this.tree.add(new intNode());
+
+				q.add(this.tree.get(n.left = this.tree.size()-2));
+				q.add(this.tree.get(n.right = this.tree.size()-1));
 
 				for (Node node : n.elements) {
-					if (node.coords[d?0:1] > n.point[d?0:1]) n.right.elements.add(node);
-					else n.left.elements.add(node);
+					if (node.coords[d==1?0:1] > n.point[d==1?0:1]) this.tree.get(n.right).elements.add(node);
+					else this.tree.get(n.left).elements.add(node);
 				}
-
-				n.elements = null;
-			} else {
-				n.objects = new HashSet<>();
-				for(Node node : n.elements) n.objects.add(node.obj);
-				n.elements = null;
-			}
-		};
-		this.bfs(kd,null);
-		this.lines = null;
+			} else for(Node e : n.elements) n.objects.add(e.obj);
+			n.elements = null;
+		});
 	}
 
-	public Set<Drawable> rangeSearch(double[] min, double[] max){
+	public Set<Drawable> rangeSearch(double[] min, double[] max) {
 		Set<Drawable> allElements = new HashSet<>();
-		bfsCall rs = (q,n,d,a) -> {
-			if(a != null && (n.left == null || n.right == null)) a.addAll(n.objects);
+		this.bfs((q,n,d) -> {
+			if (n.left < 0 || n.right < 0) allElements.addAll(n.objects);
 			else {
-				if(n.min < max[d?0:1]) q.add(n.left);
-				if(n.max > min[d?0:1]) q.add(n.right);
+				if (n.min < max[d==1?0:1]) q.add(this.tree.get(n.left));
+				if (n.max > min[d==1?0:1]) q.add(this.tree.get(n.right));
 			}
-		};
-		this.bfs(rs,allElements);
+		});
 		return allElements;
 	}
 
-	public List<float[]> getSplit(){
-		List<float[]> lines = new ArrayList<>();
-		bfsCall gs = (q,n,d,a) -> {
-			if(n.left != null || n.right != null){
-				lines.add(d ? new float[]{n.point[0],n.min} : new float[]{n.min,n.point[1]});
-				lines.add(d ? new float[]{n.point[0],n.max} : new float[]{n.max,n.point[1]});
-				q.add(n.left);
-				q.add(n.right);
+	public void generateSplits() {
+		this.bfs((q,n,d) -> {
+			if (n.left != -1 && n.right != -1) {
+				this.splits.add(d==1 ? new float[]{n.point[0], n.min} : new float[]{n.min, n.point[1]});
+				this.splits.add(d==1 ? new float[]{n.point[0], n.max} : new float[]{n.max, n.point[1]});
+				q.add(this.tree.get(n.left));
+				q.add(this.tree.get(n.right));
 			}
-		};
-		this.bfs(gs,lines);
-		return lines;
+		});
+	}
+
+	public List<float[]> getSplits(){
+		return this.splits;
 	}
 
 	/*public List<Node> NNSearch(){
-
 	}*/
 
 	private interface bfsCall {
-		void call(Queue<intNode> queue, intNode node, boolean depth, Collection array);
+		void call(Queue<intNode> queue, intNode node, int depth);
 	}
 
 	private static class intNode implements Serializable, SerialVersionIdentifiable {
 		public float[] point;
 		public float min, max;
-		public intNode left, right;
-		public List<Node> elements = new ArrayList<>();
-		public Set<Drawable> objects = new HashSet<>();
+		public int left, right;
+		public List<Node> elements;
+		public Set<Drawable> objects;
+
+		public intNode(){
+			this.left = this.right = -1;
+			this.elements = new ArrayList<>();
+			this.objects = new HashSet<>();
+		}
 	}
 
-	private static class Node implements Comparable<Node> {
+	private static class Node {
 		public float[] coords;
 		public Drawable obj;
-		private int compareAxis;
 
-		public Node(float lat, float lon, Drawable objRef){
-			this.coords = new float[]{lat,lon};
+		public Node(float lat, float lon, Drawable objRef) {
+			this.coords = new float[]{lat, lon};
 			this.obj = objRef;
-			this.compareAxis = 0;
-		}
-
-		public void setCompareAxis(int i){
-			this.compareAxis = i;
-		}
-
-		@Override public int compareTo(Node node){
-			return Float.compare(this.coords[this.compareAxis], node.coords[this.compareAxis]);
 		}
 	}
 }
