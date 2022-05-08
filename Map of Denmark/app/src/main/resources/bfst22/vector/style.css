@@ -22,20 +22,15 @@
 .vbox_debug_section {
     -fx-border-color: black;
     -fx-border-width: 1;
-    -fx-background-color: white;
-}
-
-.debugSectionHeader {
-    -fx-pref-width: 250;
-    -fx-background-color: black;
-    -fx-text-fill: white;
-    -fx-padding: 5;
-    -fx-font-weight: bold;
 }
 
 .debugText {
     -fx-line-spacing: 2em;
     -fx-padding: 5;
+}
+
+.toolbar {
+    -fx-background-color:black;
 }
 
 center {
@@ -56,8 +51,48 @@ center {
     -fx-padding:3 0 3 7;
 }
 
-.separator *.line {
+.separator_vertical *.line {
     -fx-border-style: hidden solid hidden hidden;
     -fx-border-width: 1px;
-    -fx-border-color: gray;
+    -fx-border-color: white;
+}
+
+.separator_horizontal *.line {
+    -fx-border-style: solid hidden hidden hidden;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}
+
+.titlepane_section {
+    -fx-animated: false;
+    -fx-text-fill: white;
+}
+
+.titlepane_section > .content {
+    -fx-background-color: white;
+}
+
+.titlepane_section > .title {
+    -fx-background-color: black;
+}
+
+.titlepane_section > .title > .text, .titlepane_section > .title > .ikonli-font-icon {
+    -fx-translate-x: -17;
+}
+
+.titlepane_section > .title > .arrow-button {
+    -fx-translate-x: 202;
+}
+
+#route_buttons .toggle-button {
+    -fx-background-color:black;
+}
+
+#route_find_button, #route_order_button {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+}
+
+#paintbar .label {
+    -fx-text-fill: white;
 }

@@ -21,23 +21,24 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ListView?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <!-- https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomeregular
-https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomeregular -->
+https://kordamp.org/ikonli -->
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TitledPane?>
 <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:id="someBorderPane"
             id="someBorderPane" stylesheets="@style.css" minWidth="400" prefWidth="800" minHeight="300" prefHeight="600">
     <fx:define>
         <ToggleGroup fx:id="brushModeGroup"/>
         <ToggleGroup fx:id="mapdisplay"/>
         <ToggleGroup fx:id="zoomGroup"/>
+        <ToggleGroup fx:id="routeTransport"/>
     </fx:define>
     <top>
         <VBox maxHeight="50" maxWidth="${someBorderPane.width}">
@@ -72,7 +73,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </MenuItem>
-                    <SeparatorMenuItem />
+                    <SeparatorMenuItem styleClass="separator_horizontal"/>
                     <MenuItem text="Exit" onAction="#exitButtonClicked">
                         <graphic>
                             <FontIcon iconLiteral="fas-door-open" iconSize="12"/>
@@ -114,9 +115,24 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="UP" code="P" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
+                    <CheckMenuItem text="Tools Bar" onAction="#toolsBarButtonClicked" selected="true">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="R" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Status Bar" onAction="#statusBarMenuClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="S" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Info Sidebar" fx:id="infoSidebar" onAction="#infoSidebarClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="T" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
                     <CheckMenuItem text="Debug Sidebar" onAction="#debugSidebarClicked">
                         <accelerator>
-                            <KeyCodeCombination alt="UP" code="Q" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            <KeyCodeCombination alt="UP" code="U" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
                 </Menu>
@@ -136,7 +152,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </MenuItem>
-                    <SeparatorMenuItem />
+                    <SeparatorMenuItem styleClass="separator_horizontal"/>
                     <RadioMenuItem text="Display Filled" onAction="#debugDisplayFilledClicked" selected="true" toggleGroup="$mapdisplay">
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
@@ -147,7 +163,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </RadioMenuItem>
-                    <SeparatorMenuItem />
+                    <SeparatorMenuItem styleClass="separator_horizontal" />
                     <CheckMenuItem text="Enable Cursor Pointer" onAction="#debugCursorClicked" selected="true">
                         <accelerator>
                             <KeyCodeCombination alt="DOWN" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="UP" />
@@ -163,14 +179,19 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="DOWN" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
-                    <CheckMenuItem text="Enable Free Movement" onAction="#debugFreeMovementClicked">
+                    <CheckMenuItem text="Enable Nearest-Neighbor" onAction="#debugNeighborClicked">
                         <accelerator>
                             <KeyCodeCombination alt="DOWN" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
-                    <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked">
+                    <CheckMenuItem text="Enable Free Movement" onAction="#debugFreeMovementClicked">
                         <accelerator>
                             <KeyCodeCombination alt="DOWN" code="DIGIT5" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                        </accelerator>
+                    </CheckMenuItem>
+                    <CheckMenuItem text="Disable Help Text" onAction="#debugHelpTextClicked">
+                        <accelerator>
+                            <KeyCodeCombination alt="DOWN" code="DIGIT6" control="UP" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
                     <CheckMenuItem text="Disable Bounding Box" onAction="#debugBoundingBoxClicked">
@@ -190,7 +211,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </MenuItem>
                 </Menu>
             </MenuBar>
-            <ToolBar prefHeight="30.0" HBox.hgrow="ALWAYS">
+            <ToolBar styleClass="toolbar" fx:id="toolsBar" prefHeight="30.0" HBox.hgrow="ALWAYS">
                 <HBox maxHeight="30" spacing="5" alignment="CENTER_LEFT">
                     <Button onAction="#onMenuButtonPress" text="Menu"/>
                     <ToggleButton fx:id="zoomBoxButton" text="Box Zoom" onAction="#onZoomBoxButtonPressed" toggleGroup="$zoomGroup">
@@ -213,7 +234,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </Button>
                 </HBox>
             </ToolBar>
-            <ToolBar fx:id="paintBar" prefHeight="30.0" visible="false">
+            <ToolBar styleClass="toolbar" fx:id="paintBar" id="paintbar" prefHeight="30.0" visible="false">
                 <HBox maxHeight="30" fx:id="paintBox" id="paintBox" spacing="5" alignment="CENTER_LEFT">
                     <ToggleButton text="Eraser" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="4">
                         <graphic>
@@ -235,7 +256,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <FontIcon iconLiteral="fas-circle" iconSize="12"/>
                         </graphic>
                     </ToggleButton>
-                    <Separator prefHeight="25" orientation="VERTICAL"/>
+                    <Separator styleClass="separator_vertical" prefHeight="25" orientation="VERTICAL"/>
                     <ToggleButton text="Text" onAction="#onPaintButtonPressed" toggleGroup="$brushModeGroup" userData="3">
                         <graphic>
                             <FontIcon iconLiteral="fas-font" iconSize="12"/>
@@ -248,7 +269,7 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                     </ComboBox>
                     <Label text="Font size: " prefHeight="25"/>
                     <Spinner fx:id="paintFontSize" min="1" max="150" initialValue="30" amountToStepBy="1" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintFontSizeButtonPressed"/>
-                    <Separator prefHeight="25" orientation="VERTICAL"/>
+                    <Separator styleClass="separator_vertical" prefHeight="25" orientation="VERTICAL"/>
                     <Label text="Stroke:" prefHeight="25"/>
                     <Spinner fx:id="paintStrokeSize" min="0.2" max="15" initialValue="1" amountToStepBy="0.2" editable="true" prefWidth="75" onKeyPressed="#spinnerPaintStrokeSizeButtonPressed"/>
                     <CheckBox text="Fill Polygons" prefHeight="25" onAction="#onPaintFillCheckboxPressed"/>
@@ -262,76 +283,132 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
         </VBox>
     </top>
     <left>
-        <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_LEFT">
+        <ScrollPane fx:id="vBox_scrollpane" id="vBox_scrollpane" hbarPolicy="NEVER" prefWidth="265" BorderPane.alignment="TOP_LEFT">
             <VBox id="vBox" spacing="10" prefWidth="250">
-                <VBox fx:id="pinPointSidebar" styleClass="vbox_debug_section">
-                    <Label text="Pin Points" styleClass="debugSectionHeader">
-                        <graphic>
-                            <FontIcon iconLiteral="fas-map-pin:12:WHITE"/>
-                        </graphic>
-                    </Label>
+                <TitledPane styleClass="titlepane_section" text="Find Directions">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-route:12:WHITE"/>
+                    </graphic>
+                    <VBox>
+                        <HBox id="route_buttons" spacing="5" style="-fx-padding: 0 0 5 0;" prefWidth="250">
+                            <ToggleButton toggleGroup="$routeTransport" selected="true" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="far-map:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                            <ToggleButton toggleGroup="$routeTransport" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-car:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                            <ToggleButton toggleGroup="$routeTransport" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-train:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                            <ToggleButton toggleGroup="$routeTransport" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-walking:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                            <ToggleButton toggleGroup="$routeTransport" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-bicycle:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                            <ToggleButton toggleGroup="$routeTransport" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-plane:12:WHITE"/>
+                                </graphic>
+                            </ToggleButton>
+                        </HBox>
+                        <VBox spacing="5">
+                            <TextField prefWidth="200" promptText="Starting Address"/>
+                            <TextField prefWidth="200" promptText="Destination"/>
+                            <HBox spacing="5">
+                                <Button id="route_find_button" text="Find" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-search:12:WHITE"/>
+                                    </graphic>
+                                </Button>
+                                <Button id="route_order_button" text="Reorder" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-exchange-alt:12:WHITE"/>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                            <Separator styleClass="separator_horizontal" visible="false"/>
+                            <ScrollPane disable="true" visible="false">
+                                <VBox>
+
+                                </VBox>
+                            </ScrollPane>
+                        </VBox>
+                    </VBox>
+                </TitledPane>
+                <TitledPane fx:id="pinPointSidebar" styleClass="titlepane_section" text="Pin Points" expanded="false">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-map-pin:12:WHITE"/>
+                    </graphic>
                     <ListView fx:id="pinPointList" prefHeight="200">
                         <placeholder>
                             <Label text="No pins yet added..." />
                         </placeholder>
                     </ListView>
-                </VBox>
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="Toggle Features" styleClass="debugSectionHeader">
-                        <graphic>
-                            <FontIcon iconLiteral="fas-toggle-off:12:WHITE"/>
-                        </graphic>
-                    </Label>
+                </TitledPane>
+                <TitledPane styleClass="titlepane_section" text="Toggle Features" expanded="false">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-toggle-off:12:WHITE"/>
+                    </graphic>
                     <TreeView fx:id="featuresTreeView" prefHeight="400"/>
-                </VBox>
+                </TitledPane>
             </VBox>
         </ScrollPane>
     </left>
     <right>
-        <ScrollPane fx:id="vbox_debug_scrollpane" id="vbox_debug_scrollpane" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefWidth="265" BorderPane.alignment="TOP_RIGHT">
+        <ScrollPane fx:id="vbox_debug_scrollpane" id="vbox_debug_scrollpane" hbarPolicy="NEVER" prefWidth="265" BorderPane.alignment="TOP_RIGHT">
             <VBox id="vbox_debug" spacing="10" prefWidth="250" prefHeight="500">
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="Updating" styleClass="debugSectionHeader">
-                        <graphic>
-                            <FontIcon iconLiteral="far-hourglass:12:WHITE"/>
-                        </graphic>
-                    </Label>
-                    <Label fx:id="canvas_load_time" styleClass="debugText" />
-                    <Label fx:id="canvas_repaint_time" styleClass="debugText" />
-                    <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
-                </VBox>
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="Coordinates" styleClass="debugSectionHeader">
-                        <graphic>
-                            <FontIcon iconLiteral="far-chart-bar:12:WHITE"/>
-                        </graphic>
-                    </Label>
-                    <Label fx:id="canvas_min" styleClass="debugText" />
-                    <Label fx:id="canvas_max" styleClass="debugText" />
-                    <Label fx:id="canvas_origin" styleClass="debugText" />
-                    <Label fx:id="canvas_mouse" styleClass="debugText" />
-                    <Label fx:id="canvas_zoom" styleClass="debugText" />
-                </VBox>
-                <VBox styleClass="vbox_debug_section">
-                    <Label text="File Data" styleClass="debugSectionHeader">
-                        <graphic>
-                            <FontIcon iconLiteral="far-file-alt:12:WHITE"/>
-                        </graphic>
-                    </Label>
-                    <Label fx:id="canvas_filesize" styleClass="debugText" />
-                    <Label fx:id="canvas_bounds_min" styleClass="debugText" />
-                    <Label fx:id="canvas_bounds_max" styleClass="debugText" />
-                    <Label fx:id="canvas_nodes" styleClass="debugText" />
-                    <Label fx:id="canvas_ways" styleClass="debugText" />
-                    <Label fx:id="canvas_relations" styleClass="debugText" />
-                </VBox>
+                <TitledPane styleClass="titlepane_section" text="Updating">
+                    <graphic>
+                        <FontIcon iconLiteral="far-hourglass:12:WHITE"/>
+                    </graphic>
+                    <VBox>
+                        <Label fx:id="canvas_load_time" styleClass="debugText" />
+                        <Label fx:id="canvas_repaint_time" styleClass="debugText" />
+                        <Label fx:id="canvas_avg_repaint_time" styleClass="debugText" />
+                    </VBox>
+                </TitledPane>
+                <TitledPane styleClass="titlepane_section" text="Coordinates">
+                    <graphic>
+                        <FontIcon iconLiteral="far-chart-bar:12:WHITE"/>
+                    </graphic>
+                    <VBox>
+                        <Label fx:id="canvas_min" styleClass="debugText" />
+                        <Label fx:id="canvas_max" styleClass="debugText" />
+                        <Label fx:id="canvas_origin" styleClass="debugText" />
+                        <Label fx:id="canvas_mouse" styleClass="debugText" />
+                        <Label fx:id="canvas_zoom" styleClass="debugText" />
+                    </VBox>
+                </TitledPane>
+                <TitledPane styleClass="titlepane_section" text="File Data">
+                    <graphic>
+                        <FontIcon iconLiteral="far-file-alt:12:WHITE"/>
+                    </graphic>
+                    <VBox>
+                        <Label fx:id="canvas_bounds_min" styleClass="debugText" />
+                        <Label fx:id="canvas_bounds_max" styleClass="debugText" />
+                        <Label fx:id="canvas_nodes" styleClass="debugText" />
+                        <Label fx:id="canvas_ways" styleClass="debugText" />
+                        <Label fx:id="canvas_relations" styleClass="debugText" />
+                    </VBox>
+                </TitledPane>
             </VBox>
         </ScrollPane>
     </right>
     <center>
         <MapCanvas fx:id="canvas"
-                   width="800"
-                   height="520"
+                   width="535"
+                   height="550"
                    BorderPane.alignment="TOP_LEFT"
                    onScroll="#onScroll"
                    onMousePressed="#onMousePressed"
@@ -340,10 +417,11 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                    onMouseReleased="#onMouseReleased"/>
     </center>
     <bottom>
-        <ToolBar prefHeight="30.0" maxWidth="${someBorderPane.width}">
-            <Button text="Button1"/>
-            <Button text="Button2"/>
-            <Button text="Button3"/>
+        <ToolBar styleClass="toolbar" fx:id="statusBar" prefHeight="30.0" maxWidth="${someBorderPane.width}">
+            <HBox spacing="15">
+                <Label fx:id="canvas_map_name" style="-fx-text-fill:white;" prefHeight="30"/>
+                <Label fx:id="canvas_map_size" style="-fx-text-fill:white;" prefHeight="30"/>
+            </HBox>
         </ToolBar>
     </bottom>
 </BorderPane>

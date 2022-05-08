@@ -2,7 +2,6 @@ package bfst22.vector;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class KdTree implements Serializable, SerialVersionIdentifiable {
 	private final List<float[]> splits;
@@ -39,17 +38,21 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 
 	// KD-Tree generic 'Breadth-first search' method
 	private void bfs(bfsCall lambda){
-		Queue<intNode> intNodes = new LinkedList<>();
-		intNodes.add(this.tree.get(0));
+		Queue<intNode> nodes = new LinkedList<>();
+		nodes.add(this.tree.get(0));
 		int depth = 1;
 
-		while(!intNodes.isEmpty()){
-			int queueSize = intNodes.size();
+		while(!nodes.isEmpty()){
+			int queueSize = nodes.size();
 			depth = depth==0?1:0;
 
 			for(int i = 0; i < queueSize; i++)
-				lambda.call(intNodes,intNodes.remove(),depth);
+				lambda.call(nodes,nodes.remove(),depth);
 		}
+	}
+
+	private intNode getNode(int index){
+		return this.tree.get(index);
 	}
 
 	public void generateTree() {
@@ -74,6 +77,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 					if (node.coords[d==1?0:1] > n.point[d==1?0:1]) this.tree.get(n.right).elements.add(node);
 					else this.tree.get(n.left).elements.add(node);
 				}
+				n.objects = null;
 			} else for(Node e : n.elements) n.objects.add(e.obj);
 			n.elements = null;
 		});
@@ -106,11 +110,28 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		return this.splits;
 	}
 
-	/*public List<Node> NNSearch(){
-	}*/
+	private intNode NNSearch(float[] point, intNode node, intNode closest, int depth){
+		if(node.objects != null) return closest;
+		if(point[(depth+1)%2] < node.point[(depth+1)%2]){
+			closest = NNSearch(point, getNode(node.left), closest, depth+1);
+			if(node.axisDistance(point,(depth+1)%2) < closest.distance(point))
+				closest = NNSearch(point, getNode(node.right), closest, depth+1);
+
+		} else {
+			closest = NNSearch(point, getNode(node.right), closest, depth+1);
+			if(node.axisDistance(point,(depth+1)%2) < closest.distance(point))
+				closest = NNSearch(point, getNode(node.left), closest, depth+1);
+		}
+		if(node.distance(point) < closest.distance(point)) closest = node;
+		return closest;
+	}
+
+	public float[] findNN(float[] point){
+		return this.NNSearch(point,this.tree.get(0),this.tree.get(0),0).point;
+	}
 
 	private interface bfsCall {
-		void call(Queue<intNode> queue, intNode node, int depth);
+		void call(Collection<intNode> queue, intNode node, int depth);
 	}
 
 	private static class intNode implements Serializable, SerialVersionIdentifiable {
@@ -124,6 +145,14 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 			this.left = this.right = -1;
 			this.elements = new ArrayList<>();
 			this.objects = new HashSet<>();
+		}
+
+		public double distance(float[] point){
+			return Math.sqrt(Math.pow(this.point[0]-point[0],2)+Math.pow(this.point[1]-point[1],2));
+		}
+
+		public double axisDistance(float[] point, int axis){
+			return Math.abs(point[axis]-this.point[axis]);
 		}
 	}
 

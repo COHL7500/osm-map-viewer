@@ -5,9 +5,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -23,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
@@ -30,21 +33,28 @@ public class Controller {
     private Stage stage;
 	private Model model;
     private List<String> loadedMaps;
-    private ContextMenu canvasCM;
+    private ContextMenu canvasCM, suggestionPopup;
 	
 	@FXML private MapCanvas canvas;
-    @FXML private VBox pinPointSidebar;
+    @FXML private TitledPane pinPointSidebar;
     @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
-    @FXML private ToolBar paintBar;
+    @FXML private ToolBar paintBar, toolsBar, statusBar;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
+    @FXML private CheckMenuItem infoSidebar;
     @FXML private ToggleGroup mapdisplay, brushModeGroup;
     @FXML private ColorPicker paintColourPicker;
     @FXML private Spinner<Double> paintStrokeSize;
     @FXML private Spinner<Integer> paintFontSize;
+    @FXML private HBox search_root;
+    @FXML private GridPane search_pane;
+    @FXML private HBox search_box;
+    @FXML private Button searchButton;
+    @FXML private Button clearButton;
+    @FXML private TextField searchField;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
@@ -64,10 +74,11 @@ public class Controller {
     @FXML private Label canvas_nodes;
     @FXML private Label canvas_ways;
     @FXML private Label canvas_relations;
-    @FXML private Label canvas_filesize;
     @FXML private Label canvas_load_time;
     @FXML private Label canvas_repaint_time;
     @FXML private Label canvas_avg_repaint_time;
+    @FXML private Label canvas_map_name;
+    @FXML private Label canvas_map_size;
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
@@ -82,9 +93,10 @@ public class Controller {
         this.stage = primarystage;
         this.loadedMaps = new ArrayList<>();
         this.canvasCM = new ContextMenu();
+        this.suggestionPopup = new ContextMenu();
 
-        this.someBorderPane.setLeft(null);
         this.someBorderPane.setRight(null);
+        this.someBorderPane.setBottom(null);
         this.canvas.init(model);
         this.canvas.pinpoints.init(pinPointList);
         this.addRecentLoadedMap(this.model.currFileName);
@@ -106,12 +118,29 @@ public class Controller {
             this.canvas.checkInBounds();
         });
         this.paintBar.managedProperty().bind(this.paintBar.visibleProperty());
+        this.toolsBar.managedProperty().bind(this.toolsBar.visibleProperty());
         this.someBorderPane.setOnKeyPressed(e -> {
             this.canvas.painter.keyPress(e.getText());
             this.canvas.update();
         });
         this.fontBox.getItems().addAll(Font.getFamilies());
         this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
+        this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.isEmpty()) this.suggestionPopup.hide();
+            this.suggestionPopup.getItems().clear();
+            this.model.searchTree.searchSuggestions(searchField.getText().toLowerCase(Locale.ROOT))
+                    .forEach(suggestion -> {
+                        MenuItem item = new MenuItem(suggestion.toString());
+                        item.setOnAction(action -> {
+                            this.canvas.goToPosAbsolute(suggestion.coordPos);
+                            this.canvas.zoomTo(300000);
+                            searchField.setText(suggestion.toString());
+                            suggestionPopup.hide();
+                        });
+                        suggestionPopup.getItems().add(item);
+                    });
+            suggestionPopup.show(searchField, Side.BOTTOM, 0, 0);
+        });
     }
 
     private void generateContextMenu(){
@@ -134,21 +163,27 @@ public class Controller {
     }
 
     private void updateDebugInfo(){
-        if(!this.model.isLoaded() || this.model.isLoaded() && this.someBorderPane.getRight() != null){
-            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
-            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
-            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
-            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos.getX()) + ", " + String.format("%.5f", this.canvas.mousePos.getY())));
-            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
-            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos.getY()) + ", " + String.format("%.5f", this.model.minBoundsPos.getX())));
-            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos.getY()) + ", " + String.format("%.5f", this.model.maxBoundsPos.getX())));
-            this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
-            this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
-            this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
-            this.canvas_filesize.setText(String.format("%-27s%d bytes", "file size:", this.model.filesize));
-            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
-            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
-            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+        if(!this.model.isLoaded() || this.model.isLoaded()){
+            if(this.someBorderPane.getRight() != null){
+                this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
+                this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
+                this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
+                this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos.getX()) + ", " + String.format("%.5f", this.canvas.mousePos.getY())));
+                this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
+                this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos.getY()) + ", " + String.format("%.5f", this.model.minBoundsPos.getX())));
+                this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos.getY()) + ", " + String.format("%.5f", this.model.maxBoundsPos.getX())));
+                this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
+                this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
+                this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
+                this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
+                this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
+                this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
+            }
+
+            if(this.someBorderPane.getBottom() != null){
+                this.canvas_map_name.setText(String.format("%s%20s", "file name:", this.model.currFileName));
+                this.canvas_map_size.setText(String.format("%s%10d bytes", "file size:", this.model.filesize));
+            }
         }
     }
 
@@ -255,6 +290,7 @@ public class Controller {
         this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox_scrollpane : null);
         this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 265 : -265)); // Find a way to make this non-hardcoded
         this.canvas.update();
+        this.infoSidebar.setSelected(this.someBorderPane.getLeft() != null);
     }
 
     @FXML private void onZoomBoxButtonPressed(ActionEvent e){
@@ -263,6 +299,20 @@ public class Controller {
 
     @FXML private void onZoomMagnifyingGlassButtonPressed(ActionEvent e){
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
+    }
+
+    @FXML private void onSearchButtonPressed(ActionEvent e) {
+        //search();
+    }
+
+    @FXML private void onSearchKeyPressed(KeyEvent k){
+        if (k.getCode().equals(KeyCode.ENTER)) {
+            //search();
+        }
+    }
+
+    @FXML private void onClearButtonPressed(ActionEvent e){
+        searchField.clear();
     }
 
     @FXML private void onPaintFillCheckboxPressed(ActionEvent e){
@@ -372,6 +422,25 @@ public class Controller {
         this.canvas.update();
     }
 
+    // when the menubar 'View' section button 'Tools Bar' is clicked
+    @FXML private void toolsBarButtonClicked(final ActionEvent e){
+        this.toolsBar.setVisible(!this.toolsBar.isVisible());
+        this.canvas.setHeight(this.canvas.getHeight() - (this.toolsBar.isVisible() ? 30 : -30));
+        this.canvas.update();
+    }
+
+    // when the menubar 'View' section button 'Status Bar' is clicked
+    @FXML private void statusBarMenuClicked(final ActionEvent e){
+        this.someBorderPane.setBottom(this.someBorderPane.getBottom() == null ? statusBar : null);
+        this.canvas.setHeight(this.canvas.getHeight() - (this.statusBar.isVisible() ? 30 : -30));
+        this.canvas.update();
+    }
+
+    // when the menubar 'View' section button 'Info Bar' is clicked
+    @FXML private void infoSidebarClicked(final ActionEvent e){
+        this.onMenuButtonPress(e);
+    }
+
     // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
 		this.canvas.debugPropertiesToggle("debugSideBar");
@@ -428,6 +497,10 @@ public class Controller {
     // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
     @FXML private void debugSplitsClicked(final ActionEvent e) throws IOException {
         this.canvas.debugPropertiesToggle("debugSplits");
+    }
+
+    @FXML private void debugNeighborClicked(final ActionEvent e){
+        this.canvas.debugPropertiesToggle("debugNeighbor");
     }
 
     // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
