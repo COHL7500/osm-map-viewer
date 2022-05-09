@@ -105,6 +105,9 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
+
+        // , "secondary", "tertiary", "residential"
+
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
@@ -229,6 +232,7 @@ public class Model {
                         }
 
                         nodes.clear();
+
                         if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
                             this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
                         }
@@ -257,12 +261,13 @@ public class Model {
         }
 
         graph.generate();
-        for(int i = 1; i < index2way.size() - 1; i++){
-            for(int j = 1; j < index2way.get(i).size() - 1; j++){
+        for(int i = 0; i < index2way.size() - 1 ; i++){
+            for(int j = 0; j < index2way.get(i).size() - 1; j++){
                 graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
                 graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
             }
         }
+
         /*
         Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));

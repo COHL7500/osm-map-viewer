@@ -258,12 +258,6 @@ ways:
           fill: true
           fill_color: "#8a8a8a"
       unclassified: {}
-      residential: {}
-      motorwar_link: {}
-      trunk_link: {}
-      primary_link: {}
-      secondary_link: {}
-      teritary_link: {}
       living_street: {}
       service: {}
       pedestrian:
@@ -307,24 +301,30 @@ ways:
       zoom_level: 30000
     valuefeatures:
       motorway: {}
+      motorway_link: {}
       trunk: {}
+      trunk_link: {}
       primary:
         draw:
           stroke: true
           stroke_color: "#fdd7a1"
           line_width: 0.00005
           zoom_level: 20000
+      primary_link: {}
       secondary:
         draw:
           stroke: true
           stroke_color: "#f6faab"
           line_width: 0.00004
           zoom_level: 20000
+      secondary_link: {}
       tertiary:
         draw:
           stroke: true
           stroke_color: "white"
           line_width: 0.00010
+      tertiary_link: {}
+      residential: {}
       pedestrian:
         draw:
           stroke: true
@@ -348,7 +348,7 @@ ways:
       separate: {}
   railway:
       draw:
-          stroke: true
+          stroke: false
           stroke_color: "#889194"
           dash_size: 0.00005
           zoom_level: 30000
