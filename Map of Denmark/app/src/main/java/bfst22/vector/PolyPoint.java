@@ -1,8 +1,10 @@
 
 package bfst22.vector;
 
+import java.io.Serializable;
+
 // Defines what a node is in the OSM file and its properties.
-public class PolyPoint {
+public class PolyPoint implements Serializable, SerialVersionIdentifiable {
     public long id;
     public float lat, lon;
 

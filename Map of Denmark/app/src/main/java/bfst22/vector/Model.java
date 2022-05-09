@@ -28,7 +28,6 @@ public class Model {
     public Address.Builder builder = new Address.Builder();
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
-    public int currIndex = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -55,6 +54,7 @@ public class Model {
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
+                    this.graph = (Graph) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
                 this.filesize = Files.size(Paths.get(this.currFileName));
@@ -65,6 +65,7 @@ public class Model {
     public void unload(){
         this.kdtree = null;
         this.yamlObj = null;
+        this.graph = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
         this.currFileName = "";
@@ -89,6 +90,7 @@ public class Model {
             out.writeInt(relcount);
             out.writeObject(kdtree);
             out.writeObject(yamlObj);
+            out.writeObject(graph);
         }
     }
 
@@ -98,6 +100,7 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
+        this.graph = new Graph();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
@@ -105,12 +108,12 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
+        int HwyCount = 0;
 
         // , "secondary", "tertiary", "residential"
 
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
-        graph = new Graph();
         boolean isHighway = false;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
@@ -226,9 +229,9 @@ public class Model {
                         this.kdtree.add(way);
                         this.waycount++;
                         if (isHighway) {
-                            index2way.put(currIndex, new LinkedList<>());
-                            for (PolyPoint p : nodes) index2way.get(currIndex).add(p);
-                            currIndex++;
+                            index2way.put(HwyCount, new LinkedList<>());
+                            for (PolyPoint p : nodes) index2way.get(HwyCount).add(p);
+                            HwyCount++;
                         }
 
                         nodes.clear();
