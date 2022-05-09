@@ -109,6 +109,7 @@ public class DijkstraSPTest {
     }
     @Test void dijkstraTest0to4(){
         sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4));
+        System.out.println(sp.pathToString(sp.pathTo(g.nodes.get(4))));
         assertEquals("[4->5  4.181843, 1->4  10.410108]","" + sp.pathToString(sp.pathTo(g.nodes.get(4))));
     }
 

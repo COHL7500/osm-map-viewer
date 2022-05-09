@@ -5,8 +5,8 @@ package bfst22.vector;
 import java.util.*;
 
 public class Graph {
-    private int vertexCount; //Number of vertices.
-    private int edgeCount; //Number of edges
+    int vertexCount; //Number of vertices.
+    int edgeCount; //Number of edges
     float speedlimit = 0; //Speedlimit
     List<PolyPoint> nodes = new ArrayList<>();
 
@@ -14,8 +14,6 @@ public class Graph {
     Map<PolyPoint, Integer> indexMap = new HashMap<>();
     Map<Integer, PolyPoint> polyMap = new HashMap<>();
 
-    private final LinkedList<Edge> list = new LinkedList<Edge>();
-    private final List<PolyPoint> graphNodes = new LinkedList<>();
     int index = 0;
 
     //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
@@ -28,10 +26,13 @@ public class Graph {
         vertexCount = this.nodes.size();
         for(int i = 0; i < vertexCount; i++){
             PolyPoint node = this.nodes.get(i);
-            adjMap.put(node,new LinkedList<Edge>());
-            indexMap.put(node, index);
-            polyMap.put(index, node);
-            index++;
+            if(adjMap.get(node) == null){
+                adjMap.put(node,new LinkedList<Edge>());
+                indexMap.put(node, index);
+                polyMap.put(index, node);
+                index++;
+            }
+
         }
     }
 
@@ -67,8 +68,11 @@ public class Graph {
     public Iterable<Edge> edges() {
         Bag<Edge> bagList = new Bag<>();
         for(int v = 0; v < vertexCount; v++){
-            for(Edge e : adjMap.get(polyMap.get(v))){
-                bagList.add(e);
+            if(polyMap.get(v) != null){
+                for(Edge e : adjMap.get(polyMap.get(v))){
+                    bagList.add(e);
+            }
+
             }
         }
         return bagList;
@@ -98,29 +102,13 @@ public class Graph {
             return adjMap;
         }
 
-        public List<PolyPoint> getGraphNodes ()
-        {
-            return graphNodes;
-        }
-
-        public LinkedList<Edge> getList ()
-        {
-            return list;
-        }
-
-        public void setWaycount ( int waycount){
-            if (edgeCount == 0) edgeCount = waycount;
-        }
-
         public float setWeightDistance (PolyPoint from, PolyPoint to,float speedlimit){
             Distance d = new Distance();
             return (float)d.haversineFormula(from, to) / speedlimit;
         }
 
-
         public float setWeight(float weight){
             return weight;
         }
-
 
     }

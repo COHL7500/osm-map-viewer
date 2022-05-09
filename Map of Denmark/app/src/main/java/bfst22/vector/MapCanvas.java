@@ -194,23 +194,25 @@ public class MapCanvas extends Canvas {
         }
     }
 
+    private void drawEdge(Edge e){
+        this.gc.moveTo(e.getFrom().lat,e.getFrom().lon);
+        this.gc.lineTo(e.getTo().lat,e.getTo().lon);
+    }
+
     private void drawGraph(Graph graph)
     {
-        if(graph != null)
-        {
             this.gc.setStroke(Color.RED);
-            this.gc.setLineWidth(0.000015);
+            this.gc.setLineWidth(0.000030);
             gc.beginPath();
-
-            for(Edge e : graph.edges())
-            {
-                this.gc.moveTo(e.getFrom().lat,e.getFrom().lon);
-                this.gc.lineTo(e.getTo().lat,e.getTo().lon);
+            for(Edge e : graph.edges()){
+                    drawEdge(e);
             }
-
             this.gc.stroke();
             this.gc.closePath();
-        }
+
+    }
+
+    private void drawShortestPath(){
     }
 
     // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided

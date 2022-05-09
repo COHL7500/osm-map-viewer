@@ -104,7 +104,7 @@ public class Model {
         Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
-        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary"));
+        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
@@ -226,8 +226,8 @@ public class Model {
                             index2way.put(currIndex, new LinkedList<>());
                             for (PolyPoint p : nodes) index2way.get(currIndex).add(p);
                             currIndex++;
-
                         }
+
                         nodes.clear();
                         if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
                             this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
@@ -257,14 +257,23 @@ public class Model {
         }
 
         graph.generate();
-
-        for (int i = 0; i < (index2way.size()); i++) {
-            for (int j = 0; j < (index2way.get(i).size() - 1); j++) {
-                //if(index2way.get(i) != null && index2way.get(i).get(j) != null && index2way.get(i).get(j++) != null){
-                graph.addEdge(index2way.get(i).get(j), index2way.get(i).get(j++), graph.setWeightDistance(index2way.get(i).get(j), index2way.get(i).get(j++), 75));
+        for(int i = 1; i < index2way.size() - 1; i++){
+            for(int j = 1; j < index2way.get(i).size() - 1; j++){
+                graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
+                graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
             }
         }
+        /*
+        Random rand = new Random();
+        PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
+        PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
+
+        DijkstraSP sp = new DijkstraSP(graph,from,to);
+        sp.pathToString(sp.pathTo(to));
+        */
+
     }
+
 
         
 
