@@ -3,11 +3,17 @@ import java.util.*;
 
 public class DijkstraSP {
 
+    PolyPoint start;
+    PolyPoint target;
+
     Map<PolyPoint, Double> distanceMap;
     Map<PolyPoint, Edge> edgeMap;
     IndexMinPQ<Double> pq;
 
     public DijkstraSP(Graph g, PolyPoint start, PolyPoint target){
+        this.start = start;
+        this.target = target;
+
         distanceMap = new HashMap<>();
         edgeMap = new HashMap<>();
 
