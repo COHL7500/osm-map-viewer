@@ -28,6 +28,8 @@ public class Model {
     public Address.Builder builder = new Address.Builder();
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
+    public DijkstraSP dijkstraSP;
+    public int currIndex = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -271,14 +273,14 @@ public class Model {
             }
         }
 
-        /*
+
         Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
 
-        DijkstraSP sp = new DijkstraSP(graph,from,to);
-        sp.pathToString(sp.pathTo(to));
-        */
+        dijkstraSP = new DijkstraSP(graph,from,to);
+        System.out.println(dijkstraSP.pathToString(dijkstraSP.pathTo(to)));
+
 
     }
 

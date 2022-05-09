@@ -187,7 +187,8 @@ public class MapCanvas extends Canvas {
             this.setStylingDefault();
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
-            this.drawGraph(model.graph);
+            //this.drawGraph(model.graph);
+            this.drawShortestPath(model.dijkstraSP);
             this.drawBounds();
             this.strokeCursor();
             this.strokeBox(padding);
@@ -212,7 +213,15 @@ public class MapCanvas extends Canvas {
 
     }
 
-    private void drawShortestPath(){
+    private void drawShortestPath(DijkstraSP dijkstra){
+            this.gc.setStroke(Color.GREEN);
+            this.gc.setLineWidth(0.000030);
+            gc.beginPath();
+            for(Edge e : dijkstra.pathTo(dijkstra.target)){
+                drawEdge(e);
+            }
+            this.gc.stroke();
+            this.gc.closePath();
     }
 
     // Sets the current styling options for graphicscontext based on eventual keyfeature/valuefeature values provided
