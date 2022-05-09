@@ -1,7 +1,8 @@
 package bfst22.vector;
+import java.io.Serializable;
 import java.util.*;
 
-public class DijkstraSP {
+public class DijkstraSP implements Serializable, SerialVersionIdentifiable {
 
     PolyPoint start;
     PolyPoint target;

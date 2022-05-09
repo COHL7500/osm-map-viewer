@@ -29,7 +29,6 @@ public class Model {
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
     public DijkstraSP dijkstraSP;
-    public int currIndex = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -57,6 +56,7 @@ public class Model {
                     this.kdtree = (KdTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                     this.graph = (Graph) input.readObject();
+                    this.dijkstraSP = (DijkstraSP) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
                 this.filesize = Files.size(Paths.get(this.currFileName));
@@ -68,6 +68,7 @@ public class Model {
         this.kdtree = null;
         this.yamlObj = null;
         this.graph = null;
+        this.dijkstraSP = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
         this.currFileName = "";
@@ -93,6 +94,7 @@ public class Model {
             out.writeObject(kdtree);
             out.writeObject(yamlObj);
             out.writeObject(graph);
+            out.writeObject(dijkstraSP);
         }
     }
 
@@ -103,6 +105,7 @@ public class Model {
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
         this.graph = new Graph();
+        Random rand = new Random();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
@@ -273,12 +276,10 @@ public class Model {
             }
         }
 
-
-        Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
+        this.dijkstraSP = new DijkstraSP(graph,from,to);
 
-        dijkstraSP = new DijkstraSP(graph,from,to);
         System.out.println(dijkstraSP.pathToString(dijkstraSP.pathTo(to)));
 
 

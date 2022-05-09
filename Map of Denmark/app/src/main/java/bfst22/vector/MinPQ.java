@@ -4,6 +4,10 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/*
+TODO:
+    - Remove this class (consult adam)
+ */
 
 public class MinPQ<Key> implements Iterable<Key> {
     private Key[] pq;                    // store items at indices 1 to n
