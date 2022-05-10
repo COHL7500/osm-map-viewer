@@ -251,7 +251,6 @@ public class Model {
                             }
                             HwyCount++;
 
-
                         }
 
                         nodes.clear();
@@ -296,10 +295,8 @@ public class Model {
 
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
+
         dijkstraSP = new DijkstraSP(graph,from,to, VehicleType.MOTORCAR);
-
-
-
 
     }
 
