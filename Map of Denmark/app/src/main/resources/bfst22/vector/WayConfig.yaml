@@ -15,7 +15,7 @@
       city: {}
       borough: {}
       suburb: {}
-      quater: {}
+      quarter: {}
       neighbourhood: {}
       city_block: {}
       plot: {}

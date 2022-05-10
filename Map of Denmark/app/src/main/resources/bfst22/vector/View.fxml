@@ -143,6 +143,11 @@ https://kordamp.org/ikonli/cheat-sheet-fontawesome5.html#_regular_fontawesomereg
                             <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </RadioMenuItem>
+                    <RadioMenuItem text="Display Dark Filled" onAction="#debugDisplayDarkFilledClicked" selected="true" toggleGroup="$mapdisplay">
+                        <accelerator>
+                            <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                        </accelerator>
+                    </RadioMenuItem>
                     <RadioMenuItem text="Display Wireframe" onAction="#debugDisplayWireframeClicked" toggleGroup="$mapdisplay">
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />

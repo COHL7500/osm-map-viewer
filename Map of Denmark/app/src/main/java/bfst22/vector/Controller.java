@@ -5,7 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -460,6 +459,13 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
         this.canvas.debugValMap.replace("debugDisplayWireframe", false);
+        this.canvas.backgroundColor = "#b5d2dd";
+        this.model.lightMode();
+    }
+
+    @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
+        this.canvas.backgroundColor = "#31428c";
+        this.model.darkMode();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked

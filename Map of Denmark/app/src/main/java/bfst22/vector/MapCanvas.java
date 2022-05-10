@@ -29,6 +29,7 @@ public class MapCanvas extends Canvas {
     public ZoomBox zoombox;
     public PinPoints pinpoints;
     public boolean drags;
+    public String backgroundColor;
 	Map<String, Boolean> debugValMap = debugPropertiesInit();
 
     /* ----------------------------------------------------------------------------------------------------------------- *
@@ -37,6 +38,7 @@ public class MapCanvas extends Canvas {
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
+        this.backgroundColor = "#31428c";
         this.reset();
         this.zoom(42000);
         this.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
@@ -130,7 +132,7 @@ public class MapCanvas extends Canvas {
 
         // Background color
         //this.gc.setFill(Color.web("#b5d2d"));
-        this.gc.setFill(Color.web("#31428c"));
+        this.gc.setFill(Color.web(backgroundColor));
         this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:
@@ -198,6 +200,8 @@ public class MapCanvas extends Canvas {
             if (draw.line_width != 0)       this.gc.setLineWidth(draw.line_width);
             if (draw.fill_color != null)    this.gc.setFill(Color.web(draw.fill_color));
             if (draw.dash_size != 0)        this.gc.setLineDashes(draw.dash_size);
+            if (draw.force_stroke_color != null)  this.gc.setStroke(Color.web(draw.force_stroke_color));
+            if (draw.force_fill_color != null)    this.gc.setFill(Color.web(draw.force_fill_color));
         }
     }
 
