@@ -367,8 +367,6 @@
         draw:
           stroke: true
           stroke_color: "#c5c7cc"
-          fill: true
-          fill_color: "#dcdce7"
       service:
         draw:
             stroke: true
@@ -412,11 +410,6 @@
               fill_color: "#b7b7b7"
           unclassified: {}
           residential: {}
-          motorwar_link: {}
-          trunk_link: {}
-          primary_link: {}
-          secondary_link: {}
-          teritary_link: {}
           living_street: {}
           service: {}
           breakwater:

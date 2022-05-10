@@ -130,7 +130,7 @@ public class MapCanvas extends Canvas {
 
         // Background color
         //this.gc.setFill(Color.web("#b5d2d"));
-        this.gc.setFill(Color.WHITESMOKE);
+        this.gc.setFill(Color.web("#31428c"));
         this.gc.fillRect(0, 0, super.getWidth(), super.getHeight());
 
         // Performs linear mapping between Point2D points. Our trans is Affine:

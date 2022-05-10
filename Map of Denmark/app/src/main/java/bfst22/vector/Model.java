@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -93,6 +94,34 @@ public class Model {
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
         this.searchTree = new TernarySearchTree();
+
+        yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
+
+            if (valueVF != null) {
+
+                if (key.equals("highway"))
+                {
+                    valueVF.draw.stroke_color = Color.web("#343742").toString();
+
+                }
+                else if (key.equals("building"))
+                {
+                    value.draw.stroke_color = Color.web("#586a8a").toString();
+                    value.draw.fill_color = Color.web("#586a8a").toString();
+
+                }
+                else if (keyVF.equals("water"))
+                {
+                    valueVF.draw.stroke_color = Color.web("#31428c").toString();
+                    valueVF.draw.fill_color = Color.web("#31428c").toString();
+                }
+                else
+                {
+                    valueVF.draw.stroke_color = Color.web("#3f4a5c").toString(); //Color.web(value.draw.stroke_color).darker().toString();
+                    valueVF.draw.fill_color = Color.web("#3f4a5c").toString();
+                }
+            }
+        }));
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
