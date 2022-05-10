@@ -17,10 +17,12 @@ class DirectionsTest {
     Address a;
     float km2meter;
     Graph g = new Graph();
+    VehicleType vehicle;
     DijkstraSP sp1;
     DijkstraSP sp2;
     List<PolyPoint> path1 = new ArrayList<>();
     List<PolyPoint> path2 = new ArrayList<>();
+    ArrayList<Edge> directionPath = new ArrayList<>();
 
 
     PolyPoint A = new PolyPoint(1,(float)12.6039900,(float)55.6390580);
@@ -60,7 +62,7 @@ class DirectionsTest {
     }
 
     @Test void path1Test(){
-        sp1 = new DijkstraSP(g,A,E);
+        sp1 = new DijkstraSP(g,A,E,vehicle.MOTORCAR);
         Stack<String> path = new Stack<>();
         Iterator<Edge> edgeIterator = sp1.pathTo(E).iterator();
 
@@ -72,14 +74,14 @@ class DirectionsTest {
 
         for(Edge e : sp1.pathTo(E)){
 
-            path.push(directions.turn(e.getFrom(),sp1.pathTo(E).iterator().next().getTo()));
+            //path.push(directions.turn(e.getFrom(),sp1.pathTo(E).iterator().next().getTo()));
 
         }
         assertEquals("idk",path.toString());
     }
 
     @Test void path2Test(){
-        sp1 = new DijkstraSP(g,E,A);
+        sp1 = new DijkstraSP(g,E,A,vehicle.MOTORCAR);
         Stack<Edge> path = new Stack<>();
         for(Edge e : sp1.pathTo(A)){
 
