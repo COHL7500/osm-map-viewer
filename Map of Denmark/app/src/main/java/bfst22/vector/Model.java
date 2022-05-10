@@ -25,7 +25,6 @@ public class Model {
 	public VehicleType vehicleType;
     public Edge e;
 
-
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.currFileName = filename;
@@ -49,6 +48,7 @@ public class Model {
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
+                    this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
@@ -59,10 +59,11 @@ public class Model {
 
     public void unload(){
         this.kdtree = null;
+        this.searchTree = null;
         this.yamlObj = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
-        this.currFileName = "";
+        this.currFileName = "<No File Loaded>";
         this.loadTime = this.filesize = 0;
     }
 
@@ -83,6 +84,7 @@ public class Model {
             out.writeInt(waycount);
             out.writeInt(relcount);
             out.writeObject(kdtree);
+            out.writeObject(searchTree);
             out.writeObject(yamlObj);
         }
     }

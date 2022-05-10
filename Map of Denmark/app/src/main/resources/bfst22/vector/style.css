@@ -6,17 +6,12 @@
     -fx-padding: 5 10 10 10;
 }
 
-#vBox_scrollpane, #vbox_debug_scrollpane {
-    -fx-border-width: 1;
-    -fx-border-color: black;
+.scroll-pane {
+   -fx-background-color: transparent;
 }
 
-#vBox_scrollpane {
-    -fx-border-style: hidden solid hidden hidden;
-}
-
-#vbox_debug_scrollpane {
-    -fx-border-style: hidden hidden hidden solid;
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
 }
 
 .vbox_debug_section {
@@ -29,8 +24,36 @@
     -fx-padding: 5;
 }
 
-.toolbar {
-    -fx-background-color:black;
+.toolbar .button, .toolbar .toggle-button, .toolbar .color-picker {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+}
+
+.toolbar .spinner {
+    -fx-base: black;
+    -fx-control-inner-background: rgb(100,100,100);
+}
+
+.toolbar .check-box .box {
+    -fx-border-color: black;
+    -fx-background-color: rgb(100,100,100);
+}
+
+.toolbar .combo-box {
+    -fx-background-color: black;
+}
+
+.toolbar .combo-box *, .toolbar .color-picker * {
+    -fx-text-fill: white;
+}
+
+.toolbar .combo-box .combo-box-popup .list-view {
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+
+.toolbar .combo-box .combo-box-popup .list-view .list-cell {
+    -fx-background-color: rgb(100,100,100);
 }
 
 center {
@@ -54,7 +77,7 @@ center {
 .separator_vertical *.line {
     -fx-border-style: hidden solid hidden hidden;
     -fx-border-width: 1px;
-    -fx-border-color: white;
+    -fx-border-color: black;
 }
 
 .separator_horizontal *.line {
@@ -93,6 +116,16 @@ center {
     -fx-text-fill: white;
 }
 
-#paintbar .label {
+.slider_button {
+    -fx-background-color: black;
+    -fx-background-radius: 50;
     -fx-text-fill: white;
+}
+
+#slider_bar {
+    -fx-text-fill: black;
+}
+
+#slider_bar .thumb {
+    -fx-background-color:black;
 }

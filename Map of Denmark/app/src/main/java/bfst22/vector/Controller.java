@@ -9,12 +9,12 @@ import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -40,11 +40,12 @@ public class Controller {
     @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
+    @FXML private VBox vbox_slider;
     @FXML private ToolBar paintBar, toolsBar, statusBar;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
     @FXML private Menu recentMapsSubmenu;
-    @FXML private CheckMenuItem infoSidebar;
+    @FXML private CheckMenuItem infoSidebar, sliderSidebar, debugSidebar;
     @FXML private ToggleGroup mapdisplay, brushModeGroup;
     @FXML private ColorPicker paintColourPicker;
     @FXML private Spinner<Double> paintStrokeSize;
@@ -54,6 +55,10 @@ public class Controller {
     @FXML private HBox search_box;
     @FXML private Button searchButton;
     @FXML private Button clearButton;
+    @FXML private Button routeFindButton;
+    @FXML private Button routeSwitchButton;
+    @FXML private Button slider_button_increase, slider_button_decrease;
+    @FXML private Slider slider_bar;
     @FXML private TextField searchField;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
@@ -61,6 +66,8 @@ public class Controller {
     @FXML private ComboBox<String> fontBox;
     @FXML private TreeView<String> featuresTreeView;
     @FXML private ListView<HBox> pinPointList;
+    @FXML private StackPane center_stack;
+    @FXML private VBox topmenu;
 
     // Debug menu variables
     @FXML private ScrollPane vbox_debug_scrollpane;
@@ -95,7 +102,6 @@ public class Controller {
         this.canvasCM = new ContextMenu();
         this.suggestionPopup = new ContextMenu();
 
-        this.someBorderPane.setRight(null);
         this.someBorderPane.setBottom(null);
         this.canvas.init(model);
         this.canvas.pinpoints.init(pinPointList);
@@ -103,22 +109,26 @@ public class Controller {
         this.canvas.centerMap();
         this.generateTreeView();
         this.generateContextMenu();
+        this.slider_bar.setValue(this.canvas.zoom_current);
+
+        if(this.canvas.deprop.get("debugSideBar")){
+            this.canvas.deprop.toggle("debugSideBar");
+            this.debugSidebar.setSelected(true);
+            this.debugSidebarClicked(new ActionEvent());
+        }
 
         this.someBorderPane.prefWidthProperty().bind(stage.widthProperty());
         this.someBorderPane.prefHeightProperty().bind(stage.heightProperty());
         this.someBorderPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setWidth(newValue.doubleValue() - (this.someBorderPane.getLeft() != null ? 265 : 0));
-            this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : 0));
+            this.canvas.setWidth(newValue.doubleValue());
             this.canvas.update();
             this.canvas.checkInBounds();
         });
         this.someBorderPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> {
-            this.canvas.setHeight(newValue.doubleValue()-80);
+            this.canvas.setHeight(newValue.doubleValue() - this.topmenu.getHeight() - 38 - (this.someBorderPane.getBottom()!=null?38:0));
             this.canvas.update();
             this.canvas.checkInBounds();
         });
-        this.paintBar.managedProperty().bind(this.paintBar.visibleProperty());
-        this.toolsBar.managedProperty().bind(this.toolsBar.visibleProperty());
         this.someBorderPane.setOnKeyPressed(e -> {
             this.canvas.painter.keyPress(e.getText());
             this.canvas.update();
@@ -132,7 +142,7 @@ public class Controller {
                     .forEach(suggestion -> {
                         MenuItem item = new MenuItem(suggestion.toString());
                         item.setOnAction(action -> {
-                            this.canvas.goToPosAbsolute(suggestion.coordPos);
+                            this.canvas.goToPosAbsolute(new Point2D(suggestion.coordPos[0],suggestion.coordPos[1]));
                             this.canvas.zoomTo(300000);
                             searchField.setText(suggestion.toString());
                             suggestionPopup.hide();
@@ -163,28 +173,26 @@ public class Controller {
     }
 
     private void updateDebugInfo(){
-        if(!this.model.isLoaded() || this.model.isLoaded()){
-            if(this.someBorderPane.getRight() != null){
-                this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
-                this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
-                this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
-                this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos.getX()) + ", " + String.format("%.5f", this.canvas.mousePos.getY())));
-                this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
-                this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos.getY()) + ", " + String.format("%.5f", this.model.minBoundsPos.getX())));
-                this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos.getY()) + ", " + String.format("%.5f", this.model.maxBoundsPos.getX())));
-                this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
-                this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
-                this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
-                this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
-                this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
-                this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
-            }
-
-            if(this.someBorderPane.getBottom() != null){
-                this.canvas_map_name.setText(String.format("%s%20s", "file name:", this.model.currFileName));
-                this.canvas_map_size.setText(String.format("%s%10d bytes", "file size:", this.model.filesize));
-            }
+        if(!this.model.isLoaded() || this.model.isLoaded() && this.vbox_debug_scrollpane.isVisible()){
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos.getX()) + ", " + String.format("%.5f", this.canvas.mousePos.getY())));
+            this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
+            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos.getY()) + ", " + String.format("%.5f", this.model.minBoundsPos.getX())));
+            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos.getY()) + ", " + String.format("%.5f", this.model.maxBoundsPos.getX())));
+            this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
+            this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
+            this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
+            this.canvas_load_time.setText(String.format("%-24s%d ms", "load time:", this.model.loadTime/1000000));
+            this.canvas_repaint_time.setText(String.format("%-23s%d ms", "repaint time:", this.canvas.repaintTime/1000000));
+            this.canvas_avg_repaint_time.setText(String.format("%-20s%d ms", "avg repaint time:", this.canvas.avgRT/1000000));
         }
+    }
+
+    private void updateStatusInfo(){
+        this.canvas_map_name.setText(String.format("%s%s", "File name: ", this.model.currFileName));
+        this.canvas_map_size.setText(String.format("%s%d bytes", "File size: ", this.model.filesize));
     }
 
     private String inputWindow(String title, String contentText){
@@ -243,6 +251,7 @@ public class Controller {
         this.canvas.panTo(new Point2D(0,-50));
         this.canvas.setDisable(false);
         this.unloadFileButton.setDisable(false);
+        this.updateStatusInfo();
         this.updateDebugInfo();
     }
 
@@ -252,6 +261,7 @@ public class Controller {
         this.canvas.setDisable(true);
         this.canvas.clearScreen();
         this.unloadFileButton.setDisable(true);
+        this.updateStatusInfo();
         this.updateDebugInfo();
     }
 
@@ -287,10 +297,8 @@ public class Controller {
      * ------------------------------------------------ Menubar Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
     @FXML private void onMenuButtonPress(ActionEvent e){
-        this.someBorderPane.setLeft(this.someBorderPane.getLeft() == null ? vBox_scrollpane : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getLeft() != null ? 265 : -265)); // Find a way to make this non-hardcoded
-        this.canvas.update();
-        this.infoSidebar.setSelected(this.someBorderPane.getLeft() != null);
+        this.vBox_scrollpane.setVisible(!this.vBox_scrollpane.isVisible());
+        this.infoSidebar.setSelected(this.vBox_scrollpane.isVisible());
     }
 
     @FXML private void onZoomBoxButtonPressed(ActionEvent e){
@@ -302,13 +310,27 @@ public class Controller {
     }
 
     @FXML private void onSearchButtonPressed(ActionEvent e) {
-        //search();
+        List<TernarySearchTree.Address> addresses = this.model.searchTree.searchSuggestions(searchField.getText().toLowerCase(Locale.ROOT));
+        if(!addresses.isEmpty()){
+            TernarySearchTree.Address suggestion = addresses.get(0);
+            this.canvas.goToPosAbsolute(new Point2D(suggestion.coordPos[0],suggestion.coordPos[1]));
+            this.canvas.zoomTo(300000);
+            searchField.setText(suggestion.toString());
+        }
     }
 
-    @FXML private void onSearchKeyPressed(KeyEvent k){
-        if (k.getCode().equals(KeyCode.ENTER)) {
-            //search();
-        }
+    @FXML private void sliderButtonIncreasePressed(MouseEvent e){
+        this.slider_bar.increment();
+        this.sliderBarPressed(e);
+    }
+
+    @FXML private void sliderButtonDecreasePressed(MouseEvent e){
+        this.slider_bar.decrement();
+        this.sliderBarPressed(e);
+    }
+
+    @FXML private void sliderBarPressed(MouseEvent e){
+        this.canvas.zoomTo(((int) this.slider_bar.getValue())/this.canvas.zoom_current);
     }
 
     @FXML private void onClearButtonPressed(ActionEvent e){
@@ -342,6 +364,7 @@ public class Controller {
     // handles an event of scrolling and increases/decreases the zoom level of the map.
     @FXML private void onScroll(final ScrollEvent e) {
         this.canvas.scrolled(e.getDeltaY());
+        this.slider_bar.setValue(this.canvas.zoom_current);
         this.updateDebugInfo();
     }
 
@@ -432,21 +455,29 @@ public class Controller {
     // when the menubar 'View' section button 'Status Bar' is clicked
     @FXML private void statusBarMenuClicked(final ActionEvent e){
         this.someBorderPane.setBottom(this.someBorderPane.getBottom() == null ? statusBar : null);
-        this.canvas.setHeight(this.canvas.getHeight() - (this.statusBar.isVisible() ? 30 : -30));
+        this.canvas.setHeight(this.canvas.getHeight() - (this.someBorderPane.getBottom() != null ? 40 : -40));
         this.canvas.update();
+        this.updateStatusInfo();
     }
 
-    // when the menubar 'View' section button 'Info Bar' is clicked
+    // when the menubar 'View' section button 'Info Sidebar' is clicked
     @FXML private void infoSidebarClicked(final ActionEvent e){
         this.onMenuButtonPress(e);
     }
 
-    // when the menubar 'View' section button 'Toggle Debug Sidebar' is clicked
+    // when the menubar 'View' section button 'Slider Sidebar' is clicked
+    @FXML private void sliderSidebarClicked(final ActionEvent e){
+        this.vbox_slider.setVisible(!this.vbox_slider.isVisible());
+        this.vbox_debug_scrollpane.setVisible(false);
+        this.debugSidebar.setSelected(false);
+    }
+
+    // when the menubar 'View' section button 'Debug Sidebar' is clicked
     @FXML private void debugSidebarClicked(final ActionEvent e){
-		this.canvas.debugPropertiesToggle("debugSideBar");
-        this.someBorderPane.setRight(this.someBorderPane.getRight() == null ? vbox_debug_scrollpane : null);
-        this.canvas.setWidth(this.canvas.getWidth() - (this.someBorderPane.getRight() != null ? 265 : -265)); // Find a way to make this non-hardcoded
-        this.canvas.update();
+		this.canvas.deprop.toggle("debugSideBar");
+        this.vbox_debug_scrollpane.setVisible(!this.vbox_debug_scrollpane.isVisible());
+        this.sliderSidebar.setSelected(false);
+        this.vbox_slider.setVisible(false);
         this.updateDebugInfo();
     }
 
@@ -476,47 +507,55 @@ public class Controller {
 
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
-        this.canvas.debugValMap.replace("debugDisplayWireframe", false);
+        this.canvas.deprop.set("debugDisplayWireframe", false);
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
-        this.canvas.debugValMap.replace("debugDisplayWireframe", true);
+        this.canvas.deprop.set("debugDisplayWireframe", true);
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
     @FXML private void debugCursorClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesToggle("debugCursor");
+        this.canvas.deprop.toggle("debugCursor");
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree VisBox' is clicked
     @FXML private void debugVisBoxClicked(final ActionEvent e){
-        this.canvas.debugPropertiesToggle("debugVisBox");
+        this.canvas.deprop.toggle("debugVisBox");
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
     @FXML private void debugSplitsClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesToggle("debugSplits");
+        this.canvas.deprop.toggle("debugSplits");
+        this.canvas.update();
     }
 
     @FXML private void debugNeighborClicked(final ActionEvent e){
-        this.canvas.debugPropertiesToggle("debugNeighbor");
+        this.canvas.deprop.toggle("debugNeighbor");
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Enable Free Movement' is clicked
     @FXML private void debugFreeMovementClicked(final ActionEvent e){
-		this.canvas.debugPropertiesToggle("debugFreeMovement");
+		this.canvas.deprop.toggle("debugFreeMovement");
         this.canvas.checkInBounds();
     }
 
     // when the menubar 'Tools' section button 'Disable Help Text' is clicked
     @FXML private void debugHelpTextClicked(final ActionEvent e){
-		this.canvas.debugPropertiesToggle("debugDisableHelpText");
+		this.canvas.deprop.toggle("debugDisableHelpText");
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
     @FXML private void debugBoundingBoxClicked(final ActionEvent e) throws IOException {
-        this.canvas.debugPropertiesToggle("debugBoundingBox");
+        this.canvas.deprop.toggle("debugBoundingBox");
+        this.canvas.update();
     }
 
     // when the menubar 'Help' section button 'About...' is clicked

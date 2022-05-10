@@ -1,7 +1,6 @@
 package bfst22.vector;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.ContextMenuEvent;
@@ -11,8 +10,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.FillRule;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.*;
 
 // defines the canvas of our map; panning, zooming, painting etc.
@@ -23,14 +20,14 @@ public class MapCanvas extends Canvas {
     private GraphicsContext gc;
     public Point2D minPos, maxPos, originPos, mousePos, rtMousePos;
     public double zoom_current;
-    public final int minZoom = 1, maxZoom = 500000;
+    public final int minZoom = 1, maxZoom = 100000;
     public boolean zoomMagnifyingGlass = false;
     public long repaintTime, avgRT, avgRTNum;
     public Painter painter;
     public ZoomBox zoombox;
     public PinPoints pinpoints;
+    public DebugProperties deprop;
     public boolean drags;
-	Map<String, Boolean> debugValMap = debugPropertiesInit();
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
@@ -38,6 +35,7 @@ public class MapCanvas extends Canvas {
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
+        this.deprop = new DebugProperties();
         this.reset();
         this.zoom(42000);
         this.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
@@ -80,46 +78,6 @@ public class MapCanvas extends Canvas {
         this.drags = this.pinpoints.drag(this.mousePos,this.zoom_current,state);
     }
 
-    public Map<String, Boolean> debugPropertiesInit() {
-        InputStream inputStream;
-        String propFileName = "debugconfig.properties";
-        Properties prop = new Properties();
-
-        try
-        {
-            inputStream = MapCanvas.class.getResourceAsStream(propFileName);
-
-            if(inputStream != null)
-            {
-                prop.load(inputStream);
-                inputStream.close();
-            }
-            else
-            {
-                throw new FileNotFoundException("Could not find " + propFileName + "!");
-
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("EXCEPTION: " + e.getMessage());
-        }
-
-        Map tempMap = prop;
-        Map<String, String> mapFinal = (Map<String, String>) tempMap;
-        Map<String, Boolean> mapReturn = new HashMap<>();
-
-        for(String key : mapFinal.keySet())
-        {mapReturn.put(key, Boolean.parseBoolean(mapFinal.get(key)));}
-
-        return mapReturn;
-    }
-
-    public void debugPropertiesToggle(String propName) {
-        this.debugValMap.replace(propName, !this.debugValMap.get(propName));
-        this.update();
-    }
-
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ----------------------------------------------- Painting Methods ------------------------------------------------ *
      * ----------------------------------------------------------------------------------------------------------------- */
@@ -138,8 +96,8 @@ public class MapCanvas extends Canvas {
         if(this.model.isLoaded()) {
             this.repaintTime = System.nanoTime();
 
-            double padding = debugValMap.get("debugVisBox") ? 100 : -25;
-            Set<Drawable> range = this.model.kdtree.rangeSearch(new double[]{this.minPos.getY() + this.z(padding), this.minPos.getX() + this.z(padding)},
+            double padding = this.deprop.get("debugVisBox") ? 100 : -25;
+            Set<Drawable> range = (Set<Drawable>)(Set<?>) this.model.kdtree.rangeSearch(new double[]{this.minPos.getY() + this.z(padding), this.minPos.getX() + this.z(padding)},
                     new double[]{this.maxPos.getY() - this.z(padding), this.maxPos.getX() - this.z(padding)});
 
             // Only display if set to do so, else display nothing at all
@@ -162,7 +120,7 @@ public class MapCanvas extends Canvas {
 
                                         if ((element.draw != null && element.draw.fill && element.draw.zoom_level < this.zoom_current
                                                 || element2.draw != null && element2.draw.fill && element2.draw.zoom_level < this.zoom_current)
-                                                && !debugValMap.get("debugDisplayWireframe")) {
+                                                && !this.deprop.get("debugDisplayWireframe")) {
                                             draw.fill(this.gc);
                                         }
                                         if (element.draw != null && element.draw.stroke && element.draw.zoom_level < this.zoom_current
@@ -246,7 +204,7 @@ public class MapCanvas extends Canvas {
      * -------------------------------------------- Canvas Drawing Methods --------------------------------------------- *
      * ----------------------------------------------------------------------------------------------------------------- */
     private void strokeBox(double padding){
-        if(debugValMap.get("debugVisBox") && this.model.isLoaded()){
+        if(this.deprop.get("debugVisBox") && this.model.isLoaded()){
             padding = this.z(padding);
             double csize = this.z(5);
 
@@ -268,7 +226,7 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(this.maxPos.getX()-padding,this.maxPos.getY()-padding,csize,csize);
             this.gc.fillOval(this.minPos.getX()+padding-csize,this.maxPos.getY()-padding,csize,csize);
 
-            if(debugValMap.get("debugDisableHelpText")) {
+            if(this.deprop.get("debugDisableHelpText")) {
                 this.gc.fillText("relative origin (" + String.format("%.5f", this.originPos.getX()) + "," + String.format("%.5f", this.originPos.getY()) + ")", this.originPos.getX() + csize, this.originPos.getY() - csize);
                 this.gc.fillText("top left (" + String.format("%.5f", this.minPos.getX() + padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.minPos.getX() + padding + csize, this.minPos.getY() + padding - csize);
                 this.gc.fillText("top right (" + String.format("%.5f", this.maxPos.getX() - padding) + "," + String.format("%.5f", this.minPos.getY() + padding) + ")", this.maxPos.getX() - padding + csize, this.minPos.getY() + padding - csize);
@@ -279,7 +237,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeNN(){
-        if(debugValMap.get("debugNeighbor") && this.model.isLoaded()){
+        if(this.deprop.get("debugNeighbor") && this.model.isLoaded()){
             float[] mouse = new float[]{(float) this.mousePos.getX(),(float) this.mousePos.getY()};
             float[] node = this.model.kdtree.findNN(mouse);
 
@@ -297,17 +255,17 @@ public class MapCanvas extends Canvas {
     }
 
     private void strokeCursor(){
-        if(debugValMap.get("debugCursor") && this.model.isLoaded()){
+        if(this.deprop.get("debugCursor") && this.model.isLoaded()){
             this.gc.setLineWidth(1);
             this.gc.setFill(Color.BLUE);
             this.gc.fillOval(this.mousePos.getX(),this.mousePos.getY(),this.z(5),this.z(5));
-            if(debugValMap.get("debugDisableHelpText")) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos.getX()) + "," + String.format("%.5f", this.mousePos.getY()) + ")",this.mousePos.getX()+this.z(5),this.mousePos.getY()-this.z(5));
+            if(this.deprop.get("debugDisableHelpText")) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos.getX()) + "," + String.format("%.5f", this.mousePos.getY()) + ")",this.mousePos.getX()+this.z(5),this.mousePos.getY()-this.z(5));
             this.gc.setFill(Color.BLACK);
         }
     }
 
     private void splitsTree(){
-        if(debugValMap.get("debugSplits") && this.model.isLoaded()){
+        if(this.deprop.get("debugSplits") && this.model.isLoaded()){
             List<float[]> lines = this.model.kdtree.getSplits();
             this.gc.setLineWidth(this.z(2.5));
             this.gc.setStroke(Color.GREEN);
@@ -324,7 +282,7 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawBounds(){
-        if(debugValMap.get("debugBoundingBox") && this.model.isLoaded()){
+        if(this.deprop.get("debugBoundingBox") && this.model.isLoaded()){
             this.gc.setLineWidth(this.z(1));
             this.gc.setLineDashes(0);
             this.gc.setStroke(Color.RED);
@@ -356,7 +314,7 @@ public class MapCanvas extends Canvas {
         Point2D diff = new Point2D(dx,dy);
 
         if(!this.zoombox.isZooming() && !this.painter.isDrawing() && !this.drags) this.pan(diff);
-        if(!this.isInBounds() && !debugValMap.get("debugFreeMovement")) this.pan(diff.multiply(-1));
+        if(!this.isInBounds() && !this.deprop.get("debugFreeMovement")) this.pan(diff.multiply(-1));
     }
 
     private void pan(Point2D pos) {
@@ -407,7 +365,7 @@ public class MapCanvas extends Canvas {
     }
 
     public void checkInBounds(){
-        if(!this.isInBounds() && !debugValMap.get("debugFreeMovement")) this.placeInBounds();
+        if(!this.isInBounds() && !this.deprop.get("debugFreeMovement")) this.placeInBounds();
     }
 
     private boolean isInBounds(){
@@ -454,10 +412,6 @@ public class MapCanvas extends Canvas {
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------- Misc Methods -------------------------------------------------- *
      * ----------------------------------------------------------------------------------------------------------------- */
-    public GraphicsContext getGC(){
-        return this.gc;
-    }
-
     public double z(double num){
         return (num / this.zoom_current);
     }

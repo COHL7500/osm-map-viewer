@@ -14,18 +14,18 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		this.splits = new ArrayList<>();
 	}
 
-	public void add(final PolyPoint element, Drawable owner) throws RuntimeException {
+	public void add(final PolyPoint element, Object owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
 		this.lines.add(new Node(element.lat,element.lon,owner));
 	}
 
-	public void add(final PolyLine element, Drawable owner) throws RuntimeException {
+	public void add(final PolyLine element, Object owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
 		for(int i = 0; i < element.coords.length; i+=2)
 			this.lines.add(new Node(element.coords[i],element.coords[i+1],owner));
 	}
 
-	public void add(PolyRelation element, Drawable owner) throws RuntimeException {
+	public void add(PolyRelation element, Object owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
 		element.parts.forEach(poly -> {
 			switch(poly.getClass().getName()){
@@ -83,10 +83,10 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		});
 	}
 
-	public Set<Drawable> rangeSearch(double[] min, double[] max) {
-		Set<Drawable> allElements = new HashSet<>();
+	public Set<Object> rangeSearch(double[] min, double[] max) {
+		Set<Object> allElements = new HashSet<>();
 		this.bfs((q,n,d) -> {
-			if (n.left < 0 || n.right < 0) allElements.addAll(n.objects);
+			if (n.objects != null) allElements.addAll(n.objects);
 			else {
 				if (n.min < max[d==1?0:1]) q.add(this.tree.get(n.left));
 				if (n.max > min[d==1?0:1]) q.add(this.tree.get(n.right));
@@ -139,7 +139,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		public float min, max;
 		public int left, right;
 		public List<Node> elements;
-		public Set<Drawable> objects;
+		public Set<Object> objects;
 
 		public intNode(){
 			this.left = this.right = -1;
@@ -158,9 +158,9 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 
 	private static class Node {
 		public float[] coords;
-		public Drawable obj;
+		public Object obj;
 
-		public Node(float lat, float lon, Drawable objRef) {
+		public Node(float lat, float lon, Object objRef) {
 			this.coords = new float[]{lat, lon};
 			this.obj = objRef;
 		}
