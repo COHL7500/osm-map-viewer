@@ -2,7 +2,6 @@ package bfst22.vector;
 
 public class Directions {
     Distance d = new Distance();
-    Address adress;
 
     /* Returns a String with the description of the next turn */
     public String turn(PolyPoint start, PolyPoint to){
