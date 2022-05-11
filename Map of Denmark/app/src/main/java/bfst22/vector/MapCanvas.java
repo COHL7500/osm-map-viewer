@@ -38,7 +38,7 @@ public class MapCanvas extends Canvas {
     // Runs upon startup (setting default pan, zoom for example).
     public void init(final Model model) {
         this.model = model;
-        this.backgroundColor = "#31428c";
+        this.backgroundColor = "#b5d2dd";
         this.reset();
         this.zoom(42000);
         this.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, event -> {
@@ -213,6 +213,51 @@ public class MapCanvas extends Canvas {
         this.gc.setStroke(Color.BLACK);
         this.gc.setLineDashes(1);
         this.gc.setGlobalAlpha(1);
+    }
+
+    public void darkMode()
+    {
+        this.backgroundColor = "#31428c";
+
+        model.yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
+
+            if (valueVF != null) {
+
+                if (key.equals("highway"))
+                {
+                    valueVF.draw.force_stroke_color = Color.web("#343742").toString();
+                }
+                else if (key.equals("building"))
+                {
+                    value.draw.force_stroke_color = Color.web("#586a8a").toString();
+                    value.draw.force_fill_color = Color.web("#586a8a").toString();
+
+                }
+                else if (keyVF.equals("water"))
+                {
+                    valueVF.draw.force_stroke_color = Color.web("#31428c").toString();
+                    valueVF.draw.force_fill_color = Color.web("#31428c").toString();
+                }
+                else
+                {
+                    valueVF.draw.force_stroke_color = Color.web("#3f4a5c").toString(); //Color.web(value.draw.stroke_color).darker().toString();
+                    valueVF.draw.force_fill_color = Color.web("#3f4a5c").toString();
+                }
+            }
+        }));
+    }
+
+    public void lightMode()
+    {
+        this.backgroundColor = "#b5d2dd";
+
+        model.yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
+            value.draw.force_stroke_color = null;
+            value.draw.force_fill_color = null;
+            valueVF.draw.force_stroke_color = null;
+            valueVF.draw.force_fill_color = null;
+
+        }));
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *

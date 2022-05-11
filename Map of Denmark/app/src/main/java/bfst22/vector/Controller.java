@@ -232,6 +232,7 @@ public class Controller {
         this.addRecentLoadedMap(filename);
         this.model.unload();
         this.model.load(filename);
+        canvas.darkMode();
         this.canvas.reset();
         this.canvas.zoomTo(42000);
         this.canvas.centerPos();
@@ -459,13 +460,13 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
         this.canvas.debugValMap.replace("debugDisplayWireframe", false);
-        this.canvas.backgroundColor = "#b5d2dd";
-        this.model.lightMode();
+        this.canvas.debugValMap.replace("debugDarkMode", false);
+        this.canvas.lightMode();
     }
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
-        this.canvas.backgroundColor = "#31428c";
-        this.model.darkMode();
+        this.canvas.debugValMap.replace("debugDarkMode", true);
+        this.canvas.darkMode();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked

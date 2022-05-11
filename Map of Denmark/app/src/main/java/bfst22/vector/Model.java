@@ -87,48 +87,6 @@ public class Model {
         }
     }
 
-    public void darkMode()
-    {
-        yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
-
-            if (valueVF != null) {
-
-                if (key.equals("highway"))
-                {
-                    valueVF.draw.force_stroke_color = Color.web("#343742").toString();
-                }
-                else if (key.equals("building"))
-                {
-                    value.draw.force_stroke_color = Color.web("#586a8a").toString();
-                    value.draw.force_fill_color = Color.web("#586a8a").toString();
-
-                }
-                else if (keyVF.equals("water"))
-                {
-                    valueVF.draw.force_stroke_color = Color.web("#31428c").toString();
-                    valueVF.draw.force_fill_color = Color.web("#31428c").toString();
-                }
-                else
-                {
-                    valueVF.draw.force_stroke_color = Color.web("#3f4a5c").toString(); //Color.web(value.draw.stroke_color).darker().toString();
-                    valueVF.draw.force_fill_color = Color.web("#3f4a5c").toString();
-                }
-            }
-        }));
-    }
-
-    public void lightMode()
-    {
-        yamlObj.draw.fill_color = Color.WHITESMOKE.toString();
-
-        yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
-            value.draw.force_stroke_color = null;
-            value.draw.force_fill_color = null;
-            valueVF.draw.force_stroke_color = null;
-            valueVF.draw.force_fill_color = null;
-
-        }));
-    }
 
     // Parses and reads the loaded .osm file, interpreting the data however it is configured.
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError, IOException {
