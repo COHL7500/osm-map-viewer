@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
 import javafx.geometry.Point2D;
-import bfst22.vector.TernarySearchTree.TernarySearchTree;
+import javafx.scene.paint.Color;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -18,15 +18,12 @@ public class Model {
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     public MapFeature yamlObj;
     public KdTree kdtree;
+    public TernarySearchTree searchTree;
     public Point2D minBoundsPos, maxBoundsPos, originBoundsPos; // lat, lon
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
 	public VehicleType vehicleType;
-    public Edge e;
-    public ArrayList<Address> addresses = new ArrayList<>();
-    public Address.Builder builder = new Address.Builder();
-    public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
     public DijkstraSP dijkstraSP;
     public Directions directions;
@@ -36,7 +33,6 @@ public class Model {
     public boolean isOneWay = false;
     public int speedlimit = 50; //Speed limit in towns
     public int HwyCount = 0;
-
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
@@ -61,6 +57,7 @@ public class Model {
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
+                    this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
@@ -71,10 +68,11 @@ public class Model {
 
     public void unload(){
         this.kdtree = null;
+        this.searchTree = null;
         this.yamlObj = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
-        this.currFileName = "";
+        this.currFileName = "<No File Loaded>";
         this.loadTime = this.filesize = 0;
     }
 
@@ -95,9 +93,11 @@ public class Model {
             out.writeInt(waycount);
             out.writeInt(relcount);
             out.writeObject(kdtree);
+            out.writeObject(searchTree);
             out.writeObject(yamlObj);
         }
     }
+
 
     // Parses and reads the loaded .osm file, interpreting the data however it is configured.
     private void loadOSM(InputStream input) throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -105,21 +105,22 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
+        this.searchTree = new TernarySearchTree();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
-        Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
+        Map<Long, Drawable> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
-        List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
-        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
-
-        // , "secondary", "tertiary", "residential"
-
+        List<Drawable> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
+        String keyFeature = null, valueFeature = null;
+        boolean isMultiPoly = false;
+        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
         boolean isHighway = false;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
+
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -132,6 +133,7 @@ public class Model {
                         double minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
                         double minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
                         double maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
+
                         this.minBoundsPos = new Point2D(minlat, minlon);
                         this.maxBoundsPos = new Point2D(maxlat, maxlon);
                         this.originBoundsPos = new Point2D((maxlon + minlon) / 2, (maxlat + minlat) / 2);
@@ -140,46 +142,35 @@ public class Model {
                         long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                        id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
+                        PolyPoint point = new PolyPoint(id, 0.56f * lon, -lat);
+
+                        id2node.add(point);
+                        id2way.put(relID,point);
+                        this.searchTree.setAddressPos(0.56f * lon, -lat);
                         this.nodecount++;
-                        //adds lat and lon to address builder
-                        builder = builder.lat(-lat);
-                        builder = builder.lon(0.56f * lon);
-                    }
-                    case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
+
+                    } case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                         nodes.add(id2node.get(ref));
-                    }
-                    case "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
+                    } case "relation", "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                         relID = Long.parseLong(reader.getAttributeValue(null, "id"));
                     }
                     case "tag" -> { // Parses the key and value of tags, changing the waytype to the corresponding type.
                         String k = reader.getAttributeValue(null, "k");
                         String v = reader.getAttributeValue(null, "v");
-                        if (k.equals("name")) name = v;
-                        // parses address tags and adds to address builder
+                        isMultiPoly = (k.equals("type") && v.equals("multipolygon") || isMultiPoly);
                         if (k.contains("addr:")) {
                             switch (k) {
-                                case "addr:city":
-                                    builder = builder.city(v);
-                                    break;
-                                case "addr:housenumber":
-                                    builder = builder.house(v);
-                                    break;
-                                case "addr:postcode":
-                                    builder = builder.postcode(v);
-                                    break;
-                                case "addr:street":
-                                    builder = builder.street(v);
-                                    break;
+                                case "addr:city" -> searchTree.addAddressElement("city",v);
+                                case "addr:housenumber" -> searchTree.addAddressElement("house",v);
+                                case "addr:postcode" -> searchTree.addAddressElement("postcode",v);
+                                case "addr:street" -> searchTree.addAddressElement("street",v);
                             }
-                            break;
                         }
-                        if (this.yamlObj.ways.containsKey(k)) {
-                            keyType = k;
-                            valueType = v;
+                        if (this.yamlObj.keyfeatures.containsKey(k)) {
+                            keyFeature = k;
+                            valueFeature = v;
                             isHighway = false;
-
                             switch (k) {
                                 case "motorcar":
                                     if(v.equals("no")) motorVehicle = false;
@@ -197,8 +188,6 @@ public class Model {
                                     speedlimit = Integer.parseInt(v);
                                     break;
                                 case "restriction":
-                                    if (v.equals("no_left_turn")) e.leftTurn = false;
-                                    else if (v.equals("no_right_turn")) e.rightTurn = false;
                                     break;
                                 case "highway":
                                     if (highwayTypes.contains(v)) {
@@ -208,26 +197,23 @@ public class Model {
                                     break;
                             }
                         }
-                    }
-                    case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
-                        long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                        PolyLine elm = id2way.get(ref);
-                        if (elm != null) rel.add(elm);
+                    } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
+                        Drawable elm = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+
+                        if (elm != null){
+                            switch (reader.getAttributeValue(null, "role")){
+                                case "outer" -> rel.add(new PolyGon((PolyLine) elm,false));
+                                case "inner" -> rel.add(new PolyGon((PolyLine) elm,true));
+                                default -> rel.add(elm);
+                            }
+                        }
                     }
                 }
             } else if (element == XMLStreamConstants.END_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    //adds finished address object to arraylist
-                    case "node" -> {
-                        if (!builder.isEmpty()) {
-                            addresses.add(builder.build());
-                            builder.emptyBuilder();
-                        }
-                    }
-                    case "way" -> { // "way" - All lines in the program; linking point A to B
+                    case "node" -> searchTree.insertAddress();
+					case "way" -> { // "way" - All lines in the program; linking point A to B
                         PolyLine way = new PolyLine(nodes);
-                        id2way.put(relID, way);
-                        this.kdtree.add(way);
                         this.waycount++;
                         if (isHighway) {
                             index2way.put(HwyCount, new LinkedList<>());
@@ -241,35 +227,28 @@ public class Model {
                             };
                             HwyCount++;
                         }
-
+                        id2way.put(relID, way);
+                        this.kdtree.add(way,way);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,way);
                         nodes.clear();
-
-                        if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
-                            this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
-                        }
-
-                    }
-                    case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
-                        MultiPolygon multipoly = new MultiPolygon(rel);
-                        this.kdtree.add(multipoly);
+                    } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
+                        PolyRelation multipoly = new PolyRelation(rel,isMultiPoly);
+                        this.kdtree.add(multipoly,multipoly);
                         this.relcount++;
-                        if (keyType != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
-                            List<Drawable> yamlList = this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable;
-                            yamlList.add(multipoly);
-                        }
+
+                        id2way.put(relID, multipoly);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,multipoly);
+                        isMultiPoly = false;
                         rel.clear();
                     }
                 }
             }
         }
-        this.kdtree.generate();
-        this.loadTime = System.nanoTime() - this.loadTime;
 
-        //sorts addresses and adds to ternary search tree
-        Collections.sort(addresses);
-        for (Address address : addresses) {
-            searchTree.insertAddress(address.toString(), addresses.indexOf(address));
-        }
+        this.kdtree.generateTree();
+        this.kdtree.generateSplits();
+        this.searchTree.generate();
+        this.loadTime = System.nanoTime() - this.loadTime;
 
         graph.generate();
         for(int i = 0; i < index2way.size() - 1; i++){
@@ -286,15 +265,5 @@ public class Model {
 
         dijkstraSP = new DijkstraSP(graph,from,to,vehicleType.MOTORCAR);
 
-
     }
-
-    public ArrayList<Address> getAddresses() {
-        return addresses;
-    }
-
-    public TernarySearchTree getSearchTree() {
-        return searchTree;
-    }
-
 }

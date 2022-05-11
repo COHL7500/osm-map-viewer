@@ -12,6 +12,11 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
+tasks.withType(JavaExec) {
+    jvmArgs = ['-Xmx8g']
+}
+
+
 dependencies {
     implementation 'org.yaml:snakeyaml:1.19'
     implementation 'org.kordamp.ikonli:ikonli-javafx:12.3.1'

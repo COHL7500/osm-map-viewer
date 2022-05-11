@@ -4,9 +4,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.util.MissingResourceException;
-import java.util.Objects;
-
 // Responsible for displaying model data.
 public class View {
     public View(Model model, Stage stage) throws Exception {
