@@ -49,6 +49,7 @@ public class Model {
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
+                    this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
@@ -59,10 +60,11 @@ public class Model {
 
     public void unload(){
         this.kdtree = null;
+        this.searchTree = null;
         this.yamlObj = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
-        this.currFileName = "";
+        this.currFileName = "<No File Loaded>";
         this.loadTime = this.filesize = 0;
     }
 
@@ -83,6 +85,7 @@ public class Model {
             out.writeInt(waycount);
             out.writeInt(relcount);
             out.writeObject(kdtree);
+            out.writeObject(searchTree);
             out.writeObject(yamlObj);
         }
     }
@@ -98,11 +101,12 @@ public class Model {
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
-        Map<Long, PolyLine> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
+        Map<Long, Drawable> id2way = new HashMap<>(); // Saves the ID of a particular way (Long) and stores the way as a value (OSMWay).
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
-        List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
+        List<Drawable> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
-        String keyType = null, valueType = null, name = null;
+        String keyFeature = null, valueFeature = null;
+        boolean isMultiPoly = false;
 
 
 
@@ -118,6 +122,7 @@ public class Model {
                         double minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
                         double minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
                         double maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
+
                         this.minBoundsPos = new Point2D(minlat, minlon);
                         this.maxBoundsPos = new Point2D(maxlat, maxlon);
                         this.originBoundsPos = new Point2D((maxlon + minlon) / 2, (maxlat + minlat) / 2);
@@ -125,19 +130,22 @@ public class Model {
                         long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
-                        id2node.add(new PolyPoint(id, 0.56f * lon, -lat));
+                        PolyPoint point = new PolyPoint(id, 0.56f * lon, -lat);
+
+                        id2node.add(point);
+                        id2way.put(relID,point);
                         this.searchTree.setAddressPos(0.56f * lon, -lat);
                         this.nodecount++;
                     } case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                         nodes.add(id2node.get(ref));
-                    } case "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
+                    } case "relation", "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
                         relID = Long.parseLong(reader.getAttributeValue(null, "id"));
                     } case "tag" -> { // Parses the key and value of tags, changing the waytype to the corresponding type.
                         String k = reader.getAttributeValue(null, "k");
                         String v = reader.getAttributeValue(null, "v");
-                        if (k.equals("name")) name = v;
-						if (k.contains("addr:")) {
+                        isMultiPoly = (k.equals("type") && v.equals("multipolygon") || isMultiPoly);
+                        if (k.contains("addr:")) {
                             switch (k) {
                                 case "addr:city" -> searchTree.addAddressElement("city",v);
                                 case "addr:housenumber" -> searchTree.addAddressElement("house",v);
@@ -145,9 +153,9 @@ public class Model {
                                 case "addr:street" -> searchTree.addAddressElement("street",v);
                             }
                         }
-                        if (this.yamlObj.ways.containsKey(k)) {
-                            keyType = k;
-                            valueType = v;
+                        if (this.yamlObj.keyfeatures.containsKey(k)) {
+                            keyFeature = k;
+                            valueFeature = v;
 
                             switch (k) {
                                 case "motorcar":
@@ -175,38 +183,44 @@ public class Model {
                             }
                         }
                     } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
-                        long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
-                        PolyLine elm = id2way.get(ref);
-                        if (elm != null) rel.add(elm);
+                        Drawable elm = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
+
+                        if (elm != null){
+                            switch (reader.getAttributeValue(null, "role")){
+                                case "outer" -> rel.add(new PolyGon((PolyLine) elm,false));
+                                case "inner" -> rel.add(new PolyGon((PolyLine) elm,true));
+                                default -> rel.add(elm);
+                            }
+                        }
                     }
                 }
             } else if(element == XMLStreamConstants.END_ELEMENT){
                 switch (reader.getLocalName()) {
-					case "node" -> searchTree.insertAddress();
+                    case "node" -> searchTree.insertAddress();
 					case "way" -> { // "way" - All lines in the program; linking point A to B
                         PolyLine way = new PolyLine(nodes);
-                        id2way.put(relID, way);
-                        this.kdtree.add(way);
                         this.waycount++;
+
+                        id2way.put(relID, way);
+                        this.kdtree.add(way,way);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,way);
                         nodes.clear();
-                        if (this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
-                            this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable.add(way);
-                        }
                     } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
-                        MultiPolygon multipoly = new MultiPolygon(rel);
-                        this.kdtree.add(multipoly);
+                        PolyRelation multipoly = new PolyRelation(rel,isMultiPoly);
+                        this.kdtree.add(multipoly,multipoly);
                         this.relcount++;
-                        if (keyType != null && !rel.isEmpty() && this.yamlObj.ways.containsKey(keyType) && this.yamlObj.ways.get(keyType).valuefeatures.containsKey(valueType)) {
-                            List<Drawable> yamlList = this.yamlObj.ways.get(keyType).valuefeatures.get(valueType).drawable;
-                            yamlList.add(multipoly);
-                        }
+
+                        id2way.put(relID, multipoly);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,multipoly);
+                        isMultiPoly = false;
                         rel.clear();
                     }
                 }
             }
         }
 
-        this.kdtree.generate();
+        this.kdtree.generateTree();
+        this.kdtree.generateSplits();
         this.searchTree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
     }

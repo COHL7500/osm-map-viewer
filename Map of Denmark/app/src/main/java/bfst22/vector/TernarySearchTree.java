@@ -1,9 +1,9 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
+import java.io.Serializable;
 import java.util.*;
 
-public class TernarySearchTree {
+public class TernarySearchTree implements Serializable, SerialVersionIdentifiable {
     private SearchNode root;
     private final List<Address> addresses;
 
@@ -28,9 +28,11 @@ public class TernarySearchTree {
     public void generate(){
         Collections.sort(this.addresses);
         this.addresses.forEach(address -> {
-            int id = this.addresses.indexOf(address);
-            char[] addrList = address.toString().toLowerCase().toCharArray();
-            this.root = insert(root, addrList, 0, id);
+            if(!address.isEmpty()){
+                int id = this.addresses.indexOf(address);
+                char[] addrList = address.toString().toLowerCase().toCharArray();
+                this.root = insert(root, addrList, 0, id);
+            }
         });
     }
 
@@ -44,17 +46,6 @@ public class TernarySearchTree {
         }
 
         return node;
-    }
-
-    private SearchNode search(SearchNode node, char[] word, int index) {
-        if (node == null || word.length == 0) return null;
-        if (word[index] < node.character) return search(node.left, word, index);
-        else if (word[index] > node.character) return search(node.right, word, index);
-        else {
-            if (node.isEndOString && index == (word.length-1)) return node;
-            else if (index == (word.length-1)) return null;
-            else return search(node.equal, word, index + 1);
-        }
     }
 
     private SearchNode nodeOfLastLetter(SearchNode node, char[] word, int index) {
@@ -83,34 +74,11 @@ public class TernarySearchTree {
         return tree;
     }
 
-    public String autoComplete(String word) {
-        return autoComplete(root, word.toLowerCase().toCharArray(), 0);
-    }
-
-    private String autoComplete(SearchNode node, char[] word, int index) {
-        String result;
-        if (node == null || word.length <= index) return null;
-        if (word[index] == node.character) {
-            if (word[index] == (word.length-1)) return Arrays.toString(word);
-            else {
-                result = autoComplete(node.equal, word, index+1);
-                if (result == null) result = Arrays.toString(word);
-            }
-        }
-
-        result = autoComplete((word[index] > node.character ? node.right : node.left), word, index + 1);
-        return result;
-    }
-
-    public Address addressSearch(String searchString) {
-        return this.addresses.get(this.search(root, searchString.toLowerCase().toCharArray(), 0).id);
-    }
-
     public List<Address> searchSuggestions(String searchString) {
         return this.suggestions(searchString).stream().limit(6).toList();
     }
 
-    private static class SearchNode {
+    private static class SearchNode implements Serializable, SerialVersionIdentifiable {
         public char character;
         public boolean isEndOString;
         public SearchNode left;
@@ -125,18 +93,16 @@ public class TernarySearchTree {
         }
     }
 
-    public static class Address implements Comparable<Address> {
-        //private final static String REGEX = "^ *(?<street>[1-9A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö. ]+?) +(?<house>[0-9]+[., ]+)((?<floor>[0-9]?[., ]+)?(?<side>[A-Za-zæøå0-9]+[., ]?))?( +)?(?<postcode>[0-9]{4})?( +)?(?<city>[A-Za-zÆØÅæøåÉéÈèÄäÜüŸÿÖö .]+)?$";
-        //private final static Pattern PATTERN = Pattern.compile(REGEX);
+    public static class Address implements Comparable<Address>, Serializable, SerialVersionIdentifiable {
         public Map<String,String> elements;
-        public Point2D coordPos;
+        public float[] coordPos;
 
         public Address(){
             this.elements = new HashMap<>();
         }
 
         public void setPos(float lon, float lat){
-            this.coordPos = new Point2D(lon,lat);
+            this.coordPos = new float[]{lon,lat};
         }
 
         public void addElement(String key, String value){
@@ -147,7 +113,7 @@ public class TernarySearchTree {
             return !this.elements.containsKey("street");
         }
 
-        public String toString() {
+        @Override public String toString() {
             return toStringKey("street"," ") +
                     toStringKey("house",", ") +
                     toStringKey("floor",", ") +

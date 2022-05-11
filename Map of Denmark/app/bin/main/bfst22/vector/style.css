@@ -2,31 +2,26 @@
     -fx-background-color: rgb(255, 0, 212);
 }
 
-#vBox, #vbox_debug {
-    -fx-padding: 5 10 10 10;
-}
-
-#vBox_scrollpane, #vbox_debug_scrollpane {
-    -fx-border-width: 1;
-    -fx-border-color: black;
-}
-
-#vBox_scrollpane {
+#vBox {
     -fx-border-style: hidden solid hidden hidden;
+    -fx-border-width: 1;
+    -fx-border-color: black;
 }
 
-#vbox_debug_scrollpane {
+#vbox_debug {
+    -fx-padding: 5 10 10 10;
     -fx-border-style: hidden hidden hidden solid;
+    -fx-border-width: 1;
+    -fx-border-color: black;
 }
 
-.vbox_debug_section {
+#vbox_debug .vbox_debug_section {
     -fx-border-color: black;
     -fx-border-width: 1;
-    -fx-background-color: white;
 }
 
 .debugSectionHeader {
-    -fx-pref-width: 250;
+    -fx-pref-width: 228;
     -fx-background-color: black;
     -fx-text-fill: white;
     -fx-padding: 5;
@@ -41,32 +36,4 @@
 center {
     -fx-border-color: blue;
     -fx-border-width: 1;
-}
-
-.list-cell {
-    -fx-padding: 0px;
-}
-
-#fontBox > .list-view {
-    -fx-max-width: 150;
-}
-
-#fontBox > .item-view .item-cell {
-    -fx-max-width:150;
-    -fx-padding:3 0 3 7;
-}
-
-.separator *.line {
-    -fx-border-style: hidden solid hidden hidden;
-    -fx-border-width: 1px;
-    -fx-border-color: gray;
-}
-
-#menuToolBar, #contentContainer {
-    -fx-background-color: #416A9F;
-    -fx-border-color: black;
-}
-
-#vBox, #vBox_scrollpane {
-    -fx-background-color: #7D9ECA;
 }

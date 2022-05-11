@@ -187,16 +187,7 @@ public class Painter {
 			this.colour = colour;
 			this.strokeSize = strokeSize;
 			this.filled = filled;
-			this.pos = this.calcPos();
-		}
-
-		private Point2D calcPos(){
-			double midtx = 0, midty = 0;
-			for(int i = 0; i < super.coords.length; i+=3){
-				midtx += super.coords[i+1];
-				midty += super.coords[i+2];
-			}
-			return new Point2D(midtx/(super.coords.length/3.0),midty/(super.coords.length/3.0));
+			this.pos = Poly.center(this);
 		}
 
 		public Point2D getPos(){
@@ -208,14 +199,12 @@ public class Painter {
 			gc.setStroke(this.colour);
 			gc.setFill(this.colour);
 			if(this.filled) super.fill(gc);
-			else super.draw(gc);
+			else super.stroke(gc);
 		}
 	}
 
 	private abstract static class PolyBox implements PaintObj {
-		private final Point2D pos;
-		private Point2D curr;
-		private Point2D size;
+		private Point2D pos, curr, size;
 		private final Color colour;
 		private final boolean filled;
 		private final double strokeSize;

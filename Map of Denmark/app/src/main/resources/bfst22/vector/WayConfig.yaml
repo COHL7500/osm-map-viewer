@@ -15,7 +15,7 @@
       city: {}
       borough: {}
       suburb: {}
-      quarter: {}
+      quater: {}
       neighbourhood: {}
       city_block: {}
       plot: {}
@@ -32,11 +32,12 @@
             fill_color: "#cfe0bf"
       continent: {}
       archipelago: {}
-      island: {}
-      islet:
+      island:
         draw:
+          always_draw: true
           fill: true
-          fill_color: "#b5b2ac"
+          fill_color: "pink"
+      islet: {}
       square: {}
       locality: {}
       sea: {}
