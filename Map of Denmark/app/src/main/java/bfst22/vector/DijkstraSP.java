@@ -53,7 +53,7 @@ public class DijkstraSP {
 
     }
 
-    public double h(PolyPoint start, PolyPoint target){
+    public float h(PolyPoint start, PolyPoint target){
         Distance d = new Distance();
         return d.haversineFormula(start,target);
     }

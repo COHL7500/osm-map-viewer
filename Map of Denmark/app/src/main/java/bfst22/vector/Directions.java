@@ -1,24 +1,28 @@
 package bfst22.vector;
 
 public class Directions {
-    public float angle;
+    private float angle;
+    private float distance;
+
     Distance d = new Distance();
 
     /* Returns a String with the description of the next turn */
     public String turn(PolyPoint start, PolyPoint to){
             this.angle = getAngle(start, to);
+            this.distance = d.haversineFormula(start,to) * 1000; //Gives distance and converts it to meter
+            String distanceString = String.format("%.0f",distance); //Converting into 0 floating point
 
             /*Driving Forward*/
             if (angle > 45 && angle < 135) {
-                return "Continue along /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " meter" + " Angle: " + angle + " " + start.lat + " " + start.lon;
+                return "Continue along /Certain Address/ for " + distanceString + " meters" + " Angle: " + angle + " " + start.lat + " " + start.lon;
             }
             /*Right Turn*/
             if (angle < 45 && angle > 315) {
-                return "Turn right onto /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " meter" + " Angle: " + angle + start.lat + " " + start.lon;
+                return "Turn right onto /Certain Address/ for " + distanceString + " meters" + " Angle: " + angle + start.lat + " " + start.lon;
             }
             /*Left Turn*/
             if(angle > 135 && angle < 225){
-                return "Turn left onto /Certain Address/ for " + d.haversineFormula(start, to) * 1000 + " meter" + " Angle: " + angle + start.lat + " " + start.lon;
+                return "Turn left onto /Certain Address/ for " + distanceString + " meters" + " Angle: " + angle + start.lat + " " + start.lon;
             }
             else return "Invalid Angle - Not beetween 0 <= angle <= 360, " + "The invalid Angle: " + angle + " " + start.lat + " " + start.lon;
     }
