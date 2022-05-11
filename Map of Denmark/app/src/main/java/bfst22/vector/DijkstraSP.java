@@ -93,6 +93,14 @@ public class DijkstraSP {
         return path;
     }
 
+    public ArrayList<Edge> pathToList(Iterable<Edge> path){
+        ArrayList<Edge> pathList = new ArrayList<>();
+        for(Edge e : path){
+            pathList.add(e);
+        }
+        return pathList;
+    }
+
     /* Test Function */
     public Iterable<String> pathToString(Iterable<Edge> path){
         Stack<String> pathToString = new Stack<>();
@@ -105,5 +113,7 @@ public class DijkstraSP {
         }
         return pathToString;
     }
+
+
 
 }

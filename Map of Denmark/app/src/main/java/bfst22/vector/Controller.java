@@ -389,8 +389,13 @@ public class Controller {
 
         /* For printing out the path - Fungere stadigvæk ikke endnu */
         Directions directions = new Directions();
+        ArrayList<Edge> directionList = new ArrayList<>();
         for(Edge f : dijkstraSP.pathTo(target)){
-            System.out.println(directions.turn(f.getFrom(), f.getTo()));
+            directionList.add(f);
+        }
+        for(int i = 0; i < directionList.size() - 1; i++){
+            if(i+3 >= directionList.size()) break;
+            System.out.println(directions.turn(directionList.get(i).getFrom(), directionList.get(i+3).getTo()));
         }
     }
 
