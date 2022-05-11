@@ -12,7 +12,7 @@ public class View {
     public View(Model model, Stage stage) throws Exception {
         this.setDisplayBound(stage);
 
-        model.load("data/small.osm.zip");
+        model.load("data/bornholm.zip");
         new Controller(model,stage);
 
         stage.setTitle("Danmarkskort - Gruppe #1");

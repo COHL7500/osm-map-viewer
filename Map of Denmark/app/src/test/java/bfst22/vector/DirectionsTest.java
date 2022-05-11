@@ -21,6 +21,7 @@ class DirectionsTest {
     DijkstraSP sp2;
     List<PolyPoint> path1 = new ArrayList<>();
     List<PolyPoint> path2 = new ArrayList<>();
+    VehicleType vehicleType;
 
 
     PolyPoint A = new PolyPoint(1,(float)12.6039900,(float)55.6390580);
@@ -60,7 +61,7 @@ class DirectionsTest {
     }
 
     @Test void path1Test(){
-        sp1 = new DijkstraSP(g,A,E);
+        sp1 = new DijkstraSP(g,A,E,vehicleType.MOTORCAR);
         Stack<String> path = new Stack<>();
         Iterator<Edge> edgeIterator = sp1.pathTo(E).iterator();
 
@@ -79,7 +80,7 @@ class DirectionsTest {
     }
 
     @Test void path2Test(){
-        sp1 = new DijkstraSP(g,E,A);
+        sp1 = new DijkstraSP(g,E,A,vehicleType.MOTORCAR);
         Stack<Edge> path = new Stack<>();
         for(Edge e : sp1.pathTo(A)){
 

@@ -29,7 +29,13 @@ public class Model {
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
     public DijkstraSP dijkstraSP;
-    public int currIndex = 0;
+    public Directions directions;
+    public boolean motorVehicle = true;
+    public boolean bicycle = false;
+    public boolean foot = false;
+    public boolean isOneWay = false;
+    public int speedlimit = 50; //Speed limit in towns
+    public int HwyCount = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -176,22 +182,19 @@ public class Model {
 
                             switch (k) {
                                 case "motorcar":
-                                    vehicleType = VehicleType.MOTORCAR;
-                                    e.isAllowed = v.equals("yes");
+                                    if(v.equals("no")) motorVehicle = false;
                                     break;
                                 case "bicycle":
-                                    vehicleType = VehicleType.BICYCLE;
-                                    e.isAllowed = v.equals("yes");
+                                    if(v.equals("yes")) bicycle = true;
                                     break;
                                 case "foot":
-                                    vehicleType = VehicleType.FOOT;
-                                    e.isAllowed = v.equals("yes");
+                                    if(v.equals("yes")) foot = true;
                                     break;
                                 case "oneway":
-                                    e.isOneway = v.equals("yes");
+                                    if(v.equals("yes")) isOneWay = true;
                                     break;
                                 case "maxspeed":
-                                    e.speedLimit = Integer.parseInt(v);
+                                    speedlimit = Integer.parseInt(v);
                                     break;
                                 case "restriction":
                                     if (v.equals("no_left_turn")) e.leftTurn = false;
@@ -227,9 +230,16 @@ public class Model {
                         this.kdtree.add(way);
                         this.waycount++;
                         if (isHighway) {
-                            index2way.put(currIndex, new LinkedList<>());
-                            for (PolyPoint p : nodes) index2way.get(currIndex).add(p);
-                            currIndex++;
+                            index2way.put(HwyCount, new LinkedList<>());
+                            for (PolyPoint p : nodes){
+                                p.foot = foot;
+                                p.bicycle = bicycle;
+                                p.motorVehicle = motorVehicle;
+                                p.isOneway = isOneWay;
+                                p.speedLimit = speedlimit;
+                                index2way.get(HwyCount).add(p);
+                            };
+                            HwyCount++;
                         }
 
                         nodes.clear();
@@ -262,7 +272,7 @@ public class Model {
         }
 
         graph.generate();
-        for(int i = 0; i < index2way.size() - 1 ; i++){
+        for(int i = 0; i < index2way.size() - 1; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
                 graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
                 graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
@@ -274,28 +284,10 @@ public class Model {
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
 
-        dijkstraSP = new DijkstraSP(graph,from,to);
-        System.out.println(dijkstraSP.pathToString(dijkstraSP.pathTo(to)));
+        dijkstraSP = new DijkstraSP(graph,from,to,vehicleType.MOTORCAR);
 
 
     }
-
-
-        
-
-
-        /*
-        for(int i = 0; i < (graph.nodes.size() - 1); i++) {
-            graph.addEdge(graph.nodes.get(i), graph.nodes.get(i + 1), graph.setWeightDistance(graph.nodes.get(i), graph.nodes.get(i + 1), graph.speedlimit));
-            //For now all roads go back and forth
-            //graph.addEdge(graph.nodes.get(i+1),graph.nodes.get(i), graph.setWeight(graph.nodes.get(i+1),graph.nodes.get(i), graph.speedlimit));
-        }
-
-         */
-
-
-        //graph.clearList();
-    
 
     public ArrayList<Address> getAddresses() {
         return addresses;

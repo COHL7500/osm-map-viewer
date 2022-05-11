@@ -214,8 +214,8 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawShortestPath(DijkstraSP dijkstra){
-            this.gc.setStroke(Color.GREEN);
-            this.gc.setLineWidth(0.000030);
+            this.gc.setStroke(Color.BLUE);
+            this.gc.setLineWidth(this.z(1));
             gc.beginPath();
             for(Edge e : dijkstra.pathTo(dijkstra.target)){
                 drawEdge(e);

@@ -5,20 +5,25 @@ public class DijkstraSP {
 
     PolyPoint start;
     PolyPoint target;
+    Graph g;
 
     Map<PolyPoint, Double> distanceMap;
     Map<PolyPoint, Edge> edgeMap;
     IndexMinPQ<Double> pq;
 
-    public DijkstraSP(Graph g, PolyPoint start, PolyPoint target){
+    public DijkstraSP(Graph g, PolyPoint start, PolyPoint target, VehicleType vehicleType){
         this.start = start;
         this.target = target;
+        this.g = g;
 
         distanceMap = new HashMap<>();
         edgeMap = new HashMap<>();
 
         for(int v = 0; v < g.getVertexCount(); v++){
-            distanceMap.put(g.polyMap.get(v),Double.POSITIVE_INFINITY);
+            if(distanceMap.get(g.polyMap.get(v)) == null){
+                distanceMap.put(g.polyMap.get(v),Double.POSITIVE_INFINITY);
+            }
+
         }
         distanceMap.put(start,0.0);
 
@@ -26,9 +31,24 @@ public class DijkstraSP {
         pq.insert(g.indexMap.get(start),distanceMap.get(start));
         while (!pq.isEmpty()){
             PolyPoint v = g.polyMap.get(pq.delMin());
-            for(Edge e : g.adj(v)){
-                relax(g,e,target);
+            switch(vehicleType){
+                case MOTORCAR:
+                    for(Edge e : g.adj(v)){
+                        relax(g,e,target);
+                    }
+                    break;
+                case FOOT:
+                    for(Edge e : g.adj(v)){
+                        relax(g,e,target);
+                    }
+                    break;
+                case BICYCLE:
+                    for(Edge e : g.adj(v)){
+                        relax(g,e,target);
+                    }
+                    break;
             }
+
         }
 
     }
@@ -41,15 +61,16 @@ public class DijkstraSP {
     public void relax(Graph g, Edge e, PolyPoint target){
         PolyPoint v = e.getFrom();
         PolyPoint w = e.getTo();
-        if(distanceMap.get(w) > distanceMap.get(v) + e.getWeight()){
-            distanceMap.put(w,distanceMap.get(v) + e.getWeight());
-            edgeMap.put(w,e);
-            double priority = distanceMap.get(w) + h(w,target);
-            if(pq.contains(g.indexMap.get(w))){
-                pq.decreaseKey(g.indexMap.get(w),priority);
-            }
-            else {
-                pq.insert(g.indexMap.get(w),priority);
+        if(distanceMap.get(w) != null && distanceMap.get(v) != null) {
+            if (distanceMap.get(w) > distanceMap.get(v) + e.getWeight()) {
+                distanceMap.put(w, distanceMap.get(v) + e.getWeight());
+                edgeMap.put(w, e);
+                double priority = distanceMap.get(w) + h(w, target);
+                if (pq.contains(g.indexMap.get(w))) {
+                    pq.decreaseKey(g.indexMap.get(w), priority);
+                } else {
+                    pq.insert(g.indexMap.get(w), priority);
+                }
             }
         }
     }
