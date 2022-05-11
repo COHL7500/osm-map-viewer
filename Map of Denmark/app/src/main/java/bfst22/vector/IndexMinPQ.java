@@ -1,13 +1,12 @@
 package bfst22.vector;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /* This code has been taken from our Algorithm Book: */
 /* Algorithms, 4th Edition by Robert Sedgewick and Kevin Wayne */
 
-public class IndexMinPQ<Key extends Comparable<Key>> implements Iterable<Integer>, Serializable, SerialVersionIdentifiable {
+public class IndexMinPQ<Key extends Comparable<Key>> implements Iterable<Integer> {
     private int maxN;        // maximum number of elements on PQ
     private int n;           // number of elements on PQ
     private int[] pq;        // binary heap using 1-based indexing

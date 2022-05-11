@@ -1,8 +1,6 @@
 package bfst22.vector;
 
-import java.io.Serializable;
-
-public class Edge implements Serializable, SerialVersionIdentifiable {
+public class Edge {
     private PolyPoint from;
     private PolyPoint to;
     private float weight;

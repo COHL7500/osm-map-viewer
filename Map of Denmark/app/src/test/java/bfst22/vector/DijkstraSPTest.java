@@ -13,7 +13,6 @@ public class DijkstraSPTest {
     Distance d;
     DijkstraSP sp;
     int speedLimit = 75;
-    VehicleType VehicleType;
     VehicleType vehicleType = VehicleType.MOTORCAR;
 
     /*PolyPoint objects*/
@@ -109,13 +108,13 @@ public class DijkstraSPTest {
 
     }
     @Test void dijkstraTest0to4(){
-        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4),vehicleType.MOTORCAR);
+        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4));
         System.out.println(sp.pathToString(sp.pathTo(g.nodes.get(4))));
         assertEquals("[4->5  4.181843, 1->4  10.410108]","" + sp.pathToString(sp.pathTo(g.nodes.get(4))));
     }
 
     @Test void dijkstraTest0to10(){
-        sp = new DijkstraSP(g,g.nodes.get(0),g.nodes.get(10),vehicleType.MOTORCAR);
+        sp = new DijkstraSP(g,g.nodes.get(0),g.nodes.get(10));
         assertEquals("[10->11  4.6753273, 7->10  6.6010547, 6->7  4.447797, 1->6  3.3030636]","" + sp.pathToString(sp.pathTo(g.nodes.get(10))));
     }
 

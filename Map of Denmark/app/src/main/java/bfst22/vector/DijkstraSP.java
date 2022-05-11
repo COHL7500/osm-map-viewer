@@ -1,8 +1,7 @@
 package bfst22.vector;
-import java.io.Serializable;
 import java.util.*;
 
-public class DijkstraSP implements Serializable, SerialVersionIdentifiable {
+public class DijkstraSP {
 
     PolyPoint start;
     PolyPoint target;
@@ -11,7 +10,7 @@ public class DijkstraSP implements Serializable, SerialVersionIdentifiable {
     Map<PolyPoint, Edge> edgeMap;
     IndexMinPQ<Double> pq;
 
-    public DijkstraSP(Graph g, PolyPoint start, PolyPoint target, VehicleType vehicleType){
+    public DijkstraSP(Graph g, PolyPoint start, PolyPoint target){
         this.start = start;
         this.target = target;
 
@@ -27,24 +26,6 @@ public class DijkstraSP implements Serializable, SerialVersionIdentifiable {
         pq.insert(g.indexMap.get(start),distanceMap.get(start));
         while (!pq.isEmpty()){
             PolyPoint v = g.polyMap.get(pq.delMin());
-            switch(vehicleType){
-                case MOTORCAR:
-                    for(Edge e : g.adj(v)){
-                        relax(g,e,target);
-                    }
-                    break;
-                case FOOT:
-                    for(Edge e : g.adj(v)){
-                        relax(g,e,target);
-                    }
-                    break;
-                case BICYCLE:
-                    for(Edge e : g.adj(v)){
-                        relax(g,e,target);
-                    }
-                    break;
-            }
-
             for(Edge e : g.adj(v)){
                 relax(g,e,target);
             }
@@ -102,14 +83,6 @@ public class DijkstraSP implements Serializable, SerialVersionIdentifiable {
             pathToString.push(output);
         }
         return pathToString;
-    }
-
-    public ArrayList<Edge> pathToList(Iterable<Edge> path){
-        ArrayList<Edge> pathList = new ArrayList<>();
-        for(Edge e : path){
-            pathList.add(e);
-        }
-        return pathList;
     }
 
 }

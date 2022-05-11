@@ -4,5 +4,4 @@ public enum VehicleType {
     MOTORCAR,
     BICYCLE,
     FOOT;
-
 }

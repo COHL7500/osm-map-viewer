@@ -2,10 +2,9 @@ package bfst22.vector;
 
 //Not done yet
 
-import java.io.Serializable;
 import java.util.*;
 
-public class Graph implements Serializable, SerialVersionIdentifiable {
+public class Graph {
     int vertexCount; //Number of vertices.
     int edgeCount; //Number of edges
     float speedlimit = 0; //Speedlimit

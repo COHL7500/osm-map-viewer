@@ -1,21 +1,11 @@
 package bfst22.vector;
 
-import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-// Lazy version
-
-// !! NOT IN USE !!
-
-/*
-TODO:
- - Remove this class (consult Adam)
- */
-
-public class DijkstraShortestPath implements Serializable, SerialVersionIdentifiable {
+public class DijkstraShortestPath {
     private Map<PolyPoint, Boolean> markMap;
     private Map<PolyPoint,Double> distanceMap;
     private Map<PolyPoint, Edge> edgeMap;

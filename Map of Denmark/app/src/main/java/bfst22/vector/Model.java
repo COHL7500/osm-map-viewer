@@ -8,7 +8,6 @@ import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
 import javafx.geometry.Point2D;
 import bfst22.vector.TernarySearchTree.TernarySearchTree;
-import javafx.scene.paint.Color;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -30,7 +29,7 @@ public class Model {
     public TernarySearchTree searchTree = new TernarySearchTree();
     public Graph graph;
     public DijkstraSP dijkstraSP;
-    public Directions directions;
+    public int currIndex = 0;
 
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -57,8 +56,6 @@ public class Model {
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
-                    this.graph = (Graph) input.readObject();
-                    this.dijkstraSP = (DijkstraSP) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
                 this.filesize = Files.size(Paths.get(this.currFileName));
@@ -69,8 +66,6 @@ public class Model {
     public void unload(){
         this.kdtree = null;
         this.yamlObj = null;
-        this.graph = null;
-        this.dijkstraSP = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
         this.currFileName = "";
@@ -95,8 +90,6 @@ public class Model {
             out.writeInt(relcount);
             out.writeObject(kdtree);
             out.writeObject(yamlObj);
-            out.writeObject(graph);
-            out.writeObject(dijkstraSP);
         }
     }
 
@@ -106,8 +99,6 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
-        this.graph = new Graph();
-
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
         NodeMap id2node = new NodeMap(); // Converts IDs into nodes (uncertain about this).
@@ -115,18 +106,12 @@ public class Model {
         List<PolyPoint> nodes = new ArrayList<>(); // A list of nodes drawing a particular element of map. Is cleared when fully drawn.
         List<PolyLine> rel = new ArrayList<>(); // Saves all relations.
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
-        Random rand = new Random();
-        int HwyCount = 0;
-        boolean motorVehicle = true;
-        boolean bicycle = false;
-        boolean foot = false;
-        boolean oneWay = false;
-        int speedlimit = 0;
 
         // , "secondary", "tertiary", "residential"
 
         long relID = 0; // ID of the current relation.
         String keyType = null, valueType = null, name = null;
+        graph = new Graph();
         boolean isHighway = false;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
@@ -188,23 +173,25 @@ public class Model {
                             keyType = k;
                             valueType = v;
                             isHighway = false;
-                            motorVehicle = true;
 
                             switch (k) {
                                 case "motorcar":
-                                    if(v.equals("no")) motorVehicle = false;
+                                    vehicleType = VehicleType.MOTORCAR;
+                                    e.isAllowed = v.equals("yes");
                                     break;
                                 case "bicycle":
-                                    if(v.equals("yes")) bicycle = true;
+                                    vehicleType = VehicleType.BICYCLE;
+                                    e.isAllowed = v.equals("yes");
                                     break;
                                 case "foot":
-                                    if(v.equals("yes")) foot = true;
+                                    vehicleType = VehicleType.FOOT;
+                                    e.isAllowed = v.equals("yes");
                                     break;
                                 case "oneway":
-                                    if(v.equals("yes")) oneWay = true;
+                                    e.isOneway = v.equals("yes");
                                     break;
                                 case "maxspeed":
-                                    speedlimit = Integer.parseInt(v);
+                                    e.speedLimit = Integer.parseInt(v);
                                     break;
                                 case "restriction":
                                     if (v.equals("no_left_turn")) e.leftTurn = false;
@@ -240,18 +227,9 @@ public class Model {
                         this.kdtree.add(way);
                         this.waycount++;
                         if (isHighway) {
-                            index2way.put(HwyCount, new LinkedList<>());
-                            for (PolyPoint p : nodes) {
-                                p.foot = foot;
-                                p.bicycle = bicycle;
-                                p.motorVehicle = motorVehicle;
-                                p.isOneway = oneWay;
-                                p.speedLimit = speedlimit;
-                                index2way.get(HwyCount).add(p);
-                            }
-                            HwyCount++;
-
-
+                            index2way.put(currIndex, new LinkedList<>());
+                            for (PolyPoint p : nodes) index2way.get(currIndex).add(p);
+                            currIndex++;
                         }
 
                         nodes.clear();
@@ -287,18 +265,17 @@ public class Model {
         for(int i = 0; i < index2way.size() - 1 ; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
                 graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
-                if(!index2way.get(i).get(j).isOneway){
-                    graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
-                }
-
+                graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
             }
         }
 
+
+        Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
-        dijkstraSP = new DijkstraSP(graph,from,to, VehicleType.MOTORCAR);
 
-
+        dijkstraSP = new DijkstraSP(graph,from,to);
+        System.out.println(dijkstraSP.pathToString(dijkstraSP.pathTo(to)));
 
 
     }
