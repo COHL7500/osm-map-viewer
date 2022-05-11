@@ -29,7 +29,6 @@ public class MapCanvas extends Canvas {
     public DebugProperties deprop;
     public boolean drags;
     public String backgroundColor;
-	Map<String, Boolean> debugValMap = debugPropertiesInit();
 
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------ General Methods ------------------------------------------------ *
@@ -179,7 +178,7 @@ public class MapCanvas extends Canvas {
     {
         this.backgroundColor = "#31428c";
 
-        model.yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
+        model.yamlObj.keyfeatures.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
 
             if (valueVF != null) {
 
@@ -211,7 +210,7 @@ public class MapCanvas extends Canvas {
     {
         this.backgroundColor = "#b5d2dd";
 
-        model.yamlObj.ways.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
+        model.yamlObj.keyfeatures.forEach((key, value) -> value.valuefeatures.forEach((keyVF, valueVF) -> {
             value.draw.force_stroke_color = null;
             value.draw.force_fill_color = null;
             valueVF.draw.force_stroke_color = null;

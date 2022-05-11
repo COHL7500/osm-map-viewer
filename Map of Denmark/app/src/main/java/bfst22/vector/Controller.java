@@ -510,13 +510,13 @@ public class Controller {
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.update();
-        this.canvas.debugValMap.replace("debugDisplayWireframe", false);
-        this.canvas.debugValMap.replace("debugDarkMode", false);
+        this.canvas.deprop.set("debugDisplayWireframe", false);
+        this.canvas.deprop.set("debugDarkMode", false);
         this.canvas.lightMode();
     }
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
-        this.canvas.debugValMap.replace("debugDarkMode", true);
+        this.canvas.deprop.set("debugDarkMode", true);
         this.canvas.darkMode();
     }
 

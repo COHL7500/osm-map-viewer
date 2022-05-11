@@ -44,9 +44,8 @@ class valueFeature implements Serializable, SerialVersionIdentifiable {
 class featureDraw implements Serializable, SerialVersionIdentifiable {
 	public boolean fill = false;
 	public String fill_color;
-	public boolean stroke = false;
 	public String force_fill_color;
-	public boolean stroke;
+	public boolean stroke = false;
 	public String stroke_color;
 	public String force_stroke_color;
 	public double line_width;

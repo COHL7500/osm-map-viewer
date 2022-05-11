@@ -8,9 +8,14 @@ repositories {
 }
 
 javafx {
-    version = "17"
+    version = "18.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
+
+tasks.withType(JavaExec) {
+    jvmArgs = ['-Xmx8g']
+}
+
 
 dependencies {
     implementation 'org.yaml:snakeyaml:1.19'
