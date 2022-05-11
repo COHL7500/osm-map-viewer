@@ -258,12 +258,19 @@ public class Model {
             }
         }
 
-
+        /*
         Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
-
         dijkstraSP = new DijkstraSP(graph,from,to,vehicleType.MOTORCAR);
+        for(Edge e : dijkstraSP.pathTo(to)){
+            System.out.println(directions.turn(e.getFrom(), e.getTo()));
+        }
+        */
+
+
+
+
 
     }
 }

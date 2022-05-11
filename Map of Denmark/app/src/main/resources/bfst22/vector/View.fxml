@@ -330,10 +330,10 @@ https://kordamp.org/ikonli -->
                             </graphic>
                             <VBox>
                                 <VBox spacing="5">
-                                    <TextField prefWidth="200" promptText="Starting Address"/>
-                                    <TextField prefWidth="200" promptText="Destination"/>
+                                    <TextField fx:id="startingAddress" prefWidth="200" promptText="Starting Address"/>
+                                    <TextField fx:id="targetAddress" prefWidth="200" promptText="Destination"/>
                                     <HBox spacing="5">
-                                        <Button id="route_find_button" fx:id="routeFindButton" text="Find" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                        <Button id="route_find_button" fx:id="routeFindButton" text="Find" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS" onMousePressed="#findClosestRoute">
                                             <graphic>
                                                 <FontIcon iconLiteral="fas-search:12:WHITE"/>
                                             </graphic>

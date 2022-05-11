@@ -23,11 +23,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
@@ -35,7 +31,7 @@ public class Controller {
 	private final Model model;
     private final List<String> loadedMaps;
     private final ContextMenu canvasCM, suggestionPopup;
-	
+
 	@FXML private MapCanvas canvas;
     @FXML private TitledPane pinPointSidebar;
     @FXML private ScrollPane vBox_scrollpane;
@@ -69,6 +65,8 @@ public class Controller {
     @FXML private ListView<HBox> pinPointList;
     @FXML private StackPane center_stack;
     @FXML private VBox topmenu;
+    @FXML private TextField startingAddress;
+    @FXML private TextField targetAddress;
 
     // Debug menu variables
     @FXML private ScrollPane vbox_debug_scrollpane;
@@ -358,6 +356,42 @@ public class Controller {
 
     @FXML private void spinnerPaintFontSizeButtonPressed(KeyEvent e){
         this.canvas.painter.setFontSize(this.paintFontSize.getValue());
+    }
+
+    @FXML private void findClosestRoute(MouseEvent e){
+        String[] startingArr = this.startingAddress.getText().split(",");
+        String[] targetArr = this.targetAddress.getText().split(",");
+        /*
+        /* NN */
+        KdTree kdTree = new KdTree();
+        List<PolyPoint> edgeList = new ArrayList<>();
+        for(Edge f : model.graph.edges()){
+            edgeList.add(f.getFrom());
+            edgeList.add(f.getTo());
+            kdTree.add(new PolyLine(edgeList),f);
+            edgeList.clear();
+        }
+        kdTree.generateTree();
+        kdTree.generateSplits();
+
+        float[] nearestStart = kdTree.findNN(new float[]{Float.parseFloat(startingArr[0]),Float.parseFloat(startingArr[1])});
+        float[] nearestTarget = kdTree.findNN(new float[]{Float.parseFloat(targetArr[0]),Float.parseFloat(targetArr[1])});
+
+        //PolyPoint start = new PolyPoint(0,nearestStart[0],nearestStart[1]);
+        //PolyPoint target = new PolyPoint(1,nearestTarget[1],nearestTarget[1]);
+        Random random = new Random();
+        //Takes 2 random points
+        PolyPoint start = model.graph.nodes.get(random.nextInt(model.graph.nodes.size()-1));
+        PolyPoint target = model.graph.nodes.get(random.nextInt(model.graph.nodes.size()-1));
+
+        DijkstraSP dijkstraSP = new DijkstraSP(model.graph,start,target,VehicleType.MOTORCAR);
+        this.model.dijkstraSP = dijkstraSP;
+
+        /* For printing out the path - Fungere stadigvæk ikke endnu */
+        Directions directions = new Directions();
+        for(Edge f : dijkstraSP.pathTo(target)){
+            System.out.println(directions.turn(f.getFrom(), f.getTo()));
+        }
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *
