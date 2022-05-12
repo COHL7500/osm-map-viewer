@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import bfst22.vector.MapCanvas?>
+<?import bfst22.vector.TextFieldSuggestion?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.SeparatorMenuItem?>
@@ -51,7 +52,7 @@ https://kordamp.org/ikonli -->
                 <Menu text="File">
                     <MenuItem text="Load Default map" onAction="#onDefaultLoadClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-dolly:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-dolly:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -59,7 +60,7 @@ https://kordamp.org/ikonli -->
                     </MenuItem>
                     <MenuItem text="Import Custom map" onAction="#onBrowseOSMClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-file-import:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-file-import:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="I" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -67,12 +68,12 @@ https://kordamp.org/ikonli -->
                     </MenuItem>
                     <Menu text="Recent Loaded Maps" fx:id="recentMapsSubmenu" disable="true">
                         <graphic>
-                            <FontIcon iconLiteral="far-folder-open:12:WHITE"/>
+                            <FontIcon iconLiteral="far-folder-open:12"/>
                         </graphic>
                     </Menu>
                     <MenuItem text="Unload map" fx:id="unloadFileButton" onAction="#unloadFileButtonClicked">
                         <graphic>
-                            <FontIcon iconLiteral="far-times-circle:12:WHITE"/>
+                            <FontIcon iconLiteral="far-times-circle:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="U" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -81,7 +82,7 @@ https://kordamp.org/ikonli -->
                     <SeparatorMenuItem styleClass="separator_horizontal"/>
                     <MenuItem text="Exit" onAction="#exitButtonClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-door-open:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-door-open:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="DELETE" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -91,7 +92,7 @@ https://kordamp.org/ikonli -->
                 <Menu text="Edit">
                     <MenuItem text="Zoom In" onAction="#zoomInClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-plus:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-plus:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="COMMA" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -99,7 +100,7 @@ https://kordamp.org/ikonli -->
                     </MenuItem>
                     <MenuItem text="Zoom Out" onAction="#zoomOutClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-minus:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-minus:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="PERIOD" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -107,7 +108,7 @@ https://kordamp.org/ikonli -->
                     </MenuItem>
                     <MenuItem text="Change Zoom Level" onAction="#changeZoomLevelClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-i-cursor:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-i-cursor:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -218,7 +219,7 @@ https://kordamp.org/ikonli -->
                 <Menu text="Help">
                     <MenuItem text="About..." onAction="#aboutButtonClicked">
                         <graphic>
-                            <FontIcon iconLiteral="fas-info-circle:12:WHITE"/>
+                            <FontIcon iconLiteral="fas-info-circle:12"/>
                         </graphic>
                         <accelerator>
                             <KeyCodeCombination alt="UP" code="A" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
@@ -247,7 +248,7 @@ https://kordamp.org/ikonli -->
                 <HBox fx:id="search_root" HBox.hgrow="ALWAYS" maxHeight="30" spacing="5" alignment="CENTER_RIGHT">
                     <GridPane fx:id="search_pane">
                         <HBox fx:id="search_box" spacing="5">
-                            <TextField fx:id="searchField" prefWidth="250" promptText="Search..."/>
+                            <TextFieldSuggestion fx:id="searchField" prefWidth="250" promptText="Search..."/>
                             <Button fx:id="searchButton" onAction="#onSearchButtonPressed" text="Search">
                                 <graphic>
                                     <FontIcon iconLiteral="fas-search:12:WHITE"/>
@@ -330,26 +331,27 @@ https://kordamp.org/ikonli -->
                             </graphic>
                             <VBox>
                                 <VBox spacing="5">
-                                    <TextField prefWidth="200" promptText="Starting Address"/>
-                                    <TextField prefWidth="200" promptText="Destination"/>
+                                    <TextFieldSuggestion fx:id="startAddress" prefWidth="200" promptText="Starting Address"/>
+                                    <TextFieldSuggestion fx:id="targetAddress" prefWidth="200" promptText="Destination"/>
+                                    <Label fx:id="routeErrorLabel" style="-fx-text-fill: RED;" visible="false" managed="${routeErrorLabel.visible}" />
                                     <HBox spacing="5">
-                                        <Button id="route_find_button" fx:id="routeFindButton" text="Find" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                        <Button id="route_find_button" fx:id="routeFindButton" text="Find" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS" onMousePressed="#findClosestRoute">
                                             <graphic>
                                                 <FontIcon iconLiteral="fas-search:12:WHITE"/>
                                             </graphic>
                                         </Button>
-                                        <Button id="route_order_button" fx:id="routeSwitchButton" text="Switch" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+                                        <Button id="route_order_button" fx:id="routeSwitchButton" text="Switch" prefWidth="85" maxWidth="Infinity" HBox.hgrow="ALWAYS" onMousePressed="#switchOrderRoute">
                                             <graphic>
                                                 <FontIcon iconLiteral="fas-exchange-alt:12:WHITE"/>
                                             </graphic>
                                         </Button>
                                     </HBox>
-                                    <Separator styleClass="separator_horizontal" visible="false"/>
-                                    <ScrollPane disable="true" visible="false">
-                                        <VBox>
-
-                                        </VBox>
-                                    </ScrollPane>
+                                    <Label fx:id="distance" visible="false" managed="${distance.visible}"/>
+                                    <ListView fx:id="routeTextPane" disable="true" visible="false" managed="${routeTextPane.visible}" prefHeight="200">
+                                        <placeholder>
+                                            <Label text="No Routes to show..." />
+                                        </placeholder>
+                                    </ListView>
                                 </VBox>
                             </VBox>
                         </TitledPane>

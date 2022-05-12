@@ -1,7 +1,6 @@
 package bfst22.vector;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -52,14 +51,14 @@ public class PinPoints extends Dialog<ButtonType> {
 					if(point == null){
 						HBox PinEntry 	 = (HBox) Controller.smartFXMLLoader(this,"PinListEntry.fxml");
 						String labelText = this.PinTitle.getText().length() > 20 ? this.PinTitle.getText().substring(0,20) + "..." : this.PinTitle.getText();
-						Pin newPoint 	 = new Pin(PinEntry, (float) canvas.mousePos.getX(), (float) canvas.mousePos.getY(), 30, !this.PinCheckbox.isSelected(), this.PinTitle.getText(), this.PinDescription.getText());
+						Pin newPoint 	 = new Pin(PinEntry, canvas.mousePos[0], canvas.mousePos[1], 30, !this.PinCheckbox.isSelected(), this.PinTitle.getText(), this.PinDescription.getText());
 
 						Label PinLabel 		 = ((Label) PinEntry.lookup("#PinLabel"));
 						Button PinButtonGoto = ((Button) PinEntry.lookup("#PinButtonGoto"));
 						Button PinButtonEdit = ((Button) PinEntry.lookup("#PinButtonEdit"));
 
 						PinLabel.setText(labelText);
-						PinButtonGoto.setOnMousePressed(f -> canvas.goToPosAbsolute(new Point2D(newPoint.lat,newPoint.lon)));
+						PinButtonGoto.setOnMousePressed(f -> canvas.goToPosAbsolute(new float[]{newPoint.lat,newPoint.lon}));
 						PinButtonEdit.setOnMousePressed(g -> this.displayWindow("Edit Pin Point", newPoint, canvas));
 
 						this.pinPointList.getItems().add(PinEntry);
@@ -87,15 +86,15 @@ public class PinPoints extends Dialog<ButtonType> {
 		}
 	}
 
-	public boolean drag(Point2D mousePos, double zoom, boolean state){
+	public boolean drag(float[] mousePos, double zoom, boolean state){
 		return this.pins.stream().anyMatch(obj -> {
 			boolean in = obj.inRadius(mousePos,zoom);
-			if(in) obj.move(mousePos,zoom,state);
+			if(in) obj.move(mousePos,state);
 			return in;
 		});
 	}
 
-	public void draw(GraphicsContext gc, double zoom, Point2D mousePos){
+	public void draw(GraphicsContext gc, double zoom, float[] mousePos){
 		this.pins.forEach(point -> point.draw(gc,zoom,mousePos));
 	}
 }

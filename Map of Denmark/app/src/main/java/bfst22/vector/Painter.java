@@ -1,6 +1,5 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -15,7 +14,7 @@ public class Painter {
 	private int drawMode;
 	private boolean fill;
 	private Color paintColor;
-	private Point2D mousePos;
+	private float[] mousePos;
 	private double strokeSize;
 	private String selectedFont;
 	private double zoom_current;
@@ -68,20 +67,20 @@ public class Painter {
 		if(this.drawMode == 3) ((PolyText) this.elements.get(this.elements.size()-1)).addText(key);
 	}
 
-	public void press(Point2D mousePos){
+	public void press(float[] mousePos){
 		this.mousePos = mousePos;
 		switch(this.drawMode){
-			case 0 -> this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
-			case 1 -> this.elements.add(new PolyCircle(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
-			case 2 -> this.elements.add(new PolyRect(mousePos,new Point2D(0,0),this.paintColor,this.strokeSize,this.fill));
+			case 0 -> this.tempElements.add(new PolyPoint(0,this.mousePos[0],this.mousePos[1]));
+			case 1 -> this.elements.add(new PolyCircle(mousePos,new float[]{0,0},this.paintColor,this.strokeSize,this.fill));
+			case 2 -> this.elements.add(new PolyRect(mousePos,new float[]{0,0},this.paintColor,this.strokeSize,this.fill));
 			case 3 -> this.elements.add(new PolyText(mousePos,this.paintColor,this.selectedFont,this.fontSize,this.strokeSize,this.fill));
 		}
 	}
 
-	public void drag(Point2D mousePos){
+	public void drag(float[] mousePos){
 		this.mousePos = mousePos;
 		switch (this.drawMode){
-			case 0 -> this.tempElements.add(new PolyPoint(0,(float) this.mousePos.getX(),(float) this.mousePos.getY()));
+			case 0 -> this.tempElements.add(new PolyPoint(0,this.mousePos[0],this.mousePos[1]));
 			case 1 -> ((PolyCircle) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
 			case 2 -> ((PolyRect) this.elements.get(this.elements.size()-1)).setEnd(mousePos);
 			case 4 -> this.deleteWithin();
@@ -93,7 +92,7 @@ public class Painter {
 		this.tempElements.clear();
 	}
 
-	public void stroke(GraphicsContext gc, Point2D mousePos, double zoom_current){
+	public void stroke(GraphicsContext gc, float[] mousePos, double zoom_current){
 		this.zoom_current = zoom_current;
 		gc.setLineDashes(0);
 
@@ -115,7 +114,7 @@ public class Painter {
 			gc.setStroke(Color.RED);
 			gc.setLineDashes(5/zoom_current);
 			gc.setLineWidth(2/zoom_current);
-			gc.strokeOval(mousePos.getX()-(50/zoom_current),mousePos.getY()-(50/zoom_current),100/zoom_current,100/zoom_current);
+			gc.strokeOval(mousePos[0]-(50/zoom_current),mousePos[1]-(50/zoom_current),100/zoom_current,100/zoom_current);
 			gc.setLineDashes(0);
 		}
 
@@ -125,15 +124,15 @@ public class Painter {
 	private void deleteWithin(){
 		this.elements.removeIf(obj -> {
 			double r = 50/zoom_current;
-			double x = mousePos.getX()-obj.getPos().getX();
-			double y = mousePos.getY()-obj.getPos().getY();
+			double x = mousePos[0]-obj.getPos()[0];
+			double y = mousePos[1]-obj.getPos()[1];
 			double d = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
 			return d <= r;
 		});
 	}
 
 	private interface PaintObj {
-		Point2D getPos();
+		float[] getPos();
 		void draw(GraphicsContext gc);
 	}
 
@@ -144,9 +143,9 @@ public class Painter {
 		private final String font;
 		private final int size;
 
-		public PolyText(Point2D pos, Color colour, String font, int size, double strokeSize, boolean filled){
-			this.setX(pos.getX());
-			this.setY(pos.getY());
+		public PolyText(float[] pos, Color colour, String font, int size, double strokeSize, boolean filled){
+			this.setX(pos[0]);
+			this.setY(pos[1]);
 			this.colour = colour;
 			this.strokeSize = strokeSize;
 			this.filled = filled;
@@ -158,8 +157,8 @@ public class Painter {
 			super.setText(super.getText() + chars);
 		}
 
-		public Point2D getPos(){
-			return new Point2D(super.getX(),super.getY());
+		public float[] getPos(){
+			return new float[]{(float) super.getX(),(float) super.getY()};
 		}
 
 		@Override public void draw(GraphicsContext gc){
@@ -180,7 +179,7 @@ public class Painter {
 		private final Color colour;
 		private final double strokeSize;
 		private final boolean filled;
-		private final Point2D pos;
+		private final float[] pos;
 
 		public PolyPaint(final Color colour, final List<PolyPoint> nodes, double strokeSize, boolean filled){
 			super(nodes);
@@ -190,7 +189,7 @@ public class Painter {
 			this.pos = Poly.center(this);
 		}
 
-		public Point2D getPos(){
+		public float[] getPos(){
 			return this.pos;
 		}
 
@@ -204,32 +203,32 @@ public class Painter {
 	}
 
 	private abstract static class PolyBox implements PaintObj {
-		private Point2D pos, curr, size;
+		private float[] pos, curr, size;
 		private final Color colour;
 		private final boolean filled;
 		private final double strokeSize;
 
-		public PolyBox(Point2D pos, Point2D size, Color colour, double strokeSize, boolean filled){
+		public PolyBox(float[] pos, float[] size, Color colour, double strokeSize, boolean filled){
 			this.pos = pos;
-			this.curr = new Point2D(0,0);
+			this.curr = new float[]{0,0};
 			this.size = size;
 			this.filled = filled;
 			this.colour = colour;
 			this.strokeSize = strokeSize;
 		}
 
-		public Point2D getPos(){
-			return new Point2D(this.curr.getX()+this.size.getX()/2, this.curr.getY()+this.size.getY()/2);
+		public float[] getPos(){
+			return new float[]{this.curr[0]+this.size[0]/2, this.curr[1]+this.size[1]/2};
 		}
 
-		public void setEnd(Point2D pos){
-			this.curr = new Point2D(Math.min(this.pos.getX(),pos.getX()), Math.min(this.pos.getY(),pos.getY()));
-			this.size = new Point2D(Math.abs(this.pos.getX()-pos.getX()), Math.abs(this.pos.getY()-pos.getY()));
+		public void setEnd(float[] pos){
+			this.curr = new float[]{Math.min(this.pos[0],pos[0]), Math.min(this.pos[1],pos[1])};
+			this.size = new float[]{Math.abs(this.pos[0]-pos[0]), Math.abs(this.pos[1]-pos[1])};
 		}
 	}
 
 	private static class PolyCircle extends PolyBox {
-		public PolyCircle(Point2D pos, Point2D size, Color colour, double strokeSize, boolean filled){
+		public PolyCircle(float[] pos, float[] size, Color colour, double strokeSize, boolean filled){
 			super(pos,size,colour,strokeSize,filled);
 		}
 
@@ -237,13 +236,13 @@ public class Painter {
 			gc.setLineWidth(super.strokeSize);
 			gc.setStroke(super.colour);
 			gc.setFill(super.colour);
-			if(super.filled) gc.fillOval(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
-			else gc.strokeOval(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
+			if(super.filled) gc.fillOval(super.curr[0], super.curr[1], super.size[0], super.size[1]);
+			else gc.strokeOval(super.curr[0], super.curr[1], super.size[0], super.size[1]);
 		}
 	}
 
 	private static class PolyRect extends PolyBox {
-		public PolyRect(Point2D pos, Point2D size, Color colour, double strokeSize, boolean filled){
+		public PolyRect(float[] pos, float[] size, Color colour, double strokeSize, boolean filled){
 			super(pos,size,colour,strokeSize,filled);
 		}
 
@@ -251,8 +250,8 @@ public class Painter {
 			gc.setLineWidth(super.strokeSize);
 			gc.setStroke(super.colour);
 			gc.setFill(super.colour);
-			if(super.filled) gc.fillRect(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
-			else gc.strokeRect(super.curr.getX(), super.curr.getY(), super.size.getX(), super.size.getY());
+			if(super.filled) gc.fillRect(super.curr[0], super.curr[1], super.size[0], super.size[1]);
+			else gc.strokeRect(super.curr[0], super.curr[1], super.size[0], super.size[1]);
 		}
 	}
 }

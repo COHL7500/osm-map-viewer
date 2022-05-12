@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
-
 public class Coordinates {
 
     public Coordinates(float minX, float minY, float maxX, float maxY){

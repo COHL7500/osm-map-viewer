@@ -4,8 +4,6 @@ import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.CheckBoxTreeCell;
@@ -22,19 +20,15 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
-    private final Stage stage;
-	private final Model model;
-    private final List<String> loadedMaps;
-    private final ContextMenu canvasCM, suggestionPopup;
-	
+    private Stage stage;
+	private Model model;
+    private List<String> loadedMaps;
+    private ContextMenu canvasCM;
+
 	@FXML private MapCanvas canvas;
     @FXML private TitledPane pinPointSidebar;
     @FXML private ScrollPane vBox_scrollpane;
@@ -59,7 +53,7 @@ public class Controller {
     @FXML private Button routeSwitchButton;
     @FXML private Button slider_button_increase, slider_button_decrease;
     @FXML private Slider slider_bar;
-    @FXML private TextField searchField;
+    @FXML private TextFieldSuggestion searchField, startAddress, targetAddress;
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
@@ -68,6 +62,9 @@ public class Controller {
     @FXML private ListView<HBox> pinPointList;
     @FXML private StackPane center_stack;
     @FXML private VBox topmenu;
+    @FXML private Label routeErrorLabel;
+    @FXML private ListView<String> routeTextPane;
+    @FXML private Label distance;
 
     // Debug menu variables
     @FXML private ScrollPane vbox_debug_scrollpane;
@@ -100,7 +97,6 @@ public class Controller {
         this.stage = primarystage;
         this.loadedMaps = new ArrayList<>();
         this.canvasCM = new ContextMenu();
-        this.suggestionPopup = new ContextMenu();
 
         this.someBorderPane.setBottom(null);
         this.canvas.init(model);
@@ -110,6 +106,9 @@ public class Controller {
         this.generateTreeView();
         this.generateContextMenu();
         this.slider_bar.setValue(this.canvas.zoom_current);
+        this.searchField.init(this.model.searchTree, this.canvas, true);
+        this.startAddress.init(this.model.searchTree, this.canvas, false);
+        this.targetAddress.init(this.model.searchTree, this.canvas, false);
 
         if(this.canvas.deprop.get("debugSideBar")){
             this.canvas.deprop.toggle("debugSideBar");
@@ -135,22 +134,6 @@ public class Controller {
         });
         this.fontBox.getItems().addAll(Font.getFamilies());
         this.fontBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> this.canvas.painter.setFont(newValue));
-        this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.isEmpty()) this.suggestionPopup.hide();
-            this.suggestionPopup.getItems().clear();
-            this.model.searchTree.searchSuggestions(searchField.getText().toLowerCase(Locale.ROOT))
-                    .forEach(suggestion -> {
-                        MenuItem item = new MenuItem(suggestion.toString());
-                        item.setOnAction(action -> {
-                            this.canvas.goToPosAbsolute(new Point2D(suggestion.coordPos[0],suggestion.coordPos[1]));
-                            this.canvas.zoomTo(300000);
-                            searchField.setText(suggestion.toString());
-                            suggestionPopup.hide();
-                        });
-                        suggestionPopup.getItems().add(item);
-                    });
-            suggestionPopup.show(searchField, Side.BOTTOM, 0, 0);
-        });
     }
 
     private void generateContextMenu(){
@@ -174,13 +157,13 @@ public class Controller {
 
     private void updateDebugInfo(){
         if(!this.model.isLoaded() || this.model.isLoaded() && this.vbox_debug_scrollpane.isVisible()){
-            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos.getX()) + ", " + String.format("%.5f", this.canvas.minPos.getY())));
-            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos.getX()) + ", " + String.format("%.5f", this.canvas.maxPos.getY())));
-            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos.getX()) + ", " + String.format("%.5f", this.canvas.originPos.getY())));
-            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos.getX()) + ", " + String.format("%.5f", this.canvas.mousePos.getY())));
+            this.canvas_min.setText(String.format("%-27s%s", "min:", String.format("%.5f", this.canvas.minPos[0]) + ", " + String.format("%.5f", this.canvas.minPos[1])));
+            this.canvas_max.setText(String.format("%-26.5s%s", "max:", String.format("%.5f", this.canvas.maxPos[0]) + ", " + String.format("%.5f", this.canvas.maxPos[1])));
+            this.canvas_origin.setText(String.format("%-26s%s", "origin:", String.format("%.5f", this.canvas.originPos[0]) + ", " + String.format("%.5f", this.canvas.originPos[1])));
+            this.canvas_mouse.setText(String.format("%-24s%s", "mouse:", String.format("%.5f", this.canvas.mousePos[0]) + ", " + String.format("%.5f", this.canvas.mousePos[1])));
             this.canvas_zoom.setText(String.format("%-25s%s", "zoom:", String.format("%.5f", this.canvas.zoom_current)));
-            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos.getY()) + ", " + String.format("%.5f", this.model.minBoundsPos.getX())));
-            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos.getY()) + ", " + String.format("%.5f", this.model.maxBoundsPos.getX())));
+            this.canvas_bounds_min.setText(String.format("%-21s%s", "bounds min:", String.format("%.5f", this.model.minBoundsPos[1]) + ", " + String.format("%.5f", this.model.minBoundsPos[0])));
+            this.canvas_bounds_max.setText(String.format("%-20s%s", "bounds max:", String.format("%.5f", this.model.maxBoundsPos[1]) + ", " + String.format("%.5f", this.model.maxBoundsPos[0])));
             this.canvas_nodes.setText(String.format("%-25s%s", "nodes:", this.model.nodecount));
             this.canvas_ways.setText(String.format("%-26s%s", "ways:", this.model.waycount));
             this.canvas_relations.setText(String.format("%-25s%s", "relations:", this.model.relcount));
@@ -232,7 +215,7 @@ public class Controller {
             keyFeature keyobj = this.model.yamlObj.keyfeatures.get(keyFeature.getValue());
             valueFeature valueobj = keyobj.valuefeatures.get(valueFeature.getValue());
             CheckBoxTreeItem<String> valuebox = ((CheckBoxTreeItem<String>) valueFeature);
-            valueobj.draw.display = valuebox.isSelected();
+            valueobj.draw.hide = !valuebox.isSelected();
         }));
 
         this.canvas.update();
@@ -249,7 +232,7 @@ public class Controller {
         this.canvas.reset();
         this.canvas.zoomTo(42000);
         this.canvas.centerPos();
-        this.canvas.panTo(new Point2D(0,-50));
+        this.canvas.panTo(new float[]{0,-50});
         this.canvas.setDisable(false);
         this.unloadFileButton.setDisable(false);
         this.updateStatusInfo();
@@ -314,7 +297,7 @@ public class Controller {
         List<TernarySearchTree.Address> addresses = this.model.searchTree.searchSuggestions(searchField.getText().toLowerCase(Locale.ROOT));
         if(!addresses.isEmpty()){
             TernarySearchTree.Address suggestion = addresses.get(0);
-            this.canvas.goToPosAbsolute(new Point2D(suggestion.coordPos[0],suggestion.coordPos[1]));
+            this.canvas.goToPosAbsolute(new float[]{suggestion.coordPos[0],suggestion.coordPos[1]});
             this.canvas.zoomTo(300000);
             searchField.setText(suggestion.toString());
         }
@@ -359,6 +342,78 @@ public class Controller {
         this.canvas.painter.setFontSize(this.paintFontSize.getValue());
     }
 
+    @FXML private void findClosestRoute(MouseEvent e){
+        TernarySearchTree.Address start = this.startAddress.getSelectedAddress();
+        TernarySearchTree.Address target = this.targetAddress.getSelectedAddress();
+        this.routeErrorLabel.setVisible(false);
+
+        if(start == null || target == null) {
+            this.routeErrorLabel.setText("Choose start- and target addresses!");
+            this.routeErrorLabel.setVisible(true);
+            return;
+        }
+
+        float[] startPos = this.model.NNRoutetree.findNN(start.coordPos);
+        float[] targetPos = this.model.NNRoutetree.findNN(target.coordPos);
+        PolyPoint s = null, t = null;
+
+        for(Edge f : model.graph.edges()){
+            if(f.getFrom().lat == startPos[0] && f.getFrom().lon == startPos[1]) s = f.getFrom();
+            if(f.getTo().lat == targetPos[0] && f.getTo().lon == targetPos[1]) t = f.getTo();
+        }
+
+        this.model.dijkstraSP = new DijkstraSP(model.graph,s,t,VehicleType.MOTORCAR);
+
+        if(this.model.dijkstraSP.pathTo(t) == null){
+            this.routeErrorLabel.setText("There is no such route!");
+            this.routeErrorLabel.setVisible(true);
+            return;
+        }
+
+        Directions directions = new Directions();
+        ArrayList<Edge> directionList = new ArrayList<>();
+        for(Edge f : this.model.dijkstraSP.pathTo(t)){
+            directionList.add(f);
+        }
+
+        PolyPoint first = directionList.get(0).getFrom();
+        PolyPoint last = directionList.get(directionList.size()-1).getTo();
+        Distance d = new Distance();
+        distance.setText(Float.toString(d.haversineFormula(first,last)));
+        float distanceString = d.haversineFormula(first,last);
+        System.out.println("Distance: " + String.format("%.1f",distanceString) + "kilometers");
+
+        float difference;
+        for(int i = 0; i < directionList.size() - 1; i+=3) {
+            if (i + 3 >= directionList.size()) break;
+            if (i == 0) {
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
+                        , directionList.get(i).getFrom(), directionList.get(i).getTo());
+                System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                        , directionList.get(i).getFrom(), directionList.get(i).getTo()));
+            } else if (i > 0) {
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
+                        , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
+                if (difference > 90) { //Turns
+                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
+                }
+                if (difference < 90) { //Continue
+                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
+                }
+            } else continue;
+        }
+
+    }
+
+    @FXML private void switchOrderRoute(MouseEvent e){
+        TernarySearchTree.Address tempAddr = this.targetAddress.getSelectedAddress();
+        this.targetAddress.setSelectedAddress(this.startAddress.getSelectedAddress());
+        this.startAddress.setSelectedAddress(tempAddr);
+
+    }
+
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ------------------------------------------------- Mouse Methods ------------------------------------------------- *
      * ----------------------------------------------------------------------------------------------------------------- */
@@ -371,7 +426,7 @@ public class Controller {
 
     // handles panning in the program
     @FXML private void onMouseDragged(final MouseEvent e) {
-        this.canvas.dragged(e,new Point2D(e.getX(), e.getY()));
+        this.canvas.dragged(e,new float[]{(float) e.getX(), (float) e.getY()});
         this.updateDebugInfo();
     }
 
@@ -391,7 +446,7 @@ public class Controller {
 
     // updates the mouse position on the screen upon moving
     @FXML private void onMouseMoved(final MouseEvent e){
-        this.canvas.moved(new Point2D(e.getX(), e.getY()));
+        this.canvas.moved(new float[]{(float) e.getX(), (float) e.getY()});
         this.updateDebugInfo();
     }
 
@@ -487,7 +542,7 @@ public class Controller {
         String abscoords = this.inputWindow("Change Absolute Coordinates","Syntax: -12.345, 67.890");
         if(abscoords != null){
             String[] dialogvalue = abscoords.split(",");
-            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(new Point2D(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1])));
+            if(dialogvalue.length == 2) this.canvas.goToPosAbsolute(new float[]{Float.parseFloat(dialogvalue[0]), Float.parseFloat(dialogvalue[1])});
         }
     }
 
@@ -496,14 +551,14 @@ public class Controller {
         String relcoords = this.inputWindow("Change Relative Coordinates","Syntax: -12.345, 67.890");
         if(relcoords != null){
             String[] dialogvalue = relcoords.split(",");
-            if(dialogvalue.length == 2) this.canvas.goToPosRelative(new Point2D(Double.parseDouble(dialogvalue[0]), Double.parseDouble(dialogvalue[1])));
+            if(dialogvalue.length == 2) this.canvas.goToPosRelative(new float[]{Float.parseFloat(dialogvalue[0]), Float.parseFloat(dialogvalue[1])});
         }
     }
 
     // when the menubar 'Tools' section button 'Center Screen Position' is clicked
     @FXML private void centerScreenPosition(final ActionEvent e){
         this.canvas.centerPos();
-        this.canvas.panTo(new Point2D(0,-50));
+        this.canvas.panTo(new float[]{0,-50});
     }
 
     // when the menubar 'Tools' section button 'Display Filled' is clicked

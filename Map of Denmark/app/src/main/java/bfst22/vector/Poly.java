@@ -1,14 +1,13 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
 import java.util.Arrays;
 import java.util.List;
 
 public class Poly {
-	public static void stitch(List<PolyGon> parts){
+	public static void stitch(List<Drawable> parts){
 		for(int i = 0; i < parts.size(); i++) {
 			for (int j = i+1; j < parts.size(); j++) {
-				PolyGon a = parts.get(i), b = parts.get(j);
+				PolyGon a = (PolyGon) parts.get(i), b = (PolyGon) parts.get(j);
 				if (a.ids[a.ids.length-1] == b.ids[b.ids.length-1]) Poly.mirror(b);
 				if (a.ids[a.ids.length-1] == b.ids[0]) {
 					parts.set(i,Poly.combinePolyGons(a,b));
@@ -19,13 +18,13 @@ public class Poly {
 		}
 	}
 
-	public static Point2D center(PolyLine a){
+	public static float[] center(PolyLine a){
 		double midtx = 0, midty = 0;
 		for(int i = 0; i < a.coords.length; i+=2){
 			midtx += a.coords[i];
 			midty += a.coords[i+1];
 		}
-		return new Point2D(midtx/(a.coords.length/3),midty/(a.coords.length/3));
+		return new float[]{(float) midtx/(a.coords.length/3),(float) midty/(a.coords.length/3)};
 	}
 
 	public static void winding(PolyGon a){
