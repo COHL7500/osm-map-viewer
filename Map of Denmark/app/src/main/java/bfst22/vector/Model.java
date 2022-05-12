@@ -31,6 +31,7 @@ public class Model {
     public boolean bicycle = false;
     public boolean foot = false;
     public boolean isOneWay = false;
+    public Map<Integer, List<PolyPoint>> index2way;
     public int speedlimit = 50; //Speed limit in towns
     public int HwyCount = 0;
 
@@ -69,6 +70,10 @@ public class Model {
     public void unload(){
         this.kdtree = null;
         this.searchTree = null;
+        this.directions = null;
+        this.index2way = null;
+        this.dijkstraSP = null;
+        this.graph = null;
         this.yamlObj = null;
         this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
         this.nodecount = this.waycount = this.relcount = 0;
@@ -116,10 +121,9 @@ public class Model {
         String keyFeature = null, valueFeature = null;
         boolean isMultiPoly = false;
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
-        String keyType = null, valueType = null, name = null;
         graph = new Graph();
         boolean isHighway = false;
-        Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
+       index2way = new HashMap<>();
 
 
         // Reads the entire .OSM file.
@@ -257,7 +261,6 @@ public class Model {
                 graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
             }
         }
-
 
         Random rand = new Random();
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
