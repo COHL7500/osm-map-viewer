@@ -28,20 +28,6 @@ public class DijkstraSPTest {
         PolyPoint J = new PolyPoint(10, 5,6);
         PolyPoint K = new PolyPoint(11, 4,9);
 
-        /*Method that turns an ArrayList of PolyPoints
-        nodes.add(new PolyPoint(0,12,3)); //A
-        nodes.add(new PolyPoint(1, 10,4)); //B
-        nodes.add(new PolyPoint(2,8,6)); //C
-        nodes.add(new PolyPoint(3,7,8)); //D
-        nodes.add(new PolyPoint(4, 5,10)); //E
-        nodes.add(new PolyPoint(5,10,2)); //F
-        nodes.add(new PolyPoint(6,7,2)); //G
-        nodes.add(new PolyPoint(7, 7,4)); //H
-        nodes.add(new PolyPoint(8, 5,3)); //I
-        nodes.add(new PolyPoint(9, 5,6)); //J
-        nodes.add(new PolyPoint(10,4,9)); //K
-        */
-
     @BeforeEach void setUp(){
         System.out.println(nodes.isEmpty());
         d = new Distance();
@@ -108,13 +94,13 @@ public class DijkstraSPTest {
 
     }
     @Test void dijkstraTest0to4(){
-        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4),vehicleType.MOTORCAR);
+        sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4), VehicleType.MOTORCAR);
         System.out.println(sp.pathToString(sp.pathTo(g.nodes.get(4))));
         assertEquals("[4->5  4.181843, 1->4  10.410108]","" + sp.pathToString(sp.pathTo(g.nodes.get(4))));
     }
 
     @Test void dijkstraTest0to10(){
-        sp = new DijkstraSP(g,g.nodes.get(0),g.nodes.get(10),vehicleType.MOTORCAR);
+        sp = new DijkstraSP(g,g.nodes.get(0),g.nodes.get(10), VehicleType.MOTORCAR);
         assertEquals("[10->11  4.6753273, 7->10  6.6010547, 6->7  4.447797, 1->6  3.3030636]","" + sp.pathToString(sp.pathTo(g.nodes.get(10))));
     }
 
