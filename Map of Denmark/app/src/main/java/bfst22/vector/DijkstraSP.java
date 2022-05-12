@@ -34,17 +34,24 @@ public class DijkstraSP {
             switch(vehicleType){
                 case MOTORCAR:
                     for(Edge e : g.adj(v)){
-                        relax(g,e,target);
+                        if(e.getFrom().motorVehicle = true){
+                            relax(g,e,target);
+                        }
+
                     }
                     break;
                 case FOOT:
                     for(Edge e : g.adj(v)){
-                        relax(g,e,target);
+                        if(e.getFrom().foot = true){
+                            relax(g,e,target);
+                        }
                     }
                     break;
                 case BICYCLE:
                     for(Edge e : g.adj(v)){
-                        relax(g,e,target);
+                        if(e.getFrom().bicycle = true){
+                            relax(g,e,target);
+                        }
                     }
                     break;
             }
@@ -62,7 +69,7 @@ public class DijkstraSP {
         PolyPoint v = e.getFrom();
         PolyPoint w = e.getTo();
         if(distanceMap.get(w) != null && distanceMap.get(v) != null) {
-            if (distanceMap.get(w) > distanceMap.get(v) + e.getWeight()) {
+            if (distanceMap.get(w)  > distanceMap.get(v) + e.getWeight()) {
                 distanceMap.put(w, distanceMap.get(v) + e.getWeight());
                 edgeMap.put(w, e);
                 double priority = distanceMap.get(w) + h(w, target);

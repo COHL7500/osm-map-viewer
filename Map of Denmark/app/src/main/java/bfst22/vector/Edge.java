@@ -5,13 +5,6 @@ public class Edge {
     private PolyPoint to;
     private float weight;
 
-    //Fields for roads and vehicle types
-    public boolean isAllowed = true;
-    public boolean isOneway;
-    public int speedLimit;
-    public boolean leftTurn = true;
-    public boolean rightTurn = true;
-
     public Edge(PolyPoint from, PolyPoint to, float weight) {
         this.from = from;
         this.to = to;
@@ -29,19 +22,6 @@ public class Edge {
     public float getWeight(){
         return this.weight;
     }
-
-    public boolean isForwardAllowed(VehicleType v){
-        return true;
-    }
-
-    public boolean isBackwardsAllowed(VehicleType v){
-        return true;
-    }
-
-    public boolean getAllowed(){
-        return isAllowed;
-    }
-
 
 
 }

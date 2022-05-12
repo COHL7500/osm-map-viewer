@@ -14,18 +14,37 @@ public class Directions {
     /* Returns a String with the description of the next turn */
     public String turn(float angle, float angledifference, PolyPoint current1, PolyPoint current2){
 
-            if(angledifference >= 90 && angle > 180){ //Right turn
-                return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon;
-            } else if(angledifference >= 90 && angle < 180){
-                return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon;
+            if(angledifference >= -100 && angledifference <= -45 ){
+                if(angle > 270 && angle <= 360){
+                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 180 && angle <= 270){
+                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 90 && angle <= 180){
+                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 0 && angle <= 90){
+                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
             }
 
-            if(angledifference <= -90 && angle < 180) { //Left turn
-                return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon;
-            } else if (angledifference <= -90 && angle > 180){
-                return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon;
+            if(angledifference <= 100 && angledifference >= 45) {
+                if(angle > 270 && angle <= 360){
+                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 180 && angle <= 270){
+                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 90 && angle <= 180){
+                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                if(angle > 0 && angle <= 90){
+                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+                }
+                return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
             }
-            else return "Continue along " + current2.address + " for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon;
+            else return "Continue along " + current2.address + " for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
 
 
             /*

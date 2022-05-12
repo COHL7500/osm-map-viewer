@@ -24,14 +24,14 @@ public class Model {
 	public VehicleType vehicleType;
     public Graph graph;
     public DijkstraSP dijkstraSP;
-    public Directions directions;
+    public Distance distance;
     public boolean motorVehicle = true;
     public boolean bicycle = false;
     public boolean foot = false;
     public boolean isOneWay = false;
-    public String address;
-    public int speedlimit = 50; //Speed limit in towns
+    public int speedlimit = 0; //Speed limit in towns
     public int HwyCount = 0;
+    public String address;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
@@ -117,7 +117,6 @@ public class Model {
         String keyFeature = null, valueFeature = null;
         boolean isMultiPoly = false, deleted = false;
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
-        String keyType = null, valueType = null, name = null;
         graph = new Graph();
         boolean isHighway = false;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
@@ -142,7 +141,6 @@ public class Model {
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
                         PolyPoint point = new PolyPoint(id, 0.56f * lon, -lat);
-
                         id2node.add(point);
                         id2way.put(relID,point);
                         this.searchTree.setAddressPos(0.56f * lon, -lat);
@@ -164,41 +162,29 @@ public class Model {
                                 case "addr:city" -> searchTree.addAddressElement("city",v);
                                 case "addr:housenumber" -> searchTree.addAddressElement("house",v);
                                 case "addr:postcode" -> searchTree.addAddressElement("postcode",v);
-                                case "addr:street" -> {
-                                    searchTree.addAddressElement("street", v);
-                                    address = v;
-                                    }
-
+                                case "addr:street" -> searchTree.addAddressElement("street", v);
                             }
                         }
+                        if(k.equals("bicycle")) if(v.equals("yes")) bicycle = true;
+
+                        if(k.equals("foot")) if(v.equals("yes")) foot = true;
+
+                        if(k.equals("name"))  address = v;
+
+                        if(k.equals("maxspeed")) speedlimit = Integer.parseInt(v);
+
+                        if(k.equals("oneway")) isOneWay = true;
+
                         if (this.yamlObj.keyfeatures.containsKey(k)) {
                             keyFeature = k;
                             valueFeature = v;
                             isHighway = false;
                             switch (k) {
-                                case "motorcar":
-                                    if(v.equals("no")) motorVehicle = false;
-                                    break;
-                                case "bicycle":
-                                    if(v.equals("yes")) bicycle = true;
-                                    break;
-                                case "foot":
-                                    if(v.equals("yes")) foot = true;
-                                    break;
-                                case "oneway":
-                                    if(v.equals("yes")) isOneWay = true;
-                                    break;
-                                case "maxspeed":
-                                    speedlimit = Integer.parseInt(v);
-                                    break;
-                                case "restriction":
-                                    break;
                                 case "highway":
                                     if (highwayTypes.contains(v)) {
                                         isHighway = true;
                                         graph.add(nodes);
                                     }
-                                    break;
                             }
                         }
                     } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -230,12 +216,12 @@ public class Model {
                         if (isHighway) {
                             index2way.put(HwyCount, new LinkedList<>());
                             for (PolyPoint p : nodes){
+                                p.address = address;
                                 p.foot = foot;
                                 p.bicycle = bicycle;
                                 p.motorVehicle = motorVehicle;
                                 p.isOneway = isOneWay;
                                 p.speedLimit = speedlimit;
-                                p.address = address;
                                 index2way.get(HwyCount).add(p);
                             };
                             HwyCount++;
@@ -266,8 +252,10 @@ public class Model {
         this.graph.generate();
         for(int i = 0; i < index2way.size() - 1; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
-                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
-                this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
+                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),index2way.get(i).get(j).speedLimit));
+                if(!index2way.get(i).get(j).isOneway){
+                    this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),index2way.get(i).get(j+1).speedLimit));
+                }
             }
         }
 

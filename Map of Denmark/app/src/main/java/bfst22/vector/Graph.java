@@ -104,7 +104,7 @@ public class Graph {
 
         public float setWeightDistance (PolyPoint from, PolyPoint to,float speedlimit){
             Distance d = new Distance();
-            return (float)d.haversineFormula(from, to) / speedlimit;
+            return d.haversineFormula(from, to) / speedlimit;
         }
 
         public float setWeight(float weight){

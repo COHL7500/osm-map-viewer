@@ -399,8 +399,10 @@ public class Controller {
                             , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
                 }
                 if (difference < 90) { //Continue
-                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
+                    if(directionList.get(i).getFrom().address != directionList.get(i+3).getFrom().address){
+                        System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                                , directionList.get(i+3).getFrom(), directionList.get(i + 3).getTo()));
+                    }
                 }
             } else continue;
         }
@@ -568,11 +570,13 @@ public class Controller {
         this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.deprop.set("debugDarkMode", false);
         this.canvas.lightMode();
+        this.canvas.update();
     }
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDarkMode", true);
         this.canvas.darkMode();
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked

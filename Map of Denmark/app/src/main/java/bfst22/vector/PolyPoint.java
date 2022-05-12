@@ -12,7 +12,7 @@ public class PolyPoint implements Drawable {
     public boolean foot = false;
     public boolean bicycle = false;
     public boolean motorVehicle = true;
-    public int speedLimit = 50; //Speed limit in Denmark within towns
+    public int speedLimit = 0; //Speed limit in Denmark within towns
     public boolean isOneway = false;
     public String address;
 
