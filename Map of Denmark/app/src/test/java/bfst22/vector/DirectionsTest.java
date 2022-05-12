@@ -72,7 +72,7 @@ class DirectionsTest {
 
         for(Edge e : sp1.pathTo(E)){
 
-            path.push(directions.turn(e.getFrom(),sp1.pathTo(E).iterator().next().getTo()));
+
 
         }
         assertEquals("idk",path.toString());

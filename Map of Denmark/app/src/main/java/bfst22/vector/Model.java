@@ -29,6 +29,7 @@ public class Model {
     public boolean bicycle = false;
     public boolean foot = false;
     public boolean isOneWay = false;
+    public String address;
     public int speedlimit = 50; //Speed limit in towns
     public int HwyCount = 0;
 
@@ -163,7 +164,11 @@ public class Model {
                                 case "addr:city" -> searchTree.addAddressElement("city",v);
                                 case "addr:housenumber" -> searchTree.addAddressElement("house",v);
                                 case "addr:postcode" -> searchTree.addAddressElement("postcode",v);
-                                case "addr:street" -> searchTree.addAddressElement("street",v);
+                                case "addr:street" -> {
+                                    searchTree.addAddressElement("street", v);
+                                    address = v;
+                                    }
+
                             }
                         }
                         if (this.yamlObj.keyfeatures.containsKey(k)) {
@@ -230,6 +235,7 @@ public class Model {
                                 p.motorVehicle = motorVehicle;
                                 p.isOneway = isOneWay;
                                 p.speedLimit = speedlimit;
+                                p.address = address;
                                 index2way.get(HwyCount).add(p);
                             };
                             HwyCount++;

@@ -346,6 +346,7 @@ https://kordamp.org/ikonli -->
                                             </graphic>
                                         </Button>
                                     </HBox>
+                                    <Label fx:id="distance" visible="false" managed="${distance.visible}"/>
                                     <ListView fx:id="routeTextPane" disable="true" visible="false" managed="${routeTextPane.visible}" prefHeight="200">
                                         <placeholder>
                                             <Label text="No Routes to show..." />

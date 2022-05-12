@@ -64,6 +64,7 @@ public class Controller {
     @FXML private VBox topmenu;
     @FXML private Label routeErrorLabel;
     @FXML private ListView<String> routeTextPane;
+    @FXML private Label distance;
 
     // Debug menu variables
     @FXML private ScrollPane vbox_debug_scrollpane;
@@ -369,22 +370,48 @@ public class Controller {
             return;
         }
 
-        /* For printing out the path - Fungere stadigvæk ikke endnu */
-        /*Directions directions = new Directions();
+        Directions directions = new Directions();
         ArrayList<Edge> directionList = new ArrayList<>();
-        for(Edge f : dijkstraSP.pathTo(target)){
+        for(Edge f : this.model.dijkstraSP.pathTo(t)){
             directionList.add(f);
         }
-        for(int i = 0; i < directionList.size() - 1; i++){
-            if(i+3 >= directionList.size()) break;
-            System.out.println(directions.turn(directionList.get(i).getFrom(), directionList.get(i+3).getTo()));
-        }*/
+
+        PolyPoint first = directionList.get(0).getFrom();
+        PolyPoint last = directionList.get(directionList.size()-1).getTo();
+        Distance d = new Distance();
+        distance.setText(Float.toString(d.haversineFormula(first,last)));
+        float distanceString = d.haversineFormula(first,last);
+        System.out.println("Distance: " + String.format("%.1f",distanceString) + "kilometers");
+
+        float difference;
+        for(int i = 0; i < directionList.size() - 1; i+=3) {
+            if (i + 3 >= directionList.size()) break;
+            if (i == 0) {
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
+                        , directionList.get(i).getFrom(), directionList.get(i).getTo());
+                System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                        , directionList.get(i).getFrom(), directionList.get(i).getTo()));
+            } else if (i > 0) {
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
+                        , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
+                if (difference > 90) { //Turns
+                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
+                }
+                if (difference < 90) { //Continue
+                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
+                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
+                }
+            } else continue;
+        }
+
     }
 
     @FXML private void switchOrderRoute(MouseEvent e){
         TernarySearchTree.Address tempAddr = this.targetAddress.getSelectedAddress();
         this.targetAddress.setSelectedAddress(this.startAddress.getSelectedAddress());
         this.startAddress.setSelectedAddress(tempAddr);
+
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *

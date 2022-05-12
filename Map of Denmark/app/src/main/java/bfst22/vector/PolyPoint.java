@@ -14,6 +14,7 @@ public class PolyPoint implements Drawable {
     public boolean motorVehicle = true;
     public int speedLimit = 50; //Speed limit in Denmark within towns
     public boolean isOneway = false;
+    public String address;
 
     public PolyPoint(final long id, final float lat, final float lon) {
         this.id = id;
