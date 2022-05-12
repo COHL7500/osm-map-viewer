@@ -27,6 +27,11 @@ public class PolyPoint implements Drawable {
     }
 
     @Override public Drawable clone(){
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         return new PolyPoint(this.id,this.lat,this.lon);
     }
 }
