@@ -25,14 +25,7 @@ public class Model {
     public Graph graph;
     public DijkstraSP dijkstraSP;
     public Directions directions;
-    public boolean motorVehicle = true;
-    public boolean bicycle = false;
-    public boolean foot = false;
-    public boolean isOneWay = false;
-    public String address;
     public Map<Integer, List<PolyPoint>> index2way;
-    public int speedlimit = 50; //Speed limit in towns
-    public int HwyCount = 0;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
@@ -124,6 +117,13 @@ public class Model {
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         graph = new Graph();
         boolean isHighway = false;
+        boolean motorVehicle = true;
+        boolean bicycle = false;
+        boolean foot = false;
+        boolean isOneWay = false;
+        String address = null;
+        int speedlimit = Integer.MAX_VALUE;
+        int HwyCount = 0;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
         // Reads the entire .OSM file.
