@@ -2,16 +2,6 @@ package bfst22.vector;
 
 public class Distance {
 
-    Coordinates coordinates;
-    /*
-    Double lat1 = coordinates.getMinX();
-    Double lon1 = coordinates.getMinY();
-    Double lat2 = coordinates.getMaxX();
-    Double lon2 = coordinates.getMaxY();
-    */
-
-    final int R = 6371;
-
     //Computes the straight-line distance between two pairs of lat/lon using Haversine formula.
     public double haversineFormula(PolyPoint start, PolyPoint target){
         final int R = 6371; //Earth's radius in kilometers.
