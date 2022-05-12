@@ -566,11 +566,13 @@ public class Controller {
         this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.deprop.set("debugDarkMode", false);
+        this.canvas.selectTheme();
         this.canvas.update();
     }
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDarkMode", true);
+        this.canvas.selectTheme();
         this.canvas.update();
     }
 
@@ -583,6 +585,7 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayGraphClicked(final ActionEvent e){
         this.canvas.deprop.toggle("debugDisplayGraph");
+        this.canvas.drawGraph();
         this.canvas.update();
     }
 

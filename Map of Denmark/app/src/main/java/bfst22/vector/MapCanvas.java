@@ -142,10 +142,9 @@ public class MapCanvas extends Canvas {
             this.setStylingDefault();
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
-            this.drawGraph();
             this.drawShortestPath(model.dijkstraSP);
             this.strokeNN();
-            this.colorMode();
+            this.drawGraph();
             this.drawBounds();
             this.strokeCursor();
             this.strokeBox(padding);
@@ -157,9 +156,9 @@ public class MapCanvas extends Canvas {
         this.gc.lineTo(e.getTo().lat,e.getTo().lon);
     }
 
-    private void drawGraph()
+    public void drawGraph()
     {
-        if(this.deprop.get("debugDisplayGraph"))
+        if(this.deprop.get("debugDisplayGraph")) {
             this.gc.setStroke(Color.RED);
             this.gc.setLineWidth(0.000030);
             gc.beginPath();
@@ -168,7 +167,7 @@ public class MapCanvas extends Canvas {
             }
             this.gc.stroke();
             this.gc.closePath();
-        }
+            }
     }
 
     private void drawShortestPath(DijkstraSP dijkstra){
@@ -346,7 +345,7 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private void colorMode()
+    public void selectTheme()
     {
         if(this.deprop.get("debugDarkMode"))
         {
