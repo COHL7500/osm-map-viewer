@@ -564,20 +564,25 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Filled' is clicked
     @FXML private void debugDisplayFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDisplayWireframe", false);
-        this.canvas.update();
         this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.deprop.set("debugDarkMode", false);
-        this.canvas.lightMode();
+        this.canvas.update();
     }
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDarkMode", true);
-        this.canvas.darkMode();
+        this.canvas.update();
     }
 
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayWireframeClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDisplayWireframe", true);
+        this.canvas.update();
+    }
+
+    // when the menubar 'Tools' section button 'Display Wireframe' is clicked
+    @FXML private void debugDisplayGraphClicked(final ActionEvent e){
+        this.canvas.deprop.toggle("debugDisplayGraph");
         this.canvas.update();
     }
 

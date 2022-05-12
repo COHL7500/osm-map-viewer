@@ -142,9 +142,10 @@ public class MapCanvas extends Canvas {
             this.setStylingDefault();
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
-            //this.drawGraph(model.graph);
+            this.drawGraph();
             this.drawShortestPath(model.dijkstraSP);
             this.strokeNN();
+            this.colorMode();
             this.drawBounds();
             this.strokeCursor();
             this.strokeBox(padding);
@@ -156,17 +157,17 @@ public class MapCanvas extends Canvas {
         this.gc.lineTo(e.getTo().lat,e.getTo().lon);
     }
 
-    private void drawGraph(Graph graph)
+    private void drawGraph()
     {
+        if(this.deprop.get("debugDisplayGraph"))
             this.gc.setStroke(Color.RED);
             this.gc.setLineWidth(0.000030);
             gc.beginPath();
-            for(Edge e : graph.edges()){
+            for(Edge e : model.graph.edges()){
                     drawEdge(e);
             }
             this.gc.stroke();
             this.gc.closePath();
-
     }
 
     private void drawShortestPath(DijkstraSP dijkstra){
@@ -341,6 +342,18 @@ public class MapCanvas extends Canvas {
             this.gc.fillOval(this.mousePos[0],this.mousePos[1],this.z(5),this.z(5));
             if(this.deprop.get("debugDisableHelpText")) this.gc.fillText("cursor (" + String.format("%.5f", this.mousePos[0]) + "," + String.format("%.5f", this.mousePos[1]) + ")",this.mousePos[0]+this.z(5),this.mousePos[1]-this.z(5));
             this.gc.setFill(Color.BLACK);
+        }
+    }
+
+    private void colorMode()
+    {
+        if(this.deprop.get("debugDarkMode"))
+        {
+            darkMode();
+        }
+        else
+        {
+            lightMode();
         }
     }
 
