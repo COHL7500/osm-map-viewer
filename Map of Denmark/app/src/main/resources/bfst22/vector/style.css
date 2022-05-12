@@ -129,3 +129,8 @@ center {
 #slider_bar .thumb {
     -fx-background-color:black;
 }
+
+.button:hover, .toggle-button:hover, .spinner:hover, .slider_button:hover, .check-box:hover {
+    -fx-opacity: 0.75;
+    -fx-cursor: hand;
+}

@@ -1,6 +1,5 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 
 public abstract class MoveableObj extends PolyPoint {
@@ -16,8 +15,8 @@ public abstract class MoveableObj extends PolyPoint {
 		this.isDragging = false;
 	}
 
-	public boolean inRadius(final Point2D mousePos, final double zoom){
-		if(!this.isDragging) this.inRadius = Math.sqrt(Math.pow(mousePos.getX() - this.lat,2) + Math.pow(mousePos.getY() - this.lon,2)) < (this.radius/zoom);
+	public boolean inRadius(final float[] mousePos, final double zoom){
+		if(!this.isDragging) this.inRadius = Math.sqrt(Math.pow(mousePos[0] - this.lat,2) + Math.pow(mousePos[1] - this.lon,2)) < (this.radius/zoom);
 		return this.inRadius;
 	}
 
@@ -29,13 +28,13 @@ public abstract class MoveableObj extends PolyPoint {
 		this.moveable = state;
 	}
 
-	public void move(final Point2D newPos, final double zoom, final boolean state){
+	public void move(final float[] newPos, final boolean state){
 		this.isDragging = state;
 		if(this.inRadius && this.moveable && state){
-			super.lat = (float) newPos.getX();
-			super.lon = (float) newPos.getY();
+			super.lat = newPos[0];
+			super.lon = newPos[1];
 		}
 	}
 
-	public abstract void draw(final GraphicsContext gc, final double zoom, final Point2D mousePos);
+	public abstract void draw(final GraphicsContext gc, final double zoom, final float[] mousePos);
 }

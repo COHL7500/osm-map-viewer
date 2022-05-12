@@ -11,18 +11,9 @@ public class MapFeature implements Serializable, SerialVersionIdentifiable {
 	public featureDraw draw = new featureDraw();
 	public Map<String, keyFeature> keyfeatures = new HashMap<>();
 
-	public boolean keyvalExists(final String keyFeature, final String valueFeature){
-		return this.keyfeatures.containsKey(keyFeature) && this.keyfeatures.get(keyFeature).valuefeatures.containsKey(valueFeature);
-	}
-
 	public void addDrawable(final String keyFeature, final String valueFeature, Drawable value){
-		if(this.keyvalExists(keyFeature,valueFeature)) this.keyfeatures.get(keyFeature).valuefeatures.get(valueFeature).drawable.add(value);
-	}
-
-	public void removeDrawables(final List<PolyLine> drawables){
-		for(keyFeature k : this.keyfeatures.values())
-			for(valueFeature v : k.valuefeatures.values())
-				v.drawable.removeAll(drawables);
+		if(this.keyfeatures.containsKey(keyFeature) && this.keyfeatures.get(keyFeature).valuefeatures.containsKey(valueFeature))
+			this.keyfeatures.get(keyFeature).valuefeatures.get(valueFeature).drawable.add(value);
 	}
 }
 
@@ -42,15 +33,16 @@ class valueFeature implements Serializable, SerialVersionIdentifiable {
 
 // All the different options for a feature to be drawn
 class featureDraw implements Serializable, SerialVersionIdentifiable {
-	public boolean fill = false;
+	public boolean fill;
 	public String fill_color;
 	public String force_fill_color;
-	public boolean stroke = false;
+	public boolean stroke;
 	public String stroke_color;
 	public String force_stroke_color;
 	public double line_width;
 	public double dash_size;
 	public int zoom_level;
-	public boolean always_draw = false;
-	public boolean display = true;
+	public boolean always_draw;
+	public boolean hide;
+	public boolean nodraw;
 }

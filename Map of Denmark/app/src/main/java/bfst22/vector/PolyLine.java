@@ -32,4 +32,12 @@ public class PolyLine implements Drawable, Serializable, SerialVersionIdentifiab
         for (int i = 0; i < this.coords.length; i += 2)
             gc.lineTo(coords[i], coords[i+1]);
     }
+
+    @Override public Drawable clone(){
+        long[] ids = new long[this.ids.length];
+        float[] coords = new float[this.coords.length];
+        System.arraycopy(this.ids,0,ids,0,this.ids.length);
+        System.arraycopy(this.coords,0,coords,0,this.coords.length);
+        return new PolyLine(ids,coords);
+    }
 }

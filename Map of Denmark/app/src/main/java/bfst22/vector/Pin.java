@@ -1,6 +1,5 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -23,7 +22,7 @@ public class Pin extends MoveableObj {
 		this.description = description;
 	}
 
-	@Override public void draw(final GraphicsContext gc, final double zoom, final Point2D mousePos){
+	@Override public void draw(final GraphicsContext gc, final double zoom, final float[] mousePos){
 		gc.setFill(Color.BLACK);
 		gc.setTextAlign(TextAlignment.CENTER);
 		gc.fillText(this.title.length() > 20 ? this.title.substring(0,20) + "..." : this.title, super.lat, super.lon-40/zoom);
@@ -34,7 +33,7 @@ public class Pin extends MoveableObj {
 		gc.setFont(new Font("Arial",11/zoom));
 	}
 
-	@Override public boolean inRadius(final Point2D mousePos, final double zoom){
+	@Override public boolean inRadius(final float[] mousePos, final double zoom){
 		boolean inside = super.inRadius(mousePos,zoom);
 		if(inside) listEntry.setStyle("-fx-background-color:yellow;");
 		else listEntry.setStyle("-fx-background-color:transparent;");

@@ -1,15 +1,14 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class ZoomBox {
-	private Point2D zoomBoxStart;
+	private float[] zoomBoxStart;
 	private boolean active;
 
 	public ZoomBox() {
-		this.zoomBoxStart = new Point2D(0, 0);
+		this.zoomBoxStart = new float[]{0,0};
 	}
 
 	public void setState(boolean state){
@@ -20,34 +19,35 @@ public class ZoomBox {
 		return this.active;
 	}
 
-	public void press(Point2D pos) {
+	public void press(float[] pos) {
 		if (this.active) this.zoomBoxStart = pos;
 	}
 
-	public void drag(GraphicsContext gc, Point2D pos, double zoom_current) {
+	public void drag(GraphicsContext gc, float[] pos, double zoom_current) {
 		if (this.active) {
 			gc.setLineWidth(1 / zoom_current);
 			gc.setStroke(Color.ORANGE);
 			gc.setLineDashes(0);
+
 			gc.beginPath();
-			gc.moveTo(this.zoomBoxStart.getX(), this.zoomBoxStart.getY());
-			gc.lineTo(this.zoomBoxStart.getX(), pos.getY());
-			gc.lineTo(pos.getX(), pos.getY());
-			gc.lineTo(pos.getX(), this.zoomBoxStart.getY());
-			gc.lineTo(this.zoomBoxStart.getX(), this.zoomBoxStart.getY());
+			gc.moveTo(this.zoomBoxStart[0], this.zoomBoxStart[1]);
+			gc.lineTo(this.zoomBoxStart[0], pos[1]);
+			gc.lineTo(pos[0], pos[1]);
+			gc.lineTo(pos[0], this.zoomBoxStart[1]);
+			gc.lineTo(this.zoomBoxStart[0], this.zoomBoxStart[1]);
 			gc.stroke();
 			gc.closePath();
-			gc.fillOval((pos.getX() + this.zoomBoxStart.getX()) / 2, (pos.getY() + this.zoomBoxStart.getY()) / 2, 5 / zoom_current, 5 / zoom_current);
+
+			gc.fillOval((pos[0] + this.zoomBoxStart[0]) / 2, (pos[1] + this.zoomBoxStart[1]) / 2, 5 / zoom_current, 5 / zoom_current);
 		}
 	}
 
-	public void release(MapCanvas canvas, Point2D mousepos) {
+	public void release(MapCanvas canvas, float[] mousepos) {
 		if (this.active) {
 			canvas.zoomTo(2);
-
-			double x = (mousepos.getX() + this.zoomBoxStart.getX()) / 2;
-			double y = (mousepos.getY() + this.zoomBoxStart.getY()) / 2;
-			canvas.goToPosAbsolute(new Point2D(x, y));
+			float x = (mousepos[0] + this.zoomBoxStart[0])/2;
+			float y = (mousepos[1] + this.zoomBoxStart[1])/2;
+			canvas.goToPosAbsolute(new float[]{x,y});
 		}
 	}
 }

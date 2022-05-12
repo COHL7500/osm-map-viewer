@@ -9,4 +9,8 @@ public class PolyGon extends PolyLine implements Drawable, Serializable, SerialV
 		super(node.ids, node.coords);
 		this.clockwise = clockwise;
 	}
+
+	@Override public Drawable clone() {
+		return new PolyGon((PolyLine) super.clone(),this.clockwise);
+	}
 }

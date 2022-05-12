@@ -23,4 +23,5 @@ public interface Drawable {
 
     // traces the element's area for where it has to be drawn.
     void trace(GraphicsContext gc);
+    Drawable clone();
 }

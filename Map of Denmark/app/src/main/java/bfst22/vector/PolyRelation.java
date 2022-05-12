@@ -12,7 +12,7 @@ public class PolyRelation implements Drawable, Serializable, SerialVersionIdenti
 		this.parts = new ArrayList<>(rel);
 
 		if(isMultiPoly){
-			Poly.stitch((List<PolyGon>)(List<?>) this.parts);
+			Poly.stitch(this.parts);
 			this.parts.forEach(poly -> Poly.winding((PolyGon) poly));
 		}
 	}
@@ -20,5 +20,9 @@ public class PolyRelation implements Drawable, Serializable, SerialVersionIdenti
 	// Traces the area that has to be drawn before drawing.
 	@Override public void trace(final GraphicsContext gc) {
 		this.parts.forEach(poly -> poly.trace(gc));
+	}
+
+	@Override public Drawable clone(){
+		return new PolyRelation(this.parts.stream().map(Drawable::clone).toList(),false);
 	}
 }

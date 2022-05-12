@@ -42,13 +42,33 @@
       locality: {}
       sea: {}
       ocean: {}
+  water:
+    draw:
+      fill: true
+      fill_color: "#b5d2de"
+      zoom_level: 20000
+    valuefeatures:
+      river: {}
+      oxbow: {}
+      canal: {}
+      ditch: {}
+      lock: {}
+      fish_pass: {}
+      lake: {}
+      reservoir: {}
+      pond: {}
+      basin: {}
+      lagoon: {}
+      stream_pool: {}
+      reflecting_pool: {}
+      moat: {}
+      wastewater: {}
   landuse:
     draw:
       stroke: true
       stroke_color: "beige"
       fill: true
       fill_color: "beige"
-      zoom_level: 2000
     valuefeatures:
       commercial: {}
       construction: {}
@@ -112,7 +132,9 @@
       landfill: {}
       military: {}
       plant_nusery: {}
-      port: {}
+      port:
+        draw:
+          nodraw: true
       quarry: {}
       recreation_ground:
         draw:
@@ -241,7 +263,6 @@
             stroke_color: "#f1e8c7"
             fill: true
             fill_color: "#f1e8c7"
-
   aeroway:
     valuefeatures:
         apron:
@@ -340,13 +361,24 @@
     valuefeatures:
       footway:
         draw:
-            stroke: true
-            line_width: 0.000010
-            stroke_color: "#e1e3d8"
-      motorway: {}
-      motorway_link: {}
-      trunk: {}
-      trunk_link: {}
+          stroke: true
+          line_width: 0.000010
+          stroke_color: "#e1e3d8"
+          dash_size: 0.0000175
+          zoom_level: 45000
+      bridleway: {}
+      steps: {}
+      corridor: {}
+      cycleway:
+        draw:
+          stroke: true
+          stroke_color: "#3333f8"
+          dash_size: 0.0000175
+          line_width: 0.0000085
+          zoom_level: 45000
+      proposed: {}
+      construction: {}
+      breakwater: {}
       primary:
         draw:
           stroke: true
@@ -489,3 +521,28 @@
       tracks: {}
       tram: {}
       trolleybus: {}
+  power:
+    draw:
+      nodraw: true
+    valuefeatures:
+      cable: {}
+      catenary_mast: {}
+      compensator: {}
+      connection: {}
+      converter: {}
+      generator: {}
+      heliostat: {}
+      insulator: {}
+      line: {}
+      busbar: {}
+      bay: {}
+      minor_line: {}
+      plant: {}
+      pole: {}
+      portal: {}
+      substation: {}
+      switch: {}
+      switchgear: {}
+      terminal: {}
+      tower: {}
+      transformer: {}

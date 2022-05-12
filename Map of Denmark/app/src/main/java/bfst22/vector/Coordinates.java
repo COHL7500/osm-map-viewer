@@ -1,7 +1,5 @@
 package bfst22.vector;
 
-import javafx.geometry.Point2D;
-
 public class Coordinates {
     private float minX, minY, maxX, maxY;
 
@@ -41,15 +39,15 @@ public class Coordinates {
         return this.maxY;
     }
 
-    public Point2D getMinXY(){
-        return new Point2D(minX,minY);
+    public float[] getMinXY(){
+        return new float[]{minX,minY};
     }
 
-    public Point2D getMaxXY(){
-        return new Point2D(maxX,maxY);
+    public float[] getMaxXY(){
+        return new float[]{maxX,maxY};
     }
 
-    public Point2D getCenterPoint(){
-        return new Point2D((this.minX+this.maxX)/2, (this.minY+this.maxY)/2);
+    public float[] getCenterPoint(){
+        return new float[]{(this.minX+this.maxX)/2, (this.minY+this.maxY)/2};
     }
 }

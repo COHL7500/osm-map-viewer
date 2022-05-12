@@ -6,8 +6,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -17,9 +15,9 @@ public class Model {
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     public MapFeature yamlObj;
-    public KdTree kdtree;
+    public KdTree kdtree, NNRoutetree;
     public TernarySearchTree searchTree;
-    public Point2D minBoundsPos, maxBoundsPos, originBoundsPos; // lat, lon
+    public float[] minBoundsPos, maxBoundsPos, originBoundsPos; // lat, lon
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
@@ -50,9 +48,9 @@ public class Model {
             } case "obj" -> {
                 this.loadTime = System.nanoTime();
                 try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
-                    this.minBoundsPos = new Point2D(input.readDouble(), input.readDouble());
-                    this.maxBoundsPos = new Point2D(input.readDouble(), input.readDouble());
-                    this.originBoundsPos = new Point2D(input.readDouble(), input.readDouble());
+                    this.minBoundsPos = new float[]{input.readFloat(), input.readFloat()};
+                    this.maxBoundsPos = new float[]{input.readFloat(), input.readFloat()};
+                    this.originBoundsPos = new float[]{input.readFloat(), input.readFloat()};
                     this.nodecount = input.readInt();
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
@@ -68,9 +66,10 @@ public class Model {
 
     public void unload(){
         this.kdtree = null;
+        this.NNRoutetree = null;
         this.searchTree = null;
         this.yamlObj = null;
-        this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new Point2D(0,0);
+        this.minBoundsPos = this.maxBoundsPos = this.originBoundsPos = new float[]{0,0};
         this.nodecount = this.waycount = this.relcount = 0;
         this.currFileName = "<No File Loaded>";
         this.loadTime = this.filesize = 0;
@@ -83,12 +82,12 @@ public class Model {
     // Saves the .obj file in our project hierachy.
     private void saveObj(String basename) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
-            out.writeDouble(this.minBoundsPos.getX());
-            out.writeDouble(this.minBoundsPos.getY());
-            out.writeDouble(this.maxBoundsPos.getX());
-            out.writeDouble(this.maxBoundsPos.getY());
-            out.writeDouble(this.originBoundsPos.getX());
-            out.writeDouble(this.originBoundsPos.getY());
+            out.writeDouble(this.minBoundsPos[0]);
+            out.writeDouble(this.minBoundsPos[1]);
+            out.writeDouble(this.maxBoundsPos[0]);
+            out.writeDouble(this.maxBoundsPos[1]);
+            out.writeDouble(this.originBoundsPos[0]);
+            out.writeDouble(this.originBoundsPos[1]);
             out.writeInt(nodecount);
             out.writeInt(waycount);
             out.writeInt(relcount);
@@ -105,6 +104,7 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
+        this.NNRoutetree = new KdTree();
         this.searchTree = new TernarySearchTree();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.
@@ -114,13 +114,12 @@ public class Model {
         List<Drawable> rel = new ArrayList<>(); // Saves all relations.
         long relID = 0; // ID of the current relation.
         String keyFeature = null, valueFeature = null;
-        boolean isMultiPoly = false;
+        boolean isMultiPoly = false, deleted = false;
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         String keyType = null, valueType = null, name = null;
         graph = new Graph();
         boolean isHighway = false;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
-
 
         // Reads the entire .OSM file.
         while (reader.hasNext()) {
@@ -129,16 +128,15 @@ public class Model {
             if (element == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
                     case "bounds" -> { // Configures the longitude and latitude. An element present in all OSM files. Uncertain as to why, though adjusting the floats will make the map not draw.
-                        double maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
-                        double minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
-                        double minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
-                        double maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
+                        float maxlat = -Float.parseFloat(reader.getAttributeValue(null, "minlat"));
+                        float minlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "minlon"));
+                        float minlat = -Float.parseFloat(reader.getAttributeValue(null, "maxlat"));
+                        float maxlon = 0.56f * Float.parseFloat(reader.getAttributeValue(null, "maxlon"));
 
-                        this.minBoundsPos = new Point2D(minlat, minlon);
-                        this.maxBoundsPos = new Point2D(maxlat, maxlon);
-                        this.originBoundsPos = new Point2D((maxlon + minlon) / 2, (maxlat + minlat) / 2);
-                    }
-                    case "node" -> { // Parses information from a node, adding it to the id2node list.
+                        this.minBoundsPos = new float[]{minlat, minlon};
+                        this.maxBoundsPos = new float[]{maxlat, maxlon};
+                        this.originBoundsPos = new float[]{(maxlon + minlon) / 2, (maxlat + minlat) / 2};
+                    } case "node" -> { // Parses information from a node, adding it to the id2node list.
                         long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
                         float lon = Float.parseFloat(reader.getAttributeValue(null, "lon"));
@@ -159,6 +157,7 @@ public class Model {
                         String k = reader.getAttributeValue(null, "k");
                         String v = reader.getAttributeValue(null, "v");
                         isMultiPoly = (k.equals("type") && v.equals("multipolygon") || isMultiPoly);
+                        if(k.contains("deleted:")) deleted = true;
                         if (k.contains("addr:")) {
                             switch (k) {
                                 case "addr:city" -> searchTree.addAddressElement("city",v);
@@ -202,18 +201,26 @@ public class Model {
 
                         if (elm != null){
                             switch (reader.getAttributeValue(null, "role")){
-                                case "outer" -> rel.add(new PolyGon((PolyLine) elm,false));
-                                case "inner" -> rel.add(new PolyGon((PolyLine) elm,true));
-                                default -> rel.add(elm);
+                                case "outer" -> rel.add(new PolyGon((PolyLine) elm.clone(),false));
+                                case "inner" -> rel.add(new PolyGon((PolyLine) elm.clone(),true));
+                                default -> rel.add(elm.clone());
                             }
                         }
                     }
                 }
-            } else if (element == XMLStreamConstants.END_ELEMENT) {
+            } else if(element == XMLStreamConstants.END_ELEMENT){
+                if(deleted){
+                    nodes.clear();
+                    rel.clear();
+                    isMultiPoly = deleted = false;
+                    continue;
+                }
                 switch (reader.getLocalName()) {
                     case "node" -> searchTree.insertAddress();
 					case "way" -> { // "way" - All lines in the program; linking point A to B
                         PolyLine way = new PolyLine(nodes);
+                        this.kdtree.add(way,way);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,way);
                         this.waycount++;
                         if (isHighway) {
                             index2way.put(HwyCount, new LinkedList<>());
@@ -227,17 +234,17 @@ public class Model {
                             };
                             HwyCount++;
                         }
+
+                        keyFeature = valueFeature = null;
                         id2way.put(relID, way);
-                        this.kdtree.add(way,way);
-                        this.yamlObj.addDrawable(keyFeature,valueFeature,way);
                         nodes.clear();
                     } case "relation" -> { // is a collection of ways and has to be drawn separately with MultiPolygon.
                         PolyRelation multipoly = new PolyRelation(rel,isMultiPoly);
                         this.kdtree.add(multipoly,multipoly);
+                        this.yamlObj.addDrawable(keyFeature,valueFeature,multipoly);
                         this.relcount++;
 
-                        id2way.put(relID, multipoly);
-                        this.yamlObj.addDrawable(keyFeature,valueFeature,multipoly);
+                        keyFeature = valueFeature = null;
                         isMultiPoly = false;
                         rel.clear();
                     }
@@ -250,27 +257,22 @@ public class Model {
         this.searchTree.generate();
         this.loadTime = System.nanoTime() - this.loadTime;
 
-        graph.generate();
+        this.graph.generate();
         for(int i = 0; i < index2way.size() - 1; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
-                graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
-                graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
+                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
+                this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
             }
         }
 
-        /*
-        Random rand = new Random();
-        PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
-        PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
-        dijkstraSP = new DijkstraSP(graph,from,to,vehicleType.MOTORCAR);
-        for(Edge e : dijkstraSP.pathTo(to)){
-            System.out.println(directions.turn(e.getFrom(), e.getTo()));
+        for(Edge f : this.graph.edges()){
+            List<PolyPoint> edgeList = new ArrayList<>();
+            edgeList.add(f.getFrom());
+            edgeList.add(f.getTo());
+            this.NNRoutetree.add(new PolyLine(edgeList),f);
+            edgeList.clear();
         }
-        */
-
-
-
-
-
+        this.NNRoutetree.generateTree();
+        this.NNRoutetree.generateSplits();
     }
 }

@@ -22,6 +22,10 @@ public class PolyPoint implements Drawable {
     }
 
     @Override public void trace(GraphicsContext gc) {
-        gc.moveTo(this.lat,this.lon);
+        gc.moveTo(this.lat, this.lon);
+    }
+
+    @Override public Drawable clone(){
+        return new PolyPoint(this.id,this.lat,this.lon);
     }
 }
