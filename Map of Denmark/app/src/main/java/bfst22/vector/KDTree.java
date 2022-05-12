@@ -5,8 +5,8 @@ import java.util.*;
 
 public class KdTree implements Serializable, SerialVersionIdentifiable {
 	private final List<float[]> splits;
-	private final intNode root;
-	private List<Node> lines;
+	protected final intNode root;
+	protected List<Node> lines;
 
 	public KdTree(){
 		this.root = new intNode();
@@ -16,7 +16,7 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 
 	public void add(final PolyPoint element, Object owner) throws RuntimeException {
 		if(this.lines == null) throw new RuntimeException("Unable to add element: KD-Tree already generated!");
-		this.lines.add(new Node(element.lat,element.lon,owner));
+		this.lines.add(new Node(element,owner));
 	}
 
 	public void add(final PolyLine element, Object owner) throws RuntimeException {
@@ -56,17 +56,17 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		this.lines = null;
 		this.bfs((q,n,d) -> {
 			if (n.elements.size() > 1000) {
-				n.elements.sort((o1, o2) -> Float.compare(o1.coords[d], o2.coords[d]));
+				n.elements.sort((o1, o2) -> Float.compare(o1.get(d), o2.get(d)));
 
-				n.point = n.elements.get(n.elements.size()/2).coords;
-				n.min = n.elements.get(0).coords[d];
-				n.max = n.elements.get(n.elements.size()-1).coords[d];
+				n.point = n.elements.get(n.elements.size()/2).coords();
+				n.min = n.elements.get(0).get(d);
+				n.max = n.elements.get(n.elements.size()-1).get(d);
 
 				q.add(n.left = new intNode());
 				q.add(n.right = new intNode());
 
 				for (Node node : n.elements) {
-					if (node.coords[d==1?0:1] > n.point[d==1?0:1]) n.right.elements.add(node);
+					if (node.get(d==1?0:1) > n.point[d==1?0:1]) n.right.elements.add(node);
 					else n.left.elements.add(node);
 				}
 				n.objects = null;
@@ -102,35 +102,11 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		return this.splits;
 	}
 
-	private Node NNSearch(float[] point, intNode node, Node closest, int depth){
-		if(node.objects != null) {
-			for (Node obj : node.elements)
-				if (obj.distance(point) < closest.distance(point))
-					closest = obj;
-		} else {
-			if(point[(depth+1)%2] < node.point[(depth+1)%2]){
-				closest = NNSearch(point, node.left, closest, depth+1);
-				if(node.axisDistance(point,(depth+1)%2) < closest.distance(point))
-					closest = NNSearch(point, node.right, closest, depth+1);
-
-			} else {
-				closest = NNSearch(point, node.right, closest, depth+1);
-				if(node.axisDistance(point,(depth+1)%2) < closest.distance(point))
-					closest = NNSearch(point, node.left, closest, depth+1);
-			}
-		}
-		return closest;
-	}
-
-	public float[] findNN(float[] point){
-		return this.NNSearch(point,this.root,new Node(999,999,null),0).coords;
-	}
-
 	private interface bfsCall {
 		void call(Collection<intNode> queue, intNode node, int depth);
 	}
 
-	private static class intNode implements Serializable, SerialVersionIdentifiable {
+	protected static class intNode implements Serializable, SerialVersionIdentifiable {
 		public float[] point;
 		public float min, max;
 		public intNode left, right;
@@ -151,17 +127,40 @@ public class KdTree implements Serializable, SerialVersionIdentifiable {
 		}
 	}
 
-	private static class Node implements Serializable, SerialVersionIdentifiable {
-		public float[] coords;
+	protected static class Node extends Point implements Serializable, SerialVersionIdentifiable {
 		public Object obj;
+		public VehicleType type;
+		public int speedLimit;
+		public boolean isOneway;
+		public String address;
 
 		public Node(float lat, float lon, Object objRef) {
-			this.coords = new float[]{lat, lon};
+			super(-1,lat,lon);
 			this.obj = objRef;
 		}
 
+		public Node(PolyPoint element, Object objRef) {
+			super(-1,element.lat,element.lon);
+			this.obj = objRef;
+			this.speedLimit = element.speedLimit;
+			this.isOneway = element.isOneway;
+			this.address = element.address;
+
+			if(element.foot) this.type = VehicleType.FOOT;
+			else if(element.bicycle) this.type = VehicleType.BICYCLE;
+			else this.type = VehicleType.MOTORCAR;
+		}
+
+		public float get(int index){
+			return (index == 0 ? super.lat : super.lon);
+		}
+
+		public float[] coords(){
+			return new float[]{super.lat,super.lon};
+		}
+
 		public double distance(float[] point){
-			return Math.sqrt(Math.pow(this.coords[0]-point[0],2)+Math.pow(this.coords[1]-point[1],2));
+			return Math.sqrt(Math.pow(super.lat-point[0],2)+Math.pow(super.lon-point[1],2));
 		}
 	}
 }

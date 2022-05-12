@@ -1,7 +1,11 @@
 package bfst22.vector;
 
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
 public class Directions {
-    private float angle;
     private float distance;
     Distance d = new Distance();
 
@@ -12,53 +16,45 @@ public class Directions {
     }
 
     /* Returns a String with the description of the next turn */
-    public String turn(float angle, float angledifference, PolyPoint current1, PolyPoint current2){
+    public HBox turn(int row, float angle, float angledifference, PolyPoint current1, PolyPoint current2, MapCanvas canvas, boolean end){
+        HBox TurnEntry = (HBox) Controller.smartFXMLLoader(this,"RouteListEntry.fxml");
 
-            if(angledifference >= -100 && angledifference <= -45 ){
-                if(angle > 270 && angle <= 360){
-                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 180 && angle <= 270){
-                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 90 && angle <= 180){
-                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 0 && angle <= 90){
-                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-            }
+        Label RouteNumberLabel      = (Label) TurnEntry.lookup("#RouteNumber");
+        Text RouteSymbolLabel       = (Text) TurnEntry.lookup("#RouteSymbol");
+        Label RouteDescriptionLabel = (Label) TurnEntry.lookup("#RouteDescription");
 
-            if(angledifference <= 100 && angledifference >= 45) {
-                if(angle > 270 && angle <= 360){
-                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 180 && angle <= 270){
-                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 90 && angle <= 180){
-                    return "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                if(angle > 0 && angle <= 90){
-                    return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-                }
-                return "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
-            }
-            else return "Continue along " + current2.address + " for " + stringDistance(current1,current2) + " meters" + " Angle: " + getAngle(current1,current2) + " Point " + current1.lat + " " + current2.lon + " speedlimit: " + current2.speedLimit;
+        String description, symbol;
 
+        if(current2 == null && !end){
+            symbol = String.valueOf('\uF041');
+            description = "You begin your journey here!";
+        } else if(current2 == null && end) {
+            symbol = String.valueOf('\uF041');
+            description = "You arrive at your destination!";
+        } else if(angledifference >= 90 && angle > 180){ //Right turn
+            symbol = String.valueOf('\uF30B');
+            description = "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters.";
+        } else if(angledifference >= 90 && angle < 180){
+            symbol = String.valueOf('\uF30A');
+            description = "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters.";
+        } else if(angledifference <= -90 && angle < 180) { //Left turn
+            symbol = String.valueOf('\uF30A');
+            description = "Turn left onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters.";
+        } else if (angledifference <= -90 && angle > 180){
+            symbol = String.valueOf('\uF30B');
+            description = "Turn right onto " + current2.address + " and continue for " + stringDistance(current1,current2) + " meters.";
+        } else {
+            symbol = String.valueOf('\uF30C');
+            description = "Continue along " + current2.address + " for " + stringDistance(current1,current2) + " meters.";
+        }
 
-            /*
-            if (angle > 45 && angle < 135) {
-                return
-            }
-            if (angle < 45 && angle > 315) {
+        TurnEntry.setOnMousePressed(e -> canvas.goToPosAbsolute(new float[]{current1.lat,current1.lon}));
+        RouteNumberLabel.setText(String.format("%03d",row));
+        RouteSymbolLabel.setFont(new Font("Font Awesome 5 Free Solid",18));
+        RouteSymbolLabel.setText(symbol);
+        RouteDescriptionLabel.setText(description);
 
-            }
-            if(angle > 135 && angle < 225){
-                return "Turn left onto /Certain Address/ for " + distanceString + " meters" + " Angle: " + angle + start.lat + " " + start.lon;
-            }
-            else return "Invalid Angle - Not beetween 0 <= angle <= 360, " + "The invalid Angle: " + angle + " " + start.lat + " " + start.lon;
-            */
+        return TurnEntry;
     }
 
     /* Returns the angle between two nodes (Start of the road to the end of the road) */

@@ -15,7 +15,8 @@ public class Model {
     // Declares and instantiates lines, containing all lines needed to be drawn.
     // Like HashMap, it has key (the enum waytype) and value (list of all lines w/ that waytype).
     public MapFeature yamlObj;
-    public KdTree kdtree, NNRoutetree;
+    public KdTree kdtree;
+    public NNKdTree NNRoutetree;
     public TernarySearchTree searchTree;
     public float[] minBoundsPos, maxBoundsPos, originBoundsPos; // lat, lon
     public int nodecount, waycount, relcount;
@@ -99,7 +100,7 @@ public class Model {
         this.filesize = Files.size(Paths.get(this.currFileName));
         this.yamlObj = new Yaml(new Constructor(MapFeature.class)).load(this.getClass().getResourceAsStream("WayConfig.yaml"));
         this.kdtree = new KdTree();
-        this.NNRoutetree = new KdTree();
+        this.NNRoutetree = new NNKdTree();
         this.searchTree = new TernarySearchTree();
 
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new BufferedInputStream(input)); // Reads the .osm file, being an XML file.

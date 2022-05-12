@@ -144,7 +144,6 @@ public class MapCanvas extends Canvas {
             this.splitsTree();
             //this.drawGraph(model.graph);
             this.drawShortestPath(model.dijkstraSP);
-            this.strokeNN();
             this.drawBounds();
             this.strokeCursor();
             this.strokeBox(padding);
@@ -313,24 +312,6 @@ public class MapCanvas extends Canvas {
                 this.gc.fillText("bottom right (" + String.format("%.5f", this.maxPos[0] - padding) + "," + String.format("%.5f", this.maxPos[1] - padding) + ")", this.maxPos[0] - padding + csize, this.maxPos[1] - padding - csize);
                 this.gc.fillText("bottom left (" + String.format("%.5f", this.minPos[0] + padding) + "," + String.format("%.5f", this.maxPos[1] - padding) + ")", this.minPos[0] + padding + csize, this.maxPos[1] - padding - csize);
             }
-        }
-    }
-
-    private void strokeNN(){
-        if(this.deprop.get("debugNeighbor") && this.model.isLoaded()){
-            float[] mouse = this.mousePos;
-            float[] node = this.model.kdtree.findNN(mouse);
-
-            this.gc.setLineWidth(this.z(2.5));
-            this.gc.setStroke(Color.RED);
-            this.gc.setLineDashes(0);
-
-            this.gc.fillOval(node[0],node[1],this.z(5),this.z(5));
-            this.gc.beginPath();
-            this.gc.moveTo(node[0],node[1]);
-            this.gc.lineTo(this.mousePos[0],this.mousePos[1]);
-            this.gc.stroke();
-            this.gc.closePath();
         }
     }
 

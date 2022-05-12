@@ -34,7 +34,7 @@ public class Controller {
     @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
-    @FXML private VBox vbox_slider;
+    @FXML private VBox vbox_slider, routePlanVBox, routeVBoxPane;
     @FXML private ToolBar paintBar, toolsBar, statusBar;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
@@ -57,14 +57,16 @@ public class Controller {
     @FXML private ToggleButton zoomBoxButton;
     @FXML private ToggleButton zoomMagnifyingGlass;
     @FXML private ToggleButton pinpointButton;
+    @FXML private ToggleGroup routeTransport;
     @FXML private ComboBox<String> fontBox;
     @FXML private TreeView<String> featuresTreeView;
     @FXML private ListView<HBox> pinPointList;
     @FXML private StackPane center_stack;
     @FXML private VBox topmenu;
     @FXML private Label routeErrorLabel;
-    @FXML private ListView<String> routeTextPane;
+    @FXML private ScrollPane routeTextPane;
     @FXML private Label distance;
+    @FXML private Separator routeSeperator;
 
     // Debug menu variables
     @FXML private ScrollPane vbox_debug_scrollpane;
@@ -345,6 +347,7 @@ public class Controller {
         TernarySearchTree.Address start = this.startAddress.getSelectedAddress();
         TernarySearchTree.Address target = this.targetAddress.getSelectedAddress();
         this.routeErrorLabel.setVisible(false);
+        this.routePlanVBox.setVisible(false);
 
         if(start == null || target == null) {
             this.routeErrorLabel.setText("Choose start- and target addresses!");
@@ -352,8 +355,13 @@ public class Controller {
             return;
         }
 
-        float[] startPos = this.model.NNRoutetree.findNN(start.coordPos);
-        float[] targetPos = this.model.NNRoutetree.findNN(target.coordPos);
+        String userdata = routeTransport.getSelectedToggle().getUserData().toString();
+        VehicleType type = VehicleType.MOTORCAR;
+        if(userdata.equals("1")) type = VehicleType.BICYCLE;
+        else if(userdata.equals("2")) type = VehicleType.FOOT;
+
+        float[] startPos = this.model.NNRoutetree.findNN(start.coordPos,type);
+        float[] targetPos = this.model.NNRoutetree.findNN(target.coordPos,type);
         PolyPoint s = null, t = null;
 
         for(Edge f : model.graph.edges()){
@@ -361,7 +369,7 @@ public class Controller {
             if(f.getTo().lat == targetPos[0] && f.getTo().lon == targetPos[1]) t = f.getTo();
         }
 
-        this.model.dijkstraSP = new DijkstraSP(model.graph,s,t,VehicleType.MOTORCAR);
+        this.model.dijkstraSP = new DijkstraSP(model.graph,s,t,type);
 
         if(this.model.dijkstraSP.pathTo(t) == null){
             this.routeErrorLabel.setText("There is no such route!");
@@ -378,41 +386,40 @@ public class Controller {
         PolyPoint first = directionList.get(0).getFrom();
         PolyPoint last = directionList.get(directionList.size()-1).getTo();
         Distance d = new Distance();
-        distance.setText(Float.toString(d.haversineFormula(first,last)));
-        float distanceString = d.haversineFormula(first,last);
-        System.out.println("Distance: " + String.format("%.1f",distanceString) + "kilometers");
+        this.distance.setText("Total distance: " + String.format("%.1f",d.haversineFormula(first,last)) + " kilometers.");
 
+        int j = 1;
         float difference;
+        List<HBox> route = new ArrayList<>();
+
+        this.routeVBoxPane.getChildren().clear();
+        route.add(directions.turn(j++, 0, 0, directionList.get(0).getFrom(), null, this.canvas, false));
         for(int i = 0; i < directionList.size() - 1; i+=3) {
+            float getAngle = directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo());
+
             if (i + 3 >= directionList.size()) break;
             if (i == 0) {
-                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
-                        , directionList.get(i).getFrom(), directionList.get(i).getTo());
-                System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                        , directionList.get(i).getFrom(), directionList.get(i).getTo()));
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo(), directionList.get(i).getFrom(), directionList.get(i).getTo());
+                route.add(directions.turn(j++, getAngle, difference, directionList.get(i).getFrom(), directionList.get(i).getTo(),this.canvas,false));
             } else if (i > 0) {
-                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
-                        , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
-                if (difference > 90) { //Turns
-                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
-                }
-                if (difference < 90) { //Continue
-                    if(directionList.get(i).getFrom().address != directionList.get(i+3).getFrom().address){
-                        System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                                , directionList.get(i+3).getFrom(), directionList.get(i + 3).getTo()));
-                    }
-                }
-            } else continue;
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo(), directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
+                if (difference > 90) //Turns
+                    route.add(directions.turn(j++, getAngle, difference, directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo(),this.canvas,false));
+                if (difference < 90 && (!Objects.equals(directionList.get(i).getFrom().address, directionList.get(i + 3).getFrom().address))) //Continue
+                    route.add(directions.turn(j++, getAngle, difference, directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo(),this.canvas,false));
+            }
         }
+        route.add(directions.turn(j, 0, 0, directionList.get(directionList.size()-1).getFrom(), null, this.canvas, true));
 
+        this.routeVBoxPane.getChildren().addAll(route);
+        this.routePlanVBox.setVisible(true);
     }
 
     @FXML private void switchOrderRoute(MouseEvent e){
         TernarySearchTree.Address tempAddr = this.targetAddress.getSelectedAddress();
         this.targetAddress.setSelectedAddress(this.startAddress.getSelectedAddress());
         this.startAddress.setSelectedAddress(tempAddr);
-
+        this.findClosestRoute(e);
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *
