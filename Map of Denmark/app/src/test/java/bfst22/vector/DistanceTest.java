@@ -18,7 +18,7 @@ class DistanceTest {
         C = new PolyPoint(3,8,6);
     }
 
-    @Test void DistanceTest(){
+    @Test void testDistances(){
         assertEquals(2.24,d.haversineFormula(A,B));
 
     }
