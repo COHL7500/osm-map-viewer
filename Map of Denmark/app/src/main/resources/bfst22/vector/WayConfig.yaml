@@ -36,7 +36,7 @@
         draw:
           always_draw: true
           fill: true
-          fill_color: "pink"
+          fill_color: "#f5f5da"
       islet: {}
       square: {}
       locality: {}
@@ -344,7 +344,14 @@
             stroke: true
             line_width: 0.000010
             stroke_color: "#e1e3d8"
-      motorway: {}
+      motorway:
+        draw:
+            stroke: true
+            stroke_color: "#df8e9e"
+            line_width: 0.000020
+
+
+
       trunk: {}
       primary:
         draw:
