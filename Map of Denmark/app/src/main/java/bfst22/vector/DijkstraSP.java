@@ -20,9 +20,7 @@ public class DijkstraSP {
         edgeMap = new HashMap<>();
 
         for(int v = 0; v < g.getVertexCount(); v++){
-            if(distanceMap.get(g.polyMap.get(v)) == null){
-                distanceMap.put(g.polyMap.get(v),Double.POSITIVE_INFINITY);
-            }
+            distanceMap.putIfAbsent(g.polyMap.get(v), Double.POSITIVE_INFINITY);
 
         }
         distanceMap.put(start,0.0);
@@ -33,16 +31,8 @@ public class DijkstraSP {
             PolyPoint v = g.polyMap.get(pq.delMin());
             switch(vehicleType){
                 case MOTORCAR:
-                    for(Edge e : g.adj(v)){
-                        relax(g,e,target);
-                    }
-                    break;
-                case FOOT:
-                    for(Edge e : g.adj(v)){
-                        relax(g,e,target);
-                    }
-                    break;
                 case BICYCLE:
+                case FOOT:
                     for(Edge e : g.adj(v)){
                         relax(g,e,target);
                     }
@@ -76,10 +66,6 @@ public class DijkstraSP {
     }
 
 
-    public double distTo(PolyPoint v){
-        return distanceMap.get(v);
-    }
-
     public boolean hasPathTo(PolyPoint v){
         return distanceMap.get(v) < Double.POSITIVE_INFINITY;
     }
@@ -91,14 +77,6 @@ public class DijkstraSP {
             path.push(e);
         }
         return path;
-    }
-
-    public ArrayList<Edge> pathToList(Iterable<Edge> path){
-        ArrayList<Edge> pathList = new ArrayList<>();
-        for(Edge e : path){
-            pathList.add(e);
-        }
-        return pathList;
     }
 
     /* Test Function */

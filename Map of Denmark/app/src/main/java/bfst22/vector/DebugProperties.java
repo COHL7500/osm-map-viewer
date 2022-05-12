@@ -14,6 +14,7 @@ public class DebugProperties {
 		this.init();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void init() {
 		try {
 			String propFileName = "debugconfig.properties";
