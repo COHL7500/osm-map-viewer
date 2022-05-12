@@ -5,26 +5,26 @@ import javafx.scene.paint.Color;
 
 public class ZoomBox {
 	private float[] zoomBoxStart;
-	private boolean active;
+	private boolean isActive;
 
 	public ZoomBox() {
 		this.zoomBoxStart = new float[]{0,0};
 	}
 
 	public void setState(boolean state){
-		this.active = state;
+		this.isActive = state;
 	}
 
 	public boolean isZooming() {
-		return this.active;
+		return this.isActive;
 	}
 
 	public void press(float[] pos) {
-		if (this.active) this.zoomBoxStart = pos;
+		if (this.isActive) this.zoomBoxStart = pos;
 	}
 
 	public void drag(GraphicsContext gc, float[] pos, double zoom_current) {
-		if (this.active) {
+		if (this.isActive) {
 			gc.setLineWidth(1 / zoom_current);
 			gc.setStroke(Color.ORANGE);
 			gc.setLineDashes(0);
@@ -43,7 +43,7 @@ public class ZoomBox {
 	}
 
 	public void release(MapCanvas canvas, float[] mousepos) {
-		if (this.active) {
+		if (this.isActive) {
 			canvas.zoomTo(2);
 			float x = (mousepos[0] + this.zoomBoxStart[0])/2;
 			float y = (mousepos[1] + this.zoomBoxStart[1])/2;
