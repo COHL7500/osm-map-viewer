@@ -1,14 +1,14 @@
 package bfst22.vector;
 
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+
+import javax.xml.stream.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipInputStream;
-import javax.xml.stream.*;
-import javafx.geometry.Point2D;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 // Handles the logic of our data and storing it appropriately.
 public class Model {
@@ -22,7 +22,6 @@ public class Model {
     public int nodecount, waycount, relcount;
     public String currFileName;
     public long loadTime, filesize;
-	public VehicleType vehicleType;
     public Graph graph;
     public DijkstraSP dijkstraSP;
     public Directions directions;

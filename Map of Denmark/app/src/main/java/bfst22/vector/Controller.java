@@ -24,10 +24,10 @@ import java.util.*;
 
 // Responsible for controlling/updating the current view and manipulating dataflow of model.
 public class Controller {
-    private Stage stage;
-	private Model model;
-    private List<String> loadedMaps;
-    private ContextMenu canvasCM;
+    private final Stage stage;
+	private final Model model;
+    private final List<String> loadedMaps;
+    private final ContextMenu canvasCM;
 
 	@FXML private MapCanvas canvas;
     @FXML private TitledPane pinPointSidebar;
@@ -402,7 +402,7 @@ public class Controller {
                     System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
                             , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
                 }
-            } else continue;
+            }
         }
 
     }
