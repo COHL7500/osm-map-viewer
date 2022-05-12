@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.zip.ZipInputStream;
 import javax.xml.stream.*;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -156,9 +155,8 @@ public class Model {
                     } case "nd" -> { // parses reference to a node (ID) and adds it to the node list.
                         long ref = Long.parseLong(reader.getAttributeValue(null, "ref"));
                         nodes.add(id2node.get(ref));
-                    } case "relation", "way" -> { // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
-                        relID = Long.parseLong(reader.getAttributeValue(null, "id"));
-                    }
+                    } case "relation", "way" -> // Parses the ID of the way and sets a default type. For future reference, type could probably be configured properly in this step.
+                            relID = Long.parseLong(reader.getAttributeValue(null, "id"));
                     case "tag" -> { // Parses the key and value of tags, changing the waytype to the corresponding type.
                         String k = reader.getAttributeValue(null, "k");
                         String v = reader.getAttributeValue(null, "v");
@@ -228,7 +226,7 @@ public class Model {
                                 p.isOneway = isOneWay;
                                 p.speedLimit = speedlimit;
                                 index2way.get(HwyCount).add(p);
-                            };
+                            }
                             HwyCount++;
                         }
                         id2way.put(relID, way);
@@ -266,7 +264,7 @@ public class Model {
         PolyPoint from = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
         PolyPoint to = graph.nodes.get(rand.nextInt(graph.nodes.size()-1));
 
-        dijkstraSP = new DijkstraSP(graph,from,to,vehicleType.MOTORCAR);
+        dijkstraSP = new DijkstraSP(graph,from,to, VehicleType.MOTORCAR);
 
     }
 }
