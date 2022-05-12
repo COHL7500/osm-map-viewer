@@ -122,7 +122,7 @@ public class Model {
         boolean isFootway = false;
         boolean isOneWay = false;
         String address = null;
-        int speedlimit = Integer.MAX_VALUE;
+        int speedlimit = 1;
         int HwyCount = 0;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
@@ -174,36 +174,35 @@ public class Model {
 
                             }
                         }
-                        if (this.yamlObj.keyfeatures.containsKey(k)) {
-                            keyFeature = k;
-                            valueFeature = v;
-                            isHighway = false;
-                            switch (k) {
-                                case "motorcar":
-                                    if(v.equals("no")) isMotorcar = false;
-                                    break;
-                                case "isBicycle":
-                                    if(v.equals("yes")) isBicycle = true;
-                                    break;
-                                case "isFootway":
-                                    if(v.equals("yes")) isFootway = true;
-                                    break;
-                                case "oneway":
-                                    if(v.equals("yes")) isOneWay = true;
-                                    break;
-                                case "maxspeed":
-                                    speedlimit = Integer.parseInt(v);
-                                    break;
-                                case "restriction":
-                                    break;
-                                case "highway":
-                                    if (highwayTypes.contains(v)) {
-                                        isHighway = true;
-                                        graph.add(nodes);
-                                    }
-                                    break;
+
+
+                        if(k.equals("bicycle") && v.equals("yes")) isBicycle = true;
+
+                        if(k.equals("foot") && v.equals("yes")) isFootway = true;
+
+                        if(k.equals("name"))  address = v;
+
+                        if(k.equals("maxspeed")) {
+                            try {
+                                speedlimit = Integer.parseInt(v);
+                            } catch (NumberFormatException e) {
+                                speedlimit = 50;
                             }
                         }
+
+                        if(k.equals("oneway")) isOneWay = true;
+
+                        if (this.yamlObj.keyfeatures.containsKey(k)) {
+                            isHighway = false;
+
+                            if (k.equals("highway")) {
+                                if (highwayTypes.contains(v)) {
+                                    isHighway = true;
+                                    graph.add(nodes);
+                                }
+                            }
+                        }
+
                     } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
                         Drawable elm = id2way.get(Long.parseLong(reader.getAttributeValue(null, "ref")));
 
@@ -261,6 +260,7 @@ public class Model {
             }
         }
 
+
         this.kdtree.generateTree();
         this.kdtree.generateSplits();
         this.searchTree.generate();
@@ -269,8 +269,8 @@ public class Model {
         this.graph.generate();
         for(int i = 0; i < index2way.size() - 1; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
-                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),75));
-                this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),75));
+                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1), index2way.get(i).get(j).speedLimit));
+                this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j), index2way.get(i).get(j).speedLimit));
             }
         }
 
