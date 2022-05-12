@@ -168,6 +168,7 @@ public class MapCanvas extends Canvas {
             }
             this.gc.stroke();
             this.gc.closePath();
+        }
     }
 
     private void drawShortestPath(DijkstraSP dijkstra){
