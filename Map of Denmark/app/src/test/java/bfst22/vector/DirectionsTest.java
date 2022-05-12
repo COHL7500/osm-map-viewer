@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectionsTest {
     Distance distance = new Distance();
     Directions directions = new Directions();
-    float km2meter;
-    Graph g = new Graph();
+    Graph g;
     DijkstraSP sp1;
     DijkstraSP sp2;
-    List<PolyPoint> path1 = new ArrayList<>();
-    List<PolyPoint> path2 = new ArrayList<>();
+    List<PolyPoint> path1;
+    List<PolyPoint> path2;
+    ArrayList<Edge> pathList;
     VehicleType vehicleType;
 
 
@@ -30,6 +30,13 @@ class DirectionsTest {
     PolyPoint E = new PolyPoint(5,(float)12.6015500,(float)55.6400283);
 
     @BeforeEach void setUp(){
+        A.address = "Street 1";
+        B.address = "Street 2";
+        C.address = "Street 3";
+        D.address = "Street 4";
+        E.address = "Street 5";
+        path1 = new ArrayList<>();
+        path2 = new ArrayList<>();
         path1.add(A);
         path1.add(B);
         path1.add(C);
@@ -42,40 +49,49 @@ class DirectionsTest {
         path2.add(B);
         path2.add(A);
 
+        g = new Graph();
         g.add(path1);
         g.add(path2);
         g.generate();
 
 
-        g.addEdge(A,B, (float)distance.haversineFormula(A,B));
-        g.addEdge(B,C, (float)distance.haversineFormula(B,C));
-        g.addEdge(C,D, (float)distance.haversineFormula(C,D));
-        g.addEdge(D,E, (float)distance.haversineFormula(D,E));
+        g.addEdge(A,B, distance.haversineFormula(A,B));
+        g.addEdge(B,C, distance.haversineFormula(B,C));
+        g.addEdge(C,D, distance.haversineFormula(C,D));
+        g.addEdge(D,E, distance.haversineFormula(D,E));
 
-        g.addEdge(E,D, (float)distance.haversineFormula(E,D));
-        g.addEdge(D,C, (float)distance.haversineFormula(D,C));
-        g.addEdge(C,B, (float)distance.haversineFormula(C,B));
-        g.addEdge(B,A, (float)distance.haversineFormula(B,A));
+        g.addEdge(E,D, distance.haversineFormula(E,D));
+        g.addEdge(D,C, distance.haversineFormula(D,C));
+        g.addEdge(C,B, distance.haversineFormula(C,B));
+        g.addEdge(B,A, distance.haversineFormula(B,A));
+
+        pathList = new ArrayList<>();
 
     }
 
     @Test void path1Test(){
         sp1 = new DijkstraSP(g,A,E,vehicleType.MOTORCAR);
-        Stack<String> path = new Stack<>();
-        Iterator<Edge> edgeIterator = sp1.pathTo(E).iterator();
-
-        /*
-        while(edgeIterator.hasNext()){
-            path.push(directions.turn(e.getFrom(),e.getTo()));
-        }
-        */
-
         for(Edge e : sp1.pathTo(E)){
+                pathList.add(e);
+        }
+        float difference;
+        for(int i = 0; i < pathList.size() - 1; i++){
+            if(i == 0){
+                difference = directions.getAngleDifference(pathList.get(i).getFrom(), pathList.get(i).getTo()
+                        , pathList.get(i).getFrom(), pathList.get(i).getTo());
+                System.out.println(directions.turn(directions.getAngle(pathList.get(i).getFrom(), pathList.get(i).getTo()), difference
+                        , pathList.get(i+1).getFrom(), pathList.get(i+1).getTo()));
 
-
+            }
+            else if(i > 0) {
+                difference = directions.getAngleDifference(pathList.get(i).getFrom(), pathList.get(i).getTo()
+                        , pathList.get(i+1).getFrom(), pathList.get(i+1).getTo());
+                System.out.println(directions.turn(directions.getAngle(pathList.get(i).getFrom(), pathList.get(i).getTo()), difference
+                        , pathList.get(i+1).getFrom(), pathList.get(i+1).getTo()));
+            }
 
         }
-        assertEquals("idk",path.toString());
+        assertEquals("idk",pathList.toString());
     }
 
     @Test void path2Test(){
