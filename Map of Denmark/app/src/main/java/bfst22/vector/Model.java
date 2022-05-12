@@ -25,12 +25,6 @@ public class Model {
     public Graph graph;
     public DijkstraSP dijkstraSP;
     public Distance distance;
-    public boolean motorVehicle = true;
-    public boolean bicycle = false;
-    public boolean foot = false;
-    public boolean isOneWay = false;
-    public int speedlimit = 0; //Speed limit in towns
-    public int HwyCount = 0;
     public String address;
 
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
@@ -119,6 +113,12 @@ public class Model {
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         graph = new Graph();
         boolean isHighway = false;
+        boolean motorVehicle = true;
+        boolean bicycle = false;
+        boolean foot = false;
+        boolean isOneWay = false;
+        int speedlimit = 0; //Speed limit in towns
+        int HwyCount = 0;
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
         // Reads the entire .OSM file.
@@ -165,11 +165,12 @@ public class Model {
                                 case "addr:street" -> searchTree.addAddressElement("street", v);
                             }
                         }
-                        if(k.equals("bicycle")) if(v.equals("yes")) bicycle = true;
 
-                        if(k.equals("foot")) if(v.equals("yes")) foot = true;
+                        if(k.equals("bicycle") && v.equals("yes")) bicycle = true;
 
-                        if(k.equals("name"))  address = v;
+                        if(k.equals("foot") && v.equals("yes")) foot = true;
+
+                        if(k.equals("name"))  this.address = v;
 
                         if(k.equals("maxspeed")) speedlimit = Integer.parseInt(v);
 
@@ -179,12 +180,12 @@ public class Model {
                             keyFeature = k;
                             valueFeature = v;
                             isHighway = false;
-                            switch (k) {
-                                case "highway":
-                                    if (highwayTypes.contains(v)) {
-                                        isHighway = true;
-                                        graph.add(nodes);
-                                    }
+
+                            if (k.equals("highway")) {
+                                if (highwayTypes.contains(valueFeature)) {
+                                    isHighway = true;
+                                    graph.add(nodes);
+                                }
                             }
                         }
                     } case "member" -> { // parses a member (a reference to a way belonging to a collection of ways; relations)
@@ -223,10 +224,16 @@ public class Model {
                                 p.isOneway = isOneWay;
                                 p.speedLimit = speedlimit;
                                 index2way.get(HwyCount).add(p);
-                            };
+                            }
                             HwyCount++;
-                        }
 
+                            address = null;
+                            foot = false;
+                            bicycle = false;
+                            motorVehicle = false;
+                            isOneWay = false;
+                            speedlimit = 0;
+                        }
                         keyFeature = valueFeature = null;
                         id2way.put(relID, way);
                         nodes.clear();

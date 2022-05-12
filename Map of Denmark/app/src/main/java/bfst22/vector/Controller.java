@@ -228,7 +228,6 @@ public class Controller {
         this.addRecentLoadedMap(filename);
         this.model.unload();
         this.model.load(filename);
-        canvas.darkMode();
         this.canvas.reset();
         this.canvas.zoomTo(42000);
         this.canvas.centerPos();
