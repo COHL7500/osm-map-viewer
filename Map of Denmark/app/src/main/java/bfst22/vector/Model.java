@@ -117,9 +117,9 @@ public class Model {
         List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
         graph = new Graph();
         boolean isHighway = false;
-        boolean motorVehicle = true;
-        boolean bicycle = false;
-        boolean foot = false;
+        boolean isMotorcar = true;
+        boolean isBicycle = false;
+        boolean isFootway = false;
         boolean isOneWay = false;
         String address = null;
         int speedlimit = Integer.MAX_VALUE;
@@ -180,13 +180,13 @@ public class Model {
                             isHighway = false;
                             switch (k) {
                                 case "motorcar":
-                                    if(v.equals("no")) motorVehicle = false;
+                                    if(v.equals("no")) isMotorcar = false;
                                     break;
-                                case "bicycle":
-                                    if(v.equals("yes")) bicycle = true;
+                                case "isBicycle":
+                                    if(v.equals("yes")) isBicycle = true;
                                     break;
-                                case "foot":
-                                    if(v.equals("yes")) foot = true;
+                                case "isFootway":
+                                    if(v.equals("yes")) isFootway = true;
                                     break;
                                 case "oneway":
                                     if(v.equals("yes")) isOneWay = true;
@@ -233,9 +233,9 @@ public class Model {
                         if (isHighway) {
                             index2way.put(HwyCount, new LinkedList<>());
                             for (PolyPoint p : nodes){
-                                p.foot = foot;
-                                p.bicycle = bicycle;
-                                p.motorVehicle = motorVehicle;
+                                p.foot = isFootway;
+                                p.bicycle = isBicycle;
+                                p.motorVehicle = isMotorcar;
                                 p.isOneway = isOneWay;
                                 p.speedLimit = speedlimit;
                                 p.address = address;

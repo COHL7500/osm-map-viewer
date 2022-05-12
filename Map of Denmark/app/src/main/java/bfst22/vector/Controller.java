@@ -224,6 +224,7 @@ public class Controller {
     /* ----------------------------------------------------------------------------------------------------------------- *
      * ---------------------------------------------- Map Loading Methods ---------------------------------------------- *
      * ----------------------------------------------------------------------------------------------------------------- */
+
     private void loadMap(String filename) throws XMLStreamException, IOException, ClassNotFoundException {
         this.addRecentLoadedMap(filename);
         this.model.unload();
