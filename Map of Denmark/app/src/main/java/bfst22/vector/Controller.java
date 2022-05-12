@@ -14,7 +14,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -528,7 +527,7 @@ public class Controller {
     }
 
     // when the menubar 'Tools' section button 'Enable Cursor Pointer' is clicked
-    @FXML private void debugCursorClicked(final ActionEvent e) throws IOException {
+    @FXML private void debugCursorClicked(final ActionEvent e) {
         this.canvas.deprop.toggle("debugCursor");
         this.canvas.update();
     }
@@ -540,7 +539,7 @@ public class Controller {
     }
 
     // when the menubar 'Tools' section button 'Enable Kd-Tree Splits' is clicked
-    @FXML private void debugSplitsClicked(final ActionEvent e) throws IOException {
+    @FXML private void debugSplitsClicked(final ActionEvent e){
         this.canvas.deprop.toggle("debugSplits");
         this.canvas.update();
     }
@@ -563,7 +562,7 @@ public class Controller {
     }
 
     // when the menubar 'Tools' section button 'Disable Bounding Box' is clicked
-    @FXML private void debugBoundingBoxClicked(final ActionEvent e) throws IOException {
+    @FXML private void debugBoundingBoxClicked(final ActionEvent e){
         this.canvas.deprop.toggle("debugBoundingBox");
         this.canvas.update();
     }

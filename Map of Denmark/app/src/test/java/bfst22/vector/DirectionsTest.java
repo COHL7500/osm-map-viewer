@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectionsTest {
     Distance distance = new Distance();
     Directions directions = new Directions();
-    Address a;
     float km2meter;
     Graph g = new Graph();
     DijkstraSP sp1;
