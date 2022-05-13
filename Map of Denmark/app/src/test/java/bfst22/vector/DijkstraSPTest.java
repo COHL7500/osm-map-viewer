@@ -28,7 +28,6 @@ public class DijkstraSPTest {
     PolyPoint K = new PolyPoint(11, 4,9);
 
     @BeforeEach void setUp(){
-        System.out.println(nodes.isEmpty());
         d = new Distance();
         g = new Graph();
 
@@ -47,9 +46,6 @@ public class DijkstraSPTest {
         g.add(nodes);
         g.generate();
 
-        System.out.println("Vertex Count: " + g.getVertexCount());
-        System.out.println("Edge Count: " + g.getEdgeCount());
-
         g.addEdge(g.nodes.get(0), g.nodes.get(1),g.setWeightDistance(g.nodes.get(0), g.nodes.get(1),speedLimit));
         g.addEdge(g.nodes.get(1), g.nodes.get(2),g.setWeightDistance(g.nodes.get(1), g.nodes.get(2),speedLimit));
         g.addEdge(g.nodes.get(2), g.nodes.get(3),g.setWeightDistance(g.nodes.get(2), g.nodes.get(3),speedLimit));
@@ -66,16 +62,9 @@ public class DijkstraSPTest {
         g.addEdge(g.nodes.get(10), g.nodes.get(4),g.setWeightDistance(g.nodes.get(10), g.nodes.get(4),speedLimit));
         g.addEdge(g.nodes.get(7), g.nodes.get(4),g.setWeightDistance(g.nodes.get(7), g.nodes.get(4),speedLimit));
         g.addEdge(g.nodes.get(7), g.nodes.get(2),g.setWeightDistance(g.nodes.get(7), g.nodes.get(2),speedLimit));
-
-
-        System.out.println("Vertex Count: " + g.getVertexCount());
-        System.out.println("Edge Count: " + g.getEdgeCount());
-
-
     }
     @Test void dijkstraTest0to4(){
         sp = new DijkstraSP(g, g.nodes.get(0),g.nodes.get(4),vehicleType.MOTORCAR);
-        System.out.println(sp.pathToString(sp.pathTo(g.nodes.get(4))));
         assertEquals("[4->5  4.1818423, 1->4  10.410109]","" + sp.pathToString(sp.pathTo(g.nodes.get(4))));
     }
 
