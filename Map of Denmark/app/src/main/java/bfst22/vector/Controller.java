@@ -291,6 +291,7 @@ public class Controller {
 
     @FXML private void onZoomMagnifyingGlassButtonPressed(ActionEvent e){
         this.canvas.zoomMagnifyingGlass = !this.canvas.zoomMagnifyingGlass;
+        this.canvas.zoombox.setState(false);
     }
 
     @FXML private void onSearchButtonPressed(ActionEvent e) {
@@ -573,6 +574,7 @@ public class Controller {
 
     @FXML private void debugDisplayDarkFilledClicked(final ActionEvent e){
         this.canvas.deprop.set("debugDarkMode", true);
+        this.canvas.deprop.set("debugDisplayWireframe", false);
         this.canvas.selectTheme();
         this.canvas.update();
     }
@@ -586,7 +588,6 @@ public class Controller {
     // when the menubar 'Tools' section button 'Display Wireframe' is clicked
     @FXML private void debugDisplayGraphClicked(final ActionEvent e){
         this.canvas.deprop.toggle("debugDisplayGraph");
-        this.canvas.drawGraph();
         this.canvas.update();
     }
 
