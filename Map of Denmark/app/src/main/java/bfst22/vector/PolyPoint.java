@@ -3,8 +3,10 @@ package bfst22.vector;
 
 import javafx.scene.canvas.GraphicsContext;
 
+import java.io.Serializable;
+
 // Defines what a node is in the OSM file and its properties.
-public class PolyPoint implements Drawable {
+public class PolyPoint implements Drawable, SerialVersionIdentifiable, Serializable {
     public long id;
     public float lat, lon;
 

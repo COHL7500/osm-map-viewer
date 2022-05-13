@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="">
+    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="Fix dijkstra">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Edge.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Edge.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Graph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/PolyPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/PolyPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/resources/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/resources/bfst22/vector/View.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +66,10 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/app/data" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -152,40 +162,61 @@
       <workItem from="1652219705629" duration="1150000" />
       <workItem from="1652283642066" duration="7047000" />
     </task>
+    <task id="LOCAL-00001" summary="Fix dijkstra">
+      <created>1652429514732</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1652429514733</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix dijkstra" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix dijkstra" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>36</line>
+          <line>66</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>37</line>
+          <line>67</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>40</line>
+          <line>70</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>39</line>
+          <line>69</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>42</line>
+          <line>72</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>

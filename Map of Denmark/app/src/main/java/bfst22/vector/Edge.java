@@ -1,6 +1,8 @@
 package bfst22.vector;
 
-public record Edge(PolyPoint from, PolyPoint to, float weight) {
+import java.io.Serializable;
+
+public record Edge(PolyPoint from, PolyPoint to, float weight) implements SerialVersionIdentifiable, Serializable {
 
     public PolyPoint getFrom() {
         return this.from;
