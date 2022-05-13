@@ -171,17 +171,12 @@ https://kordamp.org/ikonli -->
                     </RadioMenuItem>
                     <RadioMenuItem text="Display Dark Filled" onAction="#debugDisplayDarkFilledClicked" toggleGroup="$mapdisplay">
                         <accelerator>
-                            <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </RadioMenuItem>
                     <RadioMenuItem text="Display Wireframe" onAction="#debugDisplayWireframeClicked" toggleGroup="$mapdisplay">
                         <accelerator>
-                            <KeyCodeCombination alt="UP" code="DIGIT3" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
-                        </accelerator>
-                    </RadioMenuItem>
-                    <RadioMenuItem text="Display Road Graph" onAction="#debugDisplayGraphClicked">
-                        <accelerator>
-                            <KeyCodeCombination alt="UP" code="DIGIT4" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
                         </accelerator>
                     </RadioMenuItem>
                     <SeparatorMenuItem styleClass="separator_horizontal" />
@@ -198,11 +193,6 @@ https://kordamp.org/ikonli -->
                     <CheckMenuItem text="Enable Kd-Tree Splits" onAction="#debugSplitsClicked">
                         <accelerator>
                             <KeyCodeCombination alt="DOWN" code="DIGIT3" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                        </accelerator>
-                    </CheckMenuItem>
-                    <CheckMenuItem text="Enable Nearest-Neighbor" onAction="#debugNeighborClicked">
-                        <accelerator>
-                            <KeyCodeCombination alt="DOWN" code="DIGIT4" control="UP" meta="UP" shift="UP" shortcut="UP" />
                         </accelerator>
                     </CheckMenuItem>
                     <CheckMenuItem text="Enable Free Movement" onAction="#debugFreeMovementClicked">
@@ -335,7 +325,10 @@ https://kordamp.org/ikonli -->
                                 <FontIcon iconLiteral="fas-route:12:WHITE"/>
                             </graphic>
                             <VBox>
-                                <VBox spacing="5">
+                                <VBox id="addressTop" spacing="5">
+                                    <padding>
+                                        <Insets bottom="15"/>
+                                    </padding>
                                     <TextFieldSuggestion fx:id="startAddress" prefWidth="200" promptText="Starting Address"/>
                                     <TextFieldSuggestion fx:id="targetAddress" prefWidth="200" promptText="Destination"/>
                                     <Label fx:id="routeErrorLabel" style="-fx-text-fill: RED;" visible="false" managed="${routeErrorLabel.visible}" />
@@ -351,12 +344,15 @@ https://kordamp.org/ikonli -->
                                             </graphic>
                                         </Button>
                                     </HBox>
-                                    <Label fx:id="distance" visible="false" managed="${distance.visible}"/>
-                                    <ListView fx:id="routeTextPane" disable="true" visible="false" managed="${routeTextPane.visible}" prefHeight="200">
-                                        <placeholder>
-                                            <Label text="No Routes to show..." />
-                                        </placeholder>
-                                    </ListView>
+                                </VBox>
+                                <VBox fx:id="routePlanVBox" id="addressBottom" visible="false" spacing="5" managed="${routePlanVBox.visible}">
+                                    <padding>
+                                        <Insets top="15"/>
+                                    </padding>
+                                    <Label fx:id="distance" />
+                                    <ScrollPane fx:id="routeTextPane" id="routeTextPane" prefHeight="200" hbarPolicy="NEVER" maxWidth="235">
+                                        <VBox fx:id="routeVBoxPane" />
+                                    </ScrollPane>
                                 </VBox>
                             </VBox>
                         </TitledPane>

@@ -34,7 +34,7 @@ public class Controller {
     @FXML private ScrollPane vBox_scrollpane;
     @FXML private HBox paintBox;
     @FXML private Pane somePane;
-    @FXML private VBox vbox_slider;
+    @FXML private VBox vbox_slider, routePlanVBox, routeVBoxPane;
     @FXML private ToolBar paintBar, toolsBar, statusBar;
     @FXML private BorderPane someBorderPane;
 	@FXML private MenuItem unloadFileButton;
@@ -63,7 +63,7 @@ public class Controller {
     @FXML private StackPane center_stack;
     @FXML private VBox topmenu;
     @FXML private Label routeErrorLabel;
-    @FXML private ListView<String> routeTextPane;
+    @FXML private ScrollPane routeTextPane;
     @FXML private Label distance;
 
     // Debug menu variables
@@ -379,39 +379,40 @@ public class Controller {
         PolyPoint first = directionList.get(0).getFrom();
         PolyPoint last = directionList.get(directionList.size()-1).getTo();
         Distance d = new Distance();
-        distance.setText(Float.toString(d.haversineFormula(first,last)));
-        float distanceString = d.haversineFormula(first,last);
-        System.out.println("Distance: " + String.format("%.1f",distanceString) + "kilometers");
+        distance.setText("Distance: " + String.format("%.1f",d.haversineFormula(first,last)) + " kilometers");
 
+        int j = 1;
         float difference;
+        List<HBox> route = new ArrayList<>();
+
+        this.routeVBoxPane.getChildren().clear();
+        route.add(directions.turn(j++, 0, 0, directionList.get(0).getFrom(), null, this.canvas, false));
         for(int i = 0; i < directionList.size() - 1; i+=3) {
+            float getAngle = directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo());
+
             if (i + 3 >= directionList.size()) break;
             if (i == 0) {
-                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
-                        , directionList.get(i).getFrom(), directionList.get(i).getTo());
-                System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                        , directionList.get(i).getFrom(), directionList.get(i).getTo()));
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo(), directionList.get(i).getFrom(), directionList.get(i).getTo());
+                route.add(directions.turn(j++, getAngle, difference, directionList.get(i).getFrom(), directionList.get(i).getTo(),this.canvas,false));
             } else if (i > 0) {
-                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo()
-                        , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
-                if (difference > 90) { //Turns
-                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
-                }
-                if (difference < 90) { //Continue
-                    System.out.println(directions.turn(directions.getAngle(directionList.get(i).getFrom(), directionList.get(i).getTo()), difference
-                            , directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo()));
-                }
+                difference = directions.getAngleDifference(directionList.get(i).getFrom(), directionList.get(i).getTo(), directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo());
+                if (difference > 90) //Turns
+                    route.add(directions.turn(j++, getAngle, difference, directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo(),this.canvas,false));
+                if (difference < 90 && (!Objects.equals(directionList.get(i).getFrom().address, directionList.get(i + 3).getFrom().address))) //Continue
+                    route.add(directions.turn(j++, getAngle, difference, directionList.get(i + 3).getFrom(), directionList.get(i + 3).getTo(),this.canvas,false));
             }
         }
+        route.add(directions.turn(j, 0, 0, directionList.get(directionList.size()-1).getFrom(), null, this.canvas, true));
 
+        this.routeVBoxPane.getChildren().addAll(route);
+        this.routePlanVBox.setVisible(true);
     }
 
     @FXML private void switchOrderRoute(MouseEvent e){
         TernarySearchTree.Address tempAddr = this.targetAddress.getSelectedAddress();
         this.targetAddress.setSelectedAddress(this.startAddress.getSelectedAddress());
         this.startAddress.setSelectedAddress(tempAddr);
-
+        this.findClosestRoute(e);
     }
 
     /* ----------------------------------------------------------------------------------------------------------------- *

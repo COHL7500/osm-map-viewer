@@ -282,6 +282,5 @@ public class Model {
             edgeList.clear();
         }
         this.NNRoutetree.generateTree();
-        this.NNRoutetree.generateSplits();
     }
 }
