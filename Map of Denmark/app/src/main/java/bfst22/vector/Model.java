@@ -50,6 +50,9 @@ public class Model {
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
+                    this.NNRoutetree = (KdTree) input.readObject();
+                    this.graph = (Graph) input.readObject();
+                    this.dijkstraSP = (DijkstraSP) input.readObject();
                     this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
@@ -81,16 +84,19 @@ public class Model {
     // Saves the .obj file in our project hierachy.
     private void saveObj(String basename) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(basename + ".obj"))) {
-            out.writeDouble(this.minBoundsPos[0]);
-            out.writeDouble(this.minBoundsPos[1]);
-            out.writeDouble(this.maxBoundsPos[0]);
-            out.writeDouble(this.maxBoundsPos[1]);
-            out.writeDouble(this.originBoundsPos[0]);
-            out.writeDouble(this.originBoundsPos[1]);
+            out.writeFloat(this.minBoundsPos[0]);
+            out.writeFloat(this.minBoundsPos[1]);
+            out.writeFloat(this.maxBoundsPos[0]);
+            out.writeFloat(this.maxBoundsPos[1]);
+            out.writeFloat(this.originBoundsPos[0]);
+            out.writeFloat(this.originBoundsPos[1]);
             out.writeInt(nodecount);
             out.writeInt(waycount);
             out.writeInt(relcount);
             out.writeObject(kdtree);
+            out.writeObject(NNRoutetree);
+            out.writeObject(graph);
+            out.writeObject(dijkstraSP);
             out.writeObject(searchTree);
             out.writeObject(yamlObj);
         }

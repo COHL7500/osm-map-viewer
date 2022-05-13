@@ -456,7 +456,7 @@ public class Controller {
      * ----------------------------------------------------------------------------------------------------------------- */
     // when the menubar 'File' section button 'Load Default map' is clicked
     @FXML private void onDefaultLoadClicked(final ActionEvent e) throws Exception {
-        this.loadMap("data/small.osm.zip");
+        this.loadMap("data/bornholm.osm.obj");
     }
 
     // when the menubar 'File' section button 'Import Custom map' is clicked
