@@ -55,7 +55,6 @@ public class Model {
                     this.directions = (Directions) input.readObject();
                     this.searchTree = (TernarySearchTree) input.readObject();
                     this.NNRoutetree = (KdTree) input.readObject();
-                    this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
                 this.loadTime = System.nanoTime() - this.loadTime;
@@ -95,15 +94,12 @@ public class Model {
             out.writeInt(nodecount);
             out.writeInt(waycount);
             out.writeInt(relcount);
-            out.writeObject(NNRoutetree);
-            out.writeObject(dijkstraSP);
-            out.writeObject(directions);
-            out.writeObject(graph);
             out.writeObject(kdtree);
-            out.writeObject(NNRoutetree);
-            out.writeObject(graph);
             out.writeObject(dijkstraSP);
+            out.writeObject(graph);
+            out.writeObject(directions);
             out.writeObject(searchTree);
+            out.writeObject(NNRoutetree);
             out.writeObject(yamlObj);
         }
     }
