@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="Fix dijkstra">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Edge.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Edge.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Graph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/MapCanvas.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/MapCanvas.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/PolyPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/PolyPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/resources/bfst22/vector/View.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/resources/bfst22/vector/View.fxml" afterDir="false" />
-    </list>
+    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="Change path color depending on dark/light mode" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,7 +74,28 @@
       <recent name="C:\Users\Adamh\OneDrive\Documents\GitHub\BFST22group1\Map of Denmark\app\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Map of Denmark [run]">
+  <component name="RunManager" selected="Gradle.DijkstraSPTest">
+    <configuration name="DijkstraSPTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DijkstraSPTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="DijkstraSPTest.dijkstraTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -97,6 +110,48 @@
             <option value=":app:test" />
             <option value="--tests" />
             <option value="&quot;bfst22.vector.DijkstraSPTest.dijkstraTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DistanceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DistanceTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DistanceTest.DistanceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DistanceTest.DistanceTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -141,9 +196,15 @@
     <list>
       <item itemvalue="Gradle.Map of Denmark [run]" />
       <item itemvalue="Gradle.DijkstraSPTest.dijkstraTest" />
+      <item itemvalue="Gradle.DistanceTest" />
+      <item itemvalue="Gradle.DistanceTest.DistanceTest" />
+      <item itemvalue="Gradle.DijkstraSPTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.DijkstraSPTest" />
+        <item itemvalue="Gradle.DistanceTest.DistanceTest" />
+        <item itemvalue="Gradle.DistanceTest" />
         <item itemvalue="Gradle.DijkstraSPTest.dijkstraTest" />
       </list>
     </recent_temporary>
@@ -169,7 +230,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652429514733</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Change path color depending on dark/light mode">
+      <created>1652432864404</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1652432864404</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,7 +257,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fix dijkstra" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix dijkstra" />
+    <MESSAGE value="Change path color depending on dark/light mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change path color depending on dark/light mode" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -28,7 +28,7 @@ class DistanceTest {
     }
 
     @Test void DistanceTest(){
-        assertEquals("247.73",String.format("%.2f",d.haversineFormula(A,B)));
+        assertEquals("247,73",String.format("%.2f",d.haversineFormula(A,B)));
     }
 
     @Test void DistanceTest2(){
