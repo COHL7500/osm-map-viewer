@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
-    </list>
+    <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="Change path color depending on dark/light mode" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -60,6 +58,10 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/app/data" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -72,7 +74,28 @@
       <recent name="C:\Users\Adamh\OneDrive\Documents\GitHub\BFST22group1\Map of Denmark\app\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Map of Denmark [run]">
+  <component name="RunManager" selected="Gradle.DijkstraSPTest">
+    <configuration name="DijkstraSPTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DijkstraSPTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="DijkstraSPTest.dijkstraTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -87,6 +110,48 @@
             <option value=":app:test" />
             <option value="--tests" />
             <option value="&quot;bfst22.vector.DijkstraSPTest.dijkstraTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DistanceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DistanceTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="DistanceTest.DistanceTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--tests &quot;bfst22.vector.DistanceTest.DistanceTest&quot;" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:test" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -131,9 +196,15 @@
     <list>
       <item itemvalue="Gradle.Map of Denmark [run]" />
       <item itemvalue="Gradle.DijkstraSPTest.dijkstraTest" />
+      <item itemvalue="Gradle.DistanceTest" />
+      <item itemvalue="Gradle.DistanceTest.DistanceTest" />
+      <item itemvalue="Gradle.DijkstraSPTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.DijkstraSPTest" />
+        <item itemvalue="Gradle.DistanceTest.DistanceTest" />
+        <item itemvalue="Gradle.DistanceTest" />
         <item itemvalue="Gradle.DijkstraSPTest.dijkstraTest" />
       </list>
     </recent_temporary>
@@ -152,40 +223,69 @@
       <workItem from="1652219705629" duration="1150000" />
       <workItem from="1652283642066" duration="7047000" />
     </task>
+    <task id="LOCAL-00001" summary="Fix dijkstra">
+      <created>1652429514732</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1652429514733</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Change path color depending on dark/light mode">
+      <created>1652432864404</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1652432864404</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix dijkstra" />
+    <MESSAGE value="Change path color depending on dark/light mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change path color depending on dark/light mode" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>36</line>
+          <line>66</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>37</line>
+          <line>67</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>40</line>
+          <line>70</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>39</line>
+          <line>69</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java</url>
-          <line>42</line>
+          <line>72</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>

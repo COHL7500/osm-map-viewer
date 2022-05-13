@@ -50,9 +50,11 @@ public class Model {
                     this.waycount = input.readInt();
                     this.relcount = input.readInt();
                     this.kdtree = (KdTree) input.readObject();
-                    this.NNRoutetree = (KdTree) input.readObject();
-                    this.graph = (Graph) input.readObject();
                     this.dijkstraSP = (DijkstraSP) input.readObject();
+                    this.graph = (Graph) input.readObject();
+                    this.directions = (Directions) input.readObject();
+                    this.searchTree = (TernarySearchTree) input.readObject();
+                    this.NNRoutetree = (KdTree) input.readObject();
                     this.searchTree = (TernarySearchTree) input.readObject();
                     this.yamlObj = (MapFeature) input.readObject();
                 }
@@ -93,6 +95,10 @@ public class Model {
             out.writeInt(nodecount);
             out.writeInt(waycount);
             out.writeInt(relcount);
+            out.writeObject(NNRoutetree);
+            out.writeObject(dijkstraSP);
+            out.writeObject(directions);
+            out.writeObject(graph);
             out.writeObject(kdtree);
             out.writeObject(NNRoutetree);
             out.writeObject(graph);
@@ -147,6 +153,7 @@ public class Model {
                         this.minBoundsPos = new float[]{minlat, minlon};
                         this.maxBoundsPos = new float[]{maxlat, maxlon};
                         this.originBoundsPos = new float[]{(maxlon + minlon) / 2, (maxlat + minlat) / 2};
+
                     } case "node" -> { // Parses information from a node, adding it to the id2node list.
                         long id = Long.parseLong(reader.getAttributeValue(null, "id"));
                         float lat = Float.parseFloat(reader.getAttributeValue(null, "lat"));
@@ -182,6 +189,8 @@ public class Model {
                         }
 
                         if(k.equals("bicycle") && v.equals("yes")) isBicycle = true;
+
+                        if(k.equals("motorcar") && v.equals("no")) isMotorcar = false;
 
                         if(k.equals("foot") && v.equals("yes")) isFootway = true;
 
@@ -247,6 +256,7 @@ public class Model {
                                 p.address = address;
                                 index2way.get(HwyCount).add(p);
                             }
+
                             HwyCount++;
                         }
 

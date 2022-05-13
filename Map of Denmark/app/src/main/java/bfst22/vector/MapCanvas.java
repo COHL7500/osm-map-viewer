@@ -172,7 +172,7 @@ public class MapCanvas extends Canvas {
 
     private void drawShortestPath(DijkstraSP dijkstra){
         if(dijkstra == null) return;
-            this.gc.setStroke(Color.BLUE);
+            this.gc.setStroke(deprop.get("debugDarkMode") ? Color.RED : Color.BLUE);
             this.gc.setLineWidth(this.z(1));
             gc.beginPath();
             for(Edge e : dijkstra.pathTo(dijkstra.target)){

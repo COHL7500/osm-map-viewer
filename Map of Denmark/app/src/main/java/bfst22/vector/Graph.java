@@ -8,7 +8,6 @@ import java.util.*;
 public class Graph implements Serializable, SerialVersionIdentifiable {
     int vertexCount; //Number of vertices.
     int edgeCount; //Number of edges
-    float speedlimit = 0; //Speedlimit
     List<PolyPoint> nodes = new ArrayList<>();
 
     Map<PolyPoint, LinkedList<Edge>> adjMap = new HashMap<>();
