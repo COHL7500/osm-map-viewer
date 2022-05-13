@@ -175,7 +175,6 @@ public class Model {
                             }
                         }
 
-
                         if(k.equals("bicycle") && v.equals("yes")) isBicycle = true;
 
                         if(k.equals("foot") && v.equals("yes")) isFootway = true;
@@ -193,6 +192,8 @@ public class Model {
                         if(k.equals("oneway")) isOneWay = true;
 
                         if (this.yamlObj.keyfeatures.containsKey(k)) {
+                            keyFeature = k;
+                            valueFeature = v;
                             isHighway = false;
 
                             if (k.equals("highway")) {

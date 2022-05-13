@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8ea47a5-7842-4d75-87f0-7daed10eae10" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/DijkstraSP.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/DijkstraSP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Directions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/bfst22/vector/Model.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +55,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -158,6 +156,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
