@@ -7,16 +7,12 @@ import java.util.*;
 public class Graph {
     int vertexCount; //Number of vertices.
     int edgeCount; //Number of edges
-    float speedlimit = 0; //Speedlimit
     List<PolyPoint> nodes = new ArrayList<>();
 
     Map<PolyPoint, LinkedList<Edge>> adjMap = new HashMap<>();
     Map<PolyPoint, Integer> indexMap = new HashMap<>();
     Map<Integer, PolyPoint> polyMap = new HashMap<>();
-
     int index = 0;
-
-    //Map<PolyPoint, TreeMap<PolyPoint,Float>> adj = new HashMap<>();
 
     public void add(List<PolyPoint> nodes){
         this.nodes.addAll(nodes);
@@ -82,7 +78,6 @@ public class Graph {
         return adjMap.get(v);
     }
 
-    public int getIndex(){ return index; }
 
     // Getters & Setters method for edgeCount and vertexCount
     public void setNodecount(int nodecount){

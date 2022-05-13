@@ -28,6 +28,7 @@ public class Model {
     public Distance distance;
     public String address;
 
+
     // Loads our OSM file, supporting various formats: .zip and .osm, then convert it into an .obj.
     public void load(String filename) throws IOException, XMLStreamException, FactoryConfigurationError, ClassNotFoundException {
         this.currFileName = filename;
@@ -111,15 +112,15 @@ public class Model {
         long relID = 0; // ID of the current relation.
         String keyFeature = null, valueFeature = null;
         boolean isMultiPoly = false, deleted = false;
-        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential"));
+        List<String> highwayTypes = new ArrayList<>(Arrays.asList("primary", "secondary", "tertiary", "residential","motorway","trunk","pedestrian"));
         graph = new Graph();
         boolean isHighway = false;
         boolean motorVehicle = true;
         boolean bicycle = false;
         boolean foot = false;
         boolean isOneWay = false;
-        int speedlimit = 0; //Speed limit in towns
         int HwyCount = 0;
+        int speedlimit = 50; //Speed limit in towns
         Map<Integer, List<PolyPoint>> index2way = new HashMap<>();
 
         // Reads the entire .OSM file.
@@ -167,23 +168,30 @@ public class Model {
                             }
                         }
 
-                        if(k.equals("bicycle") && v.equals("yes")) bicycle = true;
+                            if(k.equals("bicycle") && v.equals("yes")) bicycle = true;
 
-                        if(k.equals("foot") && v.equals("yes")) foot = true;
+                            if(k.equals("foot") && v.equals("yes")) foot = true;
 
-                        if(k.equals("name"))  this.address = v;
+                            if(k.equals("motorcar") && v.equals("yes")) motorVehicle = false;
 
-                        if(k.equals("maxspeed")) speedlimit = Integer.parseInt(v);
+                            if(k.equals("name"))  this.address = v;
 
-                        if(k.equals("oneway")) isOneWay = true;
+                            if(k.equals("maxspeed")) {
+                                try {
+                                    speedlimit = Integer.parseInt(v);
+                                }catch (NumberFormatException e){
+                                    speedlimit = 50;
+                                }
+                            }
+                            if(k.equals("oneway")) isOneWay = true;
 
-                        if (this.yamlObj.keyfeatures.containsKey(k)) {
+                            if (this.yamlObj.keyfeatures.containsKey(k)) {
                             keyFeature = k;
                             valueFeature = v;
                             isHighway = false;
 
-                            if (k.equals("highway")) {
-                                if (highwayTypes.contains(valueFeature)) {
+                                if (k.equals("highway")) {
+                                    if (highwayTypes.contains(valueFeature)) {
                                     isHighway = true;
                                     graph.add(nodes);
                                 }
@@ -231,9 +239,9 @@ public class Model {
                             address = null;
                             foot = false;
                             bicycle = false;
-                            motorVehicle = false;
+                            motorVehicle = true;
                             isOneWay = false;
-                            speedlimit = 0;
+                            speedlimit = 50;
                         }
                         keyFeature = valueFeature = null;
                         id2way.put(relID, way);
@@ -260,9 +268,9 @@ public class Model {
         this.graph.generate();
         for(int i = 0; i < index2way.size() - 1; i++){
             for(int j = 0; j < index2way.get(i).size() - 1; j++){
-                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), graph.setWeightDistance(index2way.get(i).get(j),index2way.get(i).get(j+1),index2way.get(i).get(j).speedLimit));
+                this.graph.addEdge(index2way.get(i).get(j),index2way.get(i).get(j+1), index2way.get(i).get(j).speedLimit);
                 if(!index2way.get(i).get(j).isOneway){
-                    this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), graph.setWeightDistance(index2way.get(i).get(j+1),index2way.get(i).get(j),index2way.get(i).get(j+1).speedLimit));
+                    this.graph.addEdge(index2way.get(i).get(j+1),index2way.get(i).get(j), index2way.get(i).get(j+1).speedLimit);
                 }
             }
         }

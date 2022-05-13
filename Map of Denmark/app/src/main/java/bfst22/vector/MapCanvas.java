@@ -142,7 +142,7 @@ public class MapCanvas extends Canvas {
             this.setStylingDefault();
             this.pinpoints.draw(this.gc,this.zoom_current,this.mousePos);
             this.splitsTree();
-            //this.drawGraph(model.graph);
+            this.drawGraph(model.graph);
             this.drawShortestPath(model.dijkstraSP);
             this.drawBounds();
             this.strokeCursor();
