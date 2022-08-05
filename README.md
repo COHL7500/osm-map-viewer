@@ -1,4 +1,6 @@
 
+**How to run**
+
 - Change directory into the folder "Map Of Denmark" (where Gradle is located).
 
 - Open Terminal located in said folder.
